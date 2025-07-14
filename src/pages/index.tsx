@@ -1,0 +1,51 @@
+import Header from '../components/Header'
+import Hero from '../components/Hero'
+import Sobre from '../components/Sobre'
+import TempoReal from '../components/TempoReal'
+import CallToAction from '../components/CallToAction'
+import Footer from '../components/Footer'
+
+function LinhaDelicada() {
+  return (
+    <div className="flex justify-center">
+      <img
+        src="/images/liner.png"
+        alt=""
+        className="h-0.5 w-full max-w-[400px] object-cover select-none pointer-events-none"
+        draggable="false"
+      />
+    </div>
+  )
+}
+
+export default function Home() {
+  return (
+    <>
+      {/* Fake SEOHead substituindo temporariamente */}
+      <head>
+        <title>CERRADØ INTERBOX 2025 - O Maior Evento de Times da América Latina</title>
+        <meta
+          name="description"
+          content="24, 25 e 26 de outubro. O CERRADØ INTERBOX vai além da arena. Aqui você não se inscreve. Você assume seu chamado."
+        />
+        <meta property="og:image" content="/images/og-interbox.png" />
+        <meta property="og:type" content="website" />
+        <meta name="keywords" content="CERRADØ INTERBOX, competição de times, crossfit competition, fitness event, Brasil, América Latina, 2025" />
+        <link rel="canonical" href="https://cerradointerbox.com.br" />
+      </head>
+
+      <div>
+        <LinhaDelicada />
+        <Header />
+        <Hero />
+        <LinhaDelicada />
+        <Sobre />
+        <LinhaDelicada />
+        <TempoReal />
+        <LinhaDelicada />
+        <CallToAction />
+        <Footer />
+      </div>
+    </>
+  )
+} 
