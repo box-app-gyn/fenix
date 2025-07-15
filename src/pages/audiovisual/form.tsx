@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 // import Image from 'next/image';
 import { useAnalytics } from '@/hooks/useAnalytics';
+import { useAuth } from '@/hooks/useAuth';
 import SEOHead from '@/components/SEOHead';
 import { 
   FirestoreAudiovisual, 
@@ -12,7 +13,8 @@ import {
   ApprovalStatus,
   createTimestamp,
   validateAudiovisualData,
-  sanitizeAudiovisualData
+  sanitizeAudiovisualData,
+  GAMIFICATION_TOKENS
 } from '@/types/firestore';
 
 // Tipos para o formulário
@@ -95,6 +97,7 @@ export default function AudiovisualFormPage() {
   const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState<string[]>([]);
   const { trackPage, trackFormSubmit, trackAudiovisual } = useAnalytics();
+  const { user } = useAuth();
 
   useEffect(() => {
     trackPage('audiovisual_form');
@@ -188,6 +191,49 @@ export default function AudiovisualFormPage() {
       const docId = `${Date.now()}-${sanitizedData.email.replace(/[^a-zA-Z0-9]/g, '')}`;
       await setDoc(doc(db, 'audiovisual', docId), audiovisualData);
 
+      // 🎯 DISTRIBUIR $BOX TOKENS
+      if (user) {
+        try {
+          const tokensToAward = GAMIFICATION_TOKENS.envio_conteudo; // 75 $BOX por envio de conteúdo
+          
+          // Atualizar tokens do usuário
+          await updateDoc(doc(db, 'users', user.uid), {
+            'gamification.tokens.box.balance': increment(tokensToAward),
+            'gamification.tokens.box.totalEarned': increment(tokensToAward),
+            'gamification.tokens.box.lastTransaction': serverTimestamp(),
+            'gamification.totalActions': increment(1),
+            'gamification.lastActionAt': serverTimestamp(),
+            'gamification.weeklyTokens': increment(tokensToAward),
+            'gamification.monthlyTokens': increment(tokensToAward),
+            'gamification.yearlyTokens': increment(tokensToAward),
+            updatedAt: serverTimestamp()
+          });
+
+          // Registrar a ação de gamificação
+          await setDoc(doc(db, 'gamification_actions', `${user.uid}_${Date.now()}`), {
+            userId: user.uid,
+            userEmail: user.email,
+            userName: user.displayName || 'Usuário',
+            action: 'envio_conteudo',
+            points: tokensToAward,
+            description: `Envio de candidatura audiovisual - ${sanitizedData.tipo}`,
+            metadata: {
+              audiovisualId: docId,
+              tipo: sanitizedData.tipo,
+              cidade: sanitizedData.cidade
+            },
+            createdAt: serverTimestamp(),
+            processed: true,
+            processedAt: serverTimestamp()
+          });
+
+          console.log(`🎯 +${tokensToAward} $BOX distribuídos para ${user.email}`);
+        } catch (tokenError) {
+          console.error('Erro ao distribuir tokens $BOX:', tokenError);
+          // Não falhar o envio do formulário se a distribuição de tokens falhar
+        }
+      }
+
       // Analytics
       trackFormSubmit('formulario_audiovisual');
       trackAudiovisual('submit_form', `${sanitizedData.tipo}_${sanitizedData.cidade}`);
@@ -265,9 +311,17 @@ export default function AudiovisualFormPage() {
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
                     Candidatura Enviada!
                   </h3>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-gray-600 mb-4">
                     Sua candidatura foi recebida com sucesso. Entraremos em contato em breve.
                   </p>
+                  {user && (
+                    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6">
+                      <p className="text-pink-800 font-semibold mb-2">🎯 Recompensa Ganha!</p>
+                      <p className="text-pink-700 text-sm">
+                        Você ganhou <span className="font-bold">+{GAMIFICATION_TOKENS.envio_conteudo} $BOX</span> por enviar sua candidatura!
+                      </p>
+                    </div>
+                  )}
                   <a
                     href="/hub"
                     className="inline-block bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:ring-4 focus:ring-pink-200 transition-all duration-200"
