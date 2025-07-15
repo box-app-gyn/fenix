@@ -88,7 +88,7 @@ function App() {
 
   // Se está logado mas não tem perfil completo, redirecionar para setup
   if (!user.profileComplete) {
-    return <Navigate to="/setup-profile" replace />;
+    return <SetupProfile />;
   }
 
   return (
