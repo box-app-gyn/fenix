@@ -120,6 +120,7 @@ export default function Header() {
               <a href="/audiovisual" className="text-pink-400 hover:text-pink-300 transition-all duration-300 font-medium text-sm">Audiovisual</a>
               {user && (
                 <>
+                  <a href="/perfil" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Perfil</a>
                   <a href="/admin" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Admin</a>
                   <button onClick={handleLogout} className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Sair</button>
                 </>
@@ -220,6 +221,13 @@ export default function Header() {
                   </a>
                   {user && (
                     <>
+                      <a 
+                        href="/perfil" 
+                        className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Perfil
+                      </a>
                       <a 
                         href="/admin" 
                         className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"

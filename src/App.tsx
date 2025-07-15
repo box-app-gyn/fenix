@@ -14,6 +14,7 @@ import Audiovisual from './pages/Audiovisual';
 import LinkShortenerPage from './pages/LinkShortenerPage';
 import LinkRedirect from './components/LinkRedirect';
 import ClusterPage from './pages/ClusterPage';
+import Perfil from './pages/Perfil';
 
 function App() {
   const { user, loading } = useAuth();
@@ -54,6 +55,7 @@ function App() {
               <Route path="/cadastro-midialouca" element={<CadastroMidiaPage />} />
               <Route path="/cadastro-curioso" element={<CadastroEspectadorPage />} />
               <Route path="/setup-profile" element={<SetupProfilePage />} />
+              <Route path="/perfil" element={<Perfil />} />
               <Route path="/cluster" element={<ClusterPage />} />
             </Routes>
           </main>
