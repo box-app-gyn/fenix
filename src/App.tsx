@@ -135,13 +135,13 @@ function App() {
               } />
               
               <Route path="/admin" element={
-                <ProtectedRoute requireProfile={true}>
+                <ProtectedRoute requireProfile={true} requireAdmin={true}>
                   <AdminDashboard />
                 </ProtectedRoute>
               } />
               
               <Route path="/admin-painel" element={
-                <ProtectedRoute requireProfile={true}>
+                <ProtectedRoute requireProfile={true} requireAdmin={true}>
                   <AdminPainel />
                 </ProtectedRoute>
               } />

@@ -134,7 +134,6 @@ export default function Header() {
                   {hasDashboardAccess && (
                     <a href="/dashboard-evento" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">📊 Dashboard</a>
                   )}
-                  <a href="/admin" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Admin</a>
                   <button onClick={handleLogout} className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Sair</button>
                 </>
               )}
@@ -250,13 +249,6 @@ export default function Header() {
                           📊 Dashboard
                         </a>
                       )}
-                      <a 
-                        href="/admin" 
-                        className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        Admin
-                      </a>
                       <button 
                         onClick={() => {
                           handleLogout();

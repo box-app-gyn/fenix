@@ -1,6 +1,16 @@
-
+import { useAuth } from '../hooks/useAuth';
 
 export default function Footer() {
+  const { user } = useAuth();
+
+  const handleAdminClick = (e: React.MouseEvent) => {
+    if (!user || user.role !== 'admin') {
+      e.preventDefault();
+      window.location.href = '/';
+      return;
+    }
+  };
+
   return (
     <footer className="py-6 bg-black text-center">
       {/* Linha visual no topo do footer */}
@@ -69,6 +79,18 @@ export default function Footer() {
           >
             Audiovisual
           </a>
+          {user && user.role === 'admin' && (
+            <>
+              <span className="text-gray-600">•</span>
+              <a
+                href="/admin"
+                onClick={handleAdminClick}
+                className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+              >
+                Admin
+              </a>
+            </>
+          )}
         </div>
       </div>
     </footer>
