@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ForceGraph3D from '3d-force-graph';
 import { fetchGraphData, GraphData } from '../utils/graphData';
 

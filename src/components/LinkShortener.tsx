@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLinkShortener } from '../hooks/useLinkShortener';
 import { ShortLinkCreate, ShortLinkUpdate, formatLinkStats } from '../types/linkShortener';

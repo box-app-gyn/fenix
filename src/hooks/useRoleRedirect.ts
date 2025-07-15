@@ -17,9 +17,16 @@ export const useRoleRedirect = () => {
       const data = snap.data();
 
       if (!data?.profileComplete) {
+        // Se não tem categoria definida, vai para seleção
+        if (!data?.categoria || data?.categoria === 'publico') {
+          return navigate('/selecao-cadastro');
+        }
+        
+        // Se tem categoria, vai direto para o cadastro específico
         switch (data?.categoria) {
           case 'atleta':
             return navigate('/cadastro-atleta');
+          case 'jurado':
           case 'judge':
             return navigate('/cadastro-jurado');
           case 'midia':

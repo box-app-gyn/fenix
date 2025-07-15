@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     VitePWA({
@@ -18,6 +18,25 @@ export default defineConfig({
         'images/bg_rounded.png',
         'images/twolines.png'
       ],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        skipWaiting: true,
+        clientsClaim: true,
+        // Excluir Firebase Auth do cache
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/(firebase|identitytoolkit|securetoken|accounts|apis)\.googleapis\.com/,
+            handler: 'NetworkOnly',
+            options: {
+              cacheName: 'firebase-auth',
+              expiration: {
+                maxEntries: 0,
+                maxAgeSeconds: 0
+              }
+            }
+          }
+        ]
+      },
       manifest: {
         name: 'CERRADØ INTERBOX 2025',
         short_name: 'CERRADØ',
@@ -102,9 +121,6 @@ export default defineConfig({
             ]
           }
         ]
-      },
-      workbox: {
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB, ajuste conforme necessário
       }
     })
   ],
@@ -116,5 +132,26 @@ export default defineConfig({
       overlay: true,
       port: 3002
     }
+  },
+  build: {
+    // Source maps apenas em desenvolvimento
+    sourcemap: mode === 'development',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+          ui: ['framer-motion', 'react-router-dom']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000 // Aumentar limite de warning
+  },
+  css: {
+    // Source maps CSS apenas em desenvolvimento
+    devSourcemap: mode === 'development'
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore']
   }
-}) 
+})) 

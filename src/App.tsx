@@ -1,13 +1,13 @@
-import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useParams, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
+import { useMobile } from './hooks/useMobile';
 import LoginPage from './pages/Login';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { FirebaseErrorBoundary } from './components/FirebaseErrorBoundary';
-import Hero from './components/Hero';
 import TempoReal from './components/TempoReal';
 import GamifiedLeaderboard from './components/GamifiedLeaderboard';
-import CallToAction from './components/CallToAction';
 import Sobre from './components/Sobre';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminPainel from './pages/AdminPainel';
@@ -17,25 +17,78 @@ import LinkShortenerPage from './pages/LinkShortenerPage';
 import LinkRedirect from './components/LinkRedirect';
 import ClusterPage from './pages/ClusterPage';
 import Perfil from './pages/Perfil';
+import CadastroAtleta from './pages/CadastroAtleta';
+import CadastroJurado from './pages/CadastroJurado';
+import CadastroMidia from './pages/CadastroMidia';
+import CadastroEspectador from './pages/CadastroEspectador';
+import SetupProfile from './pages/SetupProfile';
+import SelecaoTipoCadastro from './pages/SelecaoTipoCadastro';
+import Hub from './pages/Hub';
+import VideoIntro from './components/VideoIntro';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
+import CacheDebug from './components/CacheDebug';
+import CookieBanner from './components/CookieBanner';
+import LoadingScreen from './components/LoadingScreen';
+import DesktopWarning from './components/DesktopWarning';
+import ProtectedRoute from './components/ProtectedRoute';
+import LoginTest from './components/LoginTest';
 
 function App() {
   const { user, loading } = useAuth();
+  const { isMobile, isTablet } = useMobile();
+  const [showVideoIntro, setShowVideoIntro] = useState(true);
+
+  console.log('🔍 App.tsx - Estado atual:', { 
+    user: !!user, 
+    loading, 
+    userId: user?.uid,
+    isMobile,
+    isTablet 
+  });
+
+  // Mostrar vinheta de abertura apenas na primeira visita
+  useEffect(() => {
+    const hasSeenIntro = localStorage.getItem('hasSeenIntro');
+    if (hasSeenIntro) {
+      setShowVideoIntro(false);
+    }
+  }, []);
+
+  const handleVideoComplete = () => {
+    localStorage.setItem('hasSeenIntro', 'true');
+    setShowVideoIntro(false);
+  };
+
+  // Se não é mobile nem tablet, mostrar aviso de desktop
+  if (!isMobile && !isTablet) {
+    return <DesktopWarning />;
+  }
+
+  if (showVideoIntro) {
+    return <VideoIntro onComplete={handleVideoComplete} />;
+  }
 
   if (loading) {
+    console.log('⏳ App.tsx - Mostrando LoadingScreen');
+    return <LoadingScreen message="Conectando com Firebase..." />;
+  }
+
+  // Se não está logado, mostrar página de login
+  if (!user) {
     return (
-      <div className="h-screen flex items-center justify-center bg-black text-white">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
-          <p>Carregando...</p>
-        </div>
-      </div>
+      <>
+        <LoginPage />
+        <CacheDebug />
+        <CookieBanner />
+        <LoginTest />
+      </>
     );
   }
 
-  if (!user) {
-    return <LoginPage />;
+  // Se está logado mas não tem perfil completo, redirecionar para setup
+  if (!user.profileComplete) {
+    return <Navigate to="/setup-profile" replace />;
   }
 
   return (
@@ -45,121 +98,134 @@ function App() {
           <Header />
           <main className="flex-1">
             <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/hub" element={<HubPage />} />
-              <Route path="/tempo-real" element={<TempoReal />} />
-              <Route path="/leaderboard" element={<GamifiedLeaderboard />} />
-              <Route path="/sobre" element={<Sobre />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin-painel" element={<AdminPainel />} />
-              <Route path="/dashboard-evento" element={<DashboardEvento />} />
-              <Route path="/audiovisual" element={<Audiovisual />} />
-              <Route path="/links" element={<LinkShortenerPage />} />
-              <Route path="/l/:shortCode" element={<LinkRedirectWrapper />} />
-              <Route path="/cadastro-atleta" element={<CadastroAtletaPage />} />
-              <Route path="/cadastro-jurado" element={<CadastroJuradoPage />} />
-              <Route path="/cadastro-midialouca" element={<CadastroMidiaPage />} />
-              <Route path="/cadastro-curioso" element={<CadastroEspectadorPage />} />
-              <Route path="/setup-profile" element={<SetupProfilePage />} />
-              <Route path="/perfil" element={<Perfil />} />
-              <Route path="/cluster" element={<ClusterPage />} />
+              {/* Rota pública - redireciona para hub se logado */}
+              <Route path="/" element={
+                <ProtectedRoute requireAuth={false}>
+                  <Navigate to="/hub" replace />
+                </ProtectedRoute>
+              } />
+
+              {/* Rotas protegidas */}
+              <Route path="/hub" element={
+                <ProtectedRoute>
+                  <Hub />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/tempo-real" element={
+                <ProtectedRoute>
+                  <TempoReal />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/leaderboard" element={
+                <ProtectedRoute>
+                  <GamifiedLeaderboard />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/sobre" element={
+                <ProtectedRoute>
+                  <Sobre />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/admin" element={
+                <ProtectedRoute requireProfile={true}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/admin-painel" element={
+                <ProtectedRoute requireProfile={true}>
+                  <AdminPainel />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/dashboard-evento" element={
+                <ProtectedRoute requireProfile={true}>
+                  <DashboardEvento />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/audiovisual" element={
+                <ProtectedRoute>
+                  <Audiovisual />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/links" element={
+                <ProtectedRoute>
+                  <LinkShortenerPage />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/l/:shortCode" element={
+                <ProtectedRoute>
+                  <LinkRedirectWrapper />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/selecao-cadastro" element={
+                <ProtectedRoute>
+                  <SelecaoTipoCadastro />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/cadastro-atleta" element={
+                <ProtectedRoute>
+                  <CadastroAtleta />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/cadastro-jurado" element={
+                <ProtectedRoute>
+                  <CadastroJurado />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/cadastro-midialouca" element={
+                <ProtectedRoute>
+                  <CadastroMidia />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/cadastro-curioso" element={
+                <ProtectedRoute>
+                  <CadastroEspectador />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/setup-profile" element={
+                <ProtectedRoute>
+                  <SetupProfile />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/perfil" element={
+                <ProtectedRoute>
+                  <Perfil />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/cluster" element={
+                <ProtectedRoute>
+                  <ClusterPage />
+                </ProtectedRoute>
+              } />
+
+              {/* Rota de fallback */}
+              <Route path="*" element={<Navigate to="/hub" replace />} />
             </Routes>
           </main>
           <Footer />
           <PWAInstallPrompt />
           <PWAUpdatePrompt />
+          <CacheDebug />
+          <CookieBanner />
         </div>
       </Router>
     </FirebaseErrorBoundary>
-  );
-}
-
-// Página Principal
-function HomePage() {
-  return (
-    <div className="min-h-screen">
-      <Hero />
-      <TempoReal />
-      <GamifiedLeaderboard />
-      <CallToAction />
-      <Sobre />
-    </div>
-  );
-}
-
-// Hub Principal
-function HubPage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Hub Principal</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Tempo Real</h2>
-          <p className="text-gray-600 mb-4">Acompanhe eventos em tempo real</p>
-          <a href="/tempo-real" className="text-blue-600 hover:underline">Ver mais →</a>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Leaderboard</h2>
-          <p className="text-gray-600 mb-4">Ranking gamificado dos participantes</p>
-          <a href="/leaderboard" className="text-blue-600 hover:underline">Ver mais →</a>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Audiovisual</h2>
-          <p className="text-gray-600 mb-4">Análise de conteúdo audiovisual</p>
-          <a href="/audiovisual" className="text-blue-600 hover:underline">Ver mais →</a>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">🔗 Encurtador de Links</h2>
-          <p className="text-gray-600 mb-4">Crie links curtos e acompanhe estatísticas</p>
-          <a href="/links" className="text-blue-600 hover:underline">Ver mais →</a>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CadastroAtletaPage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Cadastro de Atleta</h1>
-      <p className="text-center text-gray-600">Formulário de cadastro para atletas</p>
-    </div>
-  );
-}
-
-function CadastroJuradoPage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Cadastro de Jurado</h1>
-      <p className="text-center text-gray-600">Formulário de cadastro para jurados</p>
-    </div>
-  );
-}
-
-function CadastroMidiaPage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Cadastro de Mídia</h1>
-      <p className="text-center text-gray-600">Formulário de cadastro para mídia</p>
-    </div>
-  );
-}
-
-function CadastroEspectadorPage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Cadastro de Espectador</h1>
-      <p className="text-center text-gray-600">Formulário de cadastro para espectadores</p>
-    </div>
-  );
-}
-
-function SetupProfilePage() {
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Configurar Perfil</h1>
-      <p className="text-center text-gray-600">Complete seu perfil</p>
-    </div>
   );
 }
 

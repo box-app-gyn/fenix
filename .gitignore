@@ -46,6 +46,10 @@ coverage/
 build/
 out/
 
+# Source maps (não versionar em produção)
+*.map
+*.map.js
+
 # OS generated files
 Thumbs.db
 ehthumbs.db

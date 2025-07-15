@@ -28,30 +28,33 @@ Este documento descreve o sistema completo de tipos TypeScript para o Firestore 
 ## 🎯 Tipos Base
 
 ### UserRole
+
 ```typescript
 type UserRole = 'publico' | 'fotografo' | 'videomaker' | 'patrocinador' | 'apoio' | 'judge' | 'atleta' | 'admin';
 ```
 
 ### PaymentStatus
+
 ```typescript
 type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded' | 'expired';
 ```
 
 ### GamificationAction
+
 ```typescript
 type GamificationAction = 
-  | 'cadastro'           // +10 XP
-  | 'indicacao_confirmada' // +50 XP
-  | 'compra_ingresso'    // +100 XP
-  | 'envio_conteudo'     // +75 XP
-  | 'qr_scan_evento'     // +25 XP (variável)
-  | 'prova_extra'        // +50 XP (variável)
-  | 'participacao_enquete' // +15 XP
-  | 'acesso_spoiler'     // +20 XP
-  | 'checkin_evento'     // +30 XP
-  | 'compartilhamento'   // +10 XP
-  | 'login_diario'       // +5 XP
-  | 'completar_perfil'   // +25 XP;
+  | 'cadastro'           // +10 $BOX
+  | 'indicacao_confirmada' // +50 $BOX
+  | 'compra_ingresso'    // +100 $BOX
+  | 'envio_conteudo'     // +75 $BOX
+  | 'qr_scan_evento'     // +25 $BOX (variável)
+  | 'prova_extra'        // +50 $BOX (variável)
+  | 'participacao_enquete' // +15 $BOX
+  | 'acesso_spoiler'     // +20 $BOX
+  | 'checkin_evento'     // +30 $BOX
+  | 'compartilhamento'   // +10 $BOX
+  | 'login_diario'       // +5 $BOX
+  | 'completar_perfil'   // +25 $BOX;
 ```
 
 ## 📊 Interfaces Principais
@@ -199,7 +202,7 @@ interface FirestoreTeam {
 
 ## 🎮 Gamificação
 
-### Sistema de Pontos
+### Sistema de $BOX
 
 ```typescript
 const GAMIFICATION_POINTS: Record<GamificationAction, number> = {
@@ -222,12 +225,12 @@ const GAMIFICATION_POINTS: Record<GamificationAction, number> = {
 
 ```typescript
 type GamificationLevel = 
-  | 'iniciante'    // 0-99 XP
-  | 'bronze'       // 100-299 XP
-  | 'prata'        // 300-599 XP
-  | 'ouro'         // 600-999 XP
-  | 'platina'      // 1000-1999 XP
-  | 'diamante'     // 2000+ XP;
+  | 'iniciante'    // 0-99 $BOX
+  | 'bronze'       // 100-299 $BOX
+  | 'prata'        // 300-599 $BOX
+  | 'ouro'         // 600-999 $BOX
+  | 'platina'      // 1000-1999 $BOX
+  | 'diamante'     // 2000+ $BOX;
 ```
 
 ### Cálculo de Nível
@@ -284,7 +287,7 @@ export const validateUserData = (data: Partial<FirestoreUser>): string[] => {
   }
   
   if (data.gamification?.points && data.gamification.points < 0) {
-    errors.push('Pontos não podem ser negativos');
+    errors.push('$BOX não podem ser negativos');
   }
   
   return errors;
@@ -335,7 +338,7 @@ export const dateToTimestamp = (date: Date): Timestamp => {
   };
 };
 
-// Cálculo de pontos para ação
+// Cálculo de $BOX para ação
 export const calculatePointsForAction = (action: GamificationAction, metadata?: Record<string, any>): number => {
   const basePoints = GAMIFICATION_POINTS[action];
   
@@ -557,7 +560,7 @@ const createUser = (userData: Partial<FirestoreUser>): FirestoreUser => {
     updatedAt: now,
     isActive: true,
     gamification: {
-      points: 10, // Pontos por cadastro
+      points: 10, // $BOX por cadastro
       level: 'iniciante',
       totalActions: 1,
       lastActionAt: now,
@@ -594,7 +597,7 @@ const processGamificationAction = (
   action: GamificationAction,
   metadata?: Record<string, any>
 ) => {
-  // Calcular pontos
+  // Calcular $BOX
   const points = calculatePointsForAction(action, metadata);
   
   // Atualizar usuário
@@ -666,7 +669,7 @@ const processGamificationAction = (
 1. **Validação de Tipos**: Sempre use as funções de validação antes de salvar dados
 2. **Sanitização**: Sempre sanitize dados de entrada
 3. **Timestamps**: Use as funções utilitárias para criar timestamps
-4. **Gamificação**: Valide pontos e níveis antes de atualizar
+4. **Gamificação**: Valide $BOX e níveis antes de atualizar
 5. **Permissões**: Verifique roles de usuário antes de operações sensíveis
 
 ### Boas Práticas

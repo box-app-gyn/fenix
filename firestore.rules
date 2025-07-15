@@ -14,6 +14,7 @@ service cloud.firestore {
     // Coleção: users
     match /users/{userId} {
       allow read, write: if request.auth.uid == userId;
+      allow create: if request.auth.uid == userId;
     }
     // Coleção: box_rewards
     match /box_rewards/{docId} {

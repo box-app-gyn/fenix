@@ -75,7 +75,7 @@ export function usePWA(): UsePWAReturn {
                     console.log('🔄 Nova versão disponível!');
                     setHasUpdate(true);
                   }
-                });
+      });
               }
             });
 

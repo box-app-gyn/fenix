@@ -4,7 +4,7 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../hooks/useAuth';
 
-export default function CadastroAtleta() {
+export default function SetupProfile() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -13,11 +13,9 @@ export default function CadastroAtleta() {
     telefone: '',
     whatsapp: '',
     box: '',
-    categoria: 'atleta',
+    categoria: 'publico',
     cidade: '',
-    mensagem: '',
-    experiencia: '',
-    objetivos: ''
+    mensagem: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,18 +29,18 @@ export default function CadastroAtleta() {
         uid: user.uid,
         displayName: formData.nome,
         email: formData.email,
-        role: 'atleta',
+        role: formData.categoria,
         isActive: true,
         profileComplete: true,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
 
-      alert('Cadastro realizado com sucesso!');
+      alert('Perfil configurado com sucesso!');
       window.location.href = '/hub';
     } catch (error) {
-      console.error('Erro ao cadastrar:', error);
-      alert('Erro ao realizar cadastro. Tente novamente.');
+      console.error('Erro ao configurar perfil:', error);
+      alert('Erro ao configurar perfil. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -65,8 +63,8 @@ export default function CadastroAtleta() {
           className="bg-white rounded-lg shadow-xl p-8"
         >
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">🏋️ Cadastro de Atleta</h1>
-            <p className="text-gray-600">Complete seu perfil para participar do Interbox 2025</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">⚙️ Configurar Perfil</h1>
+            <p className="text-gray-600">Complete seu perfil para acessar o Interbox 2025</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -127,14 +125,13 @@ export default function CadastroAtleta() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Box/Academia *
+                  Box/Academia
                 </label>
                 <input
                   type="text"
                   name="box"
                   value={formData.box}
                   onChange={handleChange}
-                  required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 />
               </div>
@@ -156,46 +153,36 @@ export default function CadastroAtleta() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Experiência no CrossFit
+                Categoria *
               </label>
               <select
-                name="experiencia"
-                value={formData.experiencia}
+                name="categoria"
+                value={formData.categoria}
                 onChange={handleChange}
+                required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               >
-                <option value="">Selecione...</option>
-                <option value="iniciante">Iniciante (0-1 ano)</option>
-                <option value="intermediario">Intermediário (1-3 anos)</option>
-                <option value="avancado">Avançado (3+ anos)</option>
+                <option value="publico">Público Geral</option>
+                <option value="atleta">Atleta</option>
+                <option value="jurado">Jurado</option>
+                <option value="midia">Mídia</option>
+                <option value="espectador">Espectador</option>
+                <option value="patrocinador">Patrocinador</option>
+                <option value="apoio">Apoio</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Objetivos no Evento
-              </label>
-              <textarea
-                name="objetivos"
-                value={formData.objetivos}
-                onChange={handleChange}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                placeholder="Conte um pouco sobre seus objetivos..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mensagem Adicional
+                Mensagem/Motivação
               </label>
               <textarea
                 name="mensagem"
                 value={formData.mensagem}
                 onChange={handleChange}
-                rows={3}
+                rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                placeholder="Alguma informação adicional..."
+                placeholder="Conte um pouco sobre sua motivação para participar do evento..."
               />
             </div>
 
@@ -210,9 +197,9 @@ export default function CadastroAtleta() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-md hover:from-pink-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50"
+                className="px-6 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 disabled:bg-gray-400 transition-colors"
               >
-                {loading ? 'Cadastrando...' : 'Finalizar Cadastro'}
+                {loading ? 'Configurando...' : 'Configurar Perfil'}
               </button>
             </div>
           </form>
