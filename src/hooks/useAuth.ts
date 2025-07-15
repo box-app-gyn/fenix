@@ -78,11 +78,22 @@ export function useAuth() {
       await signInWithPopup(auth, provider);
       console.log('Login realizado com sucesso');
     } catch (error: any) {
-      console.error('Erro no login:', error);
-      if (error.code === 'auth/invalid-api-key') {
+      // Tratamento específico para diferentes tipos de erro
+      if (error.code === 'auth/popup-closed-by-user') {
+        // Popup fechado pelo usuário - não é um erro real
+        console.log('Login cancelado pelo usuário');
+        return; // Não lança erro para popup fechado
+      } else if (error.code === 'auth/popup-blocked') {
+        console.error('Popup bloqueado pelo navegador. Tente novamente.');
+        alert('Popup bloqueado pelo navegador. Tente novamente.');
+      } else if (error.code === 'auth/invalid-api-key') {
         console.error('API Key do Firebase inválida. Verifique as configurações.');
+        alert('Erro de configuração. Entre em contato com o suporte.');
+      } else {
+        // Outros erros
+        console.error('Erro no login:', error);
+        alert('Erro ao fazer login. Tente novamente.');
       }
-      throw error;
     }
   };
 

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import LoginPage from './pages/Login';
 import Header from './components/Header';
@@ -11,6 +11,9 @@ import CallToAction from './components/CallToAction';
 import Sobre from './components/Sobre';
 import AdminDashboard from './pages/AdminDashboard';
 import Audiovisual from './pages/Audiovisual';
+import LinkShortenerPage from './pages/LinkShortenerPage';
+import LinkRedirect from './components/LinkRedirect';
+import ClusterPage from './pages/ClusterPage';
 
 function App() {
   const { user, loading } = useAuth();
@@ -44,11 +47,14 @@ function App() {
               <Route path="/sobre" element={<Sobre />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/audiovisual" element={<Audiovisual />} />
+              <Route path="/links" element={<LinkShortenerPage />} />
+              <Route path="/l/:shortCode" element={<LinkRedirectWrapper />} />
               <Route path="/cadastro-atleta" element={<CadastroAtletaPage />} />
               <Route path="/cadastro-jurado" element={<CadastroJuradoPage />} />
               <Route path="/cadastro-midialouca" element={<CadastroMidiaPage />} />
               <Route path="/cadastro-curioso" element={<CadastroEspectadorPage />} />
               <Route path="/setup-profile" element={<SetupProfilePage />} />
+              <Route path="/cluster" element={<ClusterPage />} />
             </Routes>
           </main>
           <Footer />
@@ -91,6 +97,11 @@ function HubPage() {
           <h2 className="text-xl font-semibold mb-4">Audiovisual</h2>
           <p className="text-gray-600 mb-4">Análise de conteúdo audiovisual</p>
           <a href="/audiovisual" className="text-blue-600 hover:underline">Ver mais →</a>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4">🔗 Encurtador de Links</h2>
+          <p className="text-gray-600 mb-4">Crie links curtos e acompanhe estatísticas</p>
+          <a href="/links" className="text-blue-600 hover:underline">Ver mais →</a>
         </div>
       </div>
     </div>
@@ -140,6 +151,12 @@ function SetupProfilePage() {
       <p className="text-center text-gray-600">Complete seu perfil</p>
     </div>
   );
+}
+
+// Wrapper para LinkRedirect que extrai o shortCode dos parâmetros da URL
+function LinkRedirectWrapper() {
+  const { shortCode } = useParams();
+  return shortCode ? <LinkRedirect shortCode={shortCode} /> : null;
 }
 
 export default App; 

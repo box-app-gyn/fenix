@@ -200,7 +200,7 @@ const TempoReal: React.FC = () => {
             <div className="text-center">
               <p className="text-sm text-gray-400 mb-2">👥 Indicações</p>
               <p className="text-2xl font-bold text-blue-400 mb-1">
-                {data.indicacoes.total.toLocaleString()}
+                {data.indicacoes.total !== undefined ? data.indicacoes.total.toLocaleString() : '0'}
               </p>
               <p className="text-xs text-gray-500">
                 +{data.indicacoes.hoje} hoje
@@ -238,7 +238,7 @@ const TempoReal: React.FC = () => {
             <div className="text-center">
               <p className="text-sm text-gray-400 mb-2">⭐ XP Total</p>
               <p className="text-2xl font-bold text-pink-400 mb-1">
-                {data.xp.total.toLocaleString()}
+                {data.xp.total !== undefined ? data.xp.total.toLocaleString() : '0'}
               </p>
               <p className="text-xs text-gray-500">
                 Média: {data.xp.media} XP
@@ -271,9 +271,7 @@ const TempoReal: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {isIngressosDisponiveis() ? (
                 <a
-                  href="https://www.brasilgamesscoreboard.com.br/checkout/77e9f9d6-f194-4bc5-bc83-6311699c68a9"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/l/ingresso2025"
                   className="bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold py-3 px-8 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all duration-200"
                 >
                   🎫 Comprar Ingresso

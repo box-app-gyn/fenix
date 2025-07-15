@@ -3,21 +3,25 @@
 ## ✅ Problemas Resolvidos
 
 ### 1. **Erro `/dashboard` → `/admin`**
+
 - **Problema**: AdminDashboard tentava navegar para `/dashboard` (rota inexistente)
 - **Solução**: Corrigido para `/admin` (rota correta)
 - **Arquivos afetados**: `src/pages/AdminDashboard.tsx`
 
 ### 2. **Erro `/times` → `/hub`**
+
 - **Problema**: TempoReal tentava navegar para `/times` (rota inexistente)
 - **Solução**: Corrigido para `/hub` (rota existente)
 - **Arquivos afetados**: `src/components/TempoReal.tsx`
 
 ### 3. **Erro `/politica-privacidade` e `/termos-uso`**
+
 - **Problema**: Footer tinha links para páginas inexistentes
 - **Solução**: Substituído por links para páginas existentes
 - **Arquivos afetados**: `src/components/Footer.tsx`
 
 ### 4. **Erro import Next.js**
+
 - **Problema**: Footer importava `Link` do Next.js
 - **Solução**: Removido import desnecessário
 - **Arquivos afetados**: `src/components/Footer.tsx`
@@ -25,6 +29,7 @@
 ## 🛣️ Rotas Funcionais
 
 ### ✅ Rotas Principais
+
 ```
 /                    → Página inicial (HomePage)
 /hub                 → Hub principal
@@ -36,6 +41,7 @@
 ```
 
 ### ✅ Rotas de Cadastro (Temporárias)
+
 ```
 /cadastro-atleta     → Cadastro de atleta
 /cadastro-jurado     → Cadastro de jurado
@@ -45,6 +51,7 @@
 ```
 
 ### ✅ Rotas de Autenticação
+
 ```
 /login               → Página de login (redirecionamento automático)
 ```
@@ -52,6 +59,7 @@
 ## 🔧 Navegação Corrigida
 
 ### Header
+
 - ✅ Home (`/`)
 - ✅ Hub (`/hub`)
 - ✅ Tempo Real (`/tempo-real`)

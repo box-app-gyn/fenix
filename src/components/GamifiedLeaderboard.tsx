@@ -1,21 +1,7 @@
-import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore'
-import { db } from '../lib/firebase'
-
-interface LeaderboardEntry {
-  id: string
-  userName: string
-  userPhotoURL: string
-  score: number
-  rank: number
-  category: string
-  lastUpdated: any
-}
+import { useLeaderboard } from '../hooks/useLeaderboard';
 
 interface GamifiedLeaderboardProps {
-  category?: string
-  limit?: number
   showAnimations?: boolean
 }
 
@@ -30,147 +16,9 @@ const sanitizeText = (text: string): string => {
 }
 
 export default function GamifiedLeaderboard({ 
-  category = 'all', 
-  limit: maxEntries = 10, 
   showAnimations = true 
 }: GamifiedLeaderboardProps) {
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    const loadLeaderboard = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-
-        // Primeiro, tenta carregar dados reais do Firestore
-        let q = query(
-          collection(db, 'leaderboard'),
-          orderBy('score', 'desc'),
-          limit(maxEntries)
-        )
-
-        if (category !== 'all') {
-          q = query(
-            collection(db, 'leaderboard'),
-            where('category', '==', category),
-            orderBy('score', 'desc'),
-            limit(maxEntries)
-          )
-        }
-
-        const unsubscribe = onSnapshot(
-          q,
-          (snapshot) => {
-            const leaderboardData = snapshot.docs.map((doc, index) => ({
-              id: doc.id,
-              rank: index + 1,
-              ...doc.data()
-            })) as LeaderboardEntry[]
-
-            // Se não há dados reais, usa dados de exemplo
-            if (leaderboardData.length === 0) {
-              const mockData: LeaderboardEntry[] = [
-                {
-                  id: '1',
-                  rank: 1,
-                  userName: 'João Silva',
-                  userPhotoURL: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-                  score: 1250,
-                  category: 'Atleta',
-                  lastUpdated: new Date()
-                },
-                {
-                  id: '2',
-                  rank: 2,
-                  userName: 'Maria Santos',
-                  userPhotoURL: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-                  score: 1180,
-                  category: 'Atleta',
-                  lastUpdated: new Date()
-                },
-                {
-                  id: '3',
-                  rank: 3,
-                  userName: 'Pedro Costa',
-                  userPhotoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-                  score: 1050,
-                  category: 'Jurado',
-                  lastUpdated: new Date()
-                },
-                {
-                  id: '4',
-                  rank: 4,
-                  userName: 'Ana Oliveira',
-                  userPhotoURL: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-                  score: 920,
-                  category: 'Mídia',
-                  lastUpdated: new Date()
-                },
-                {
-                  id: '5',
-                  rank: 5,
-                  userName: 'Carlos Lima',
-                  userPhotoURL: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-                  score: 850,
-                  category: 'Espectador',
-                  lastUpdated: new Date()
-                }
-              ]
-              setEntries(mockData)
-            } else {
-              setEntries(leaderboardData)
-            }
-            setLoading(false)
-          },
-          (err) => {
-            console.error('Erro ao carregar leaderboard:', err)
-            // Em caso de erro, também usa dados de exemplo
-            const mockData: LeaderboardEntry[] = [
-              {
-                id: '1',
-                rank: 1,
-                userName: 'João Silva',
-                userPhotoURL: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-                score: 1250,
-                category: 'Atleta',
-                lastUpdated: new Date()
-              },
-              {
-                id: '2',
-                rank: 2,
-                userName: 'Maria Santos',
-                userPhotoURL: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-                score: 1180,
-                category: 'Atleta',
-                lastUpdated: new Date()
-              },
-              {
-                id: '3',
-                rank: 3,
-                userName: 'Pedro Costa',
-                userPhotoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-                score: 1050,
-                category: 'Jurado',
-                lastUpdated: new Date()
-              }
-            ]
-            setEntries(mockData)
-            setLoading(false)
-          }
-        )
-
-        return () => unsubscribe()
-      } catch (err) {
-        console.error('Erro na configuração do leaderboard:', err)
-        setError('Erro na configuração')
-        setLoading(false)
-      }
-    }
-
-    loadLeaderboard()
-  }, [category, maxEntries])
+  const { leaderboard: entries, loading, error } = useLeaderboard();
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -282,7 +130,7 @@ export default function GamifiedLeaderboard({
               {/* Score */}
               <div className="flex-shrink-0 text-right">
                 <div className="text-white font-bold text-lg">
-                  {entry.score.toLocaleString()}
+                  {entry.score !== undefined ? entry.score.toLocaleString() : '—'}
                 </div>
                 <div className="text-gray-300 text-xs">pontos</div>
               </div>

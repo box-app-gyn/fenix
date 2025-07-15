@@ -164,7 +164,92 @@ export default function Header() {
               className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-lg z-40"
               onClick={() => setIsMenuOpen(false)}
             />
-            {/* Menu lateral... (idem estrutura anterior, se quiser eu replico aqui também) */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="md:hidden fixed top-0 right-0 h-full w-80 bg-black/95 backdrop-blur-lg border-l border-pink-500/20 z-50"
+            >
+              <div className="flex flex-col h-full p-6">
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-xl font-bold text-white">Menu</h2>
+                  <button
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-white hover:text-pink-400 transition-colors duration-300"
+                  >
+                    ✕
+                  </button>
+                </div>
+                
+                <nav className="flex flex-col space-y-4">
+                  <a 
+                    href="/" 
+                    className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Home
+                  </a>
+                  <a 
+                    href="/hub" 
+                    className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Hub
+                  </a>
+                  <a 
+                    href="/tempo-real" 
+                    className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Tempo Real
+                  </a>
+                  <a 
+                    href="/leaderboard" 
+                    className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Leaderboard
+                  </a>
+                  <a 
+                    href="/audiovisual" 
+                    className="text-pink-400 hover:text-pink-300 transition-all duration-300 font-medium text-lg py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Audiovisual
+                  </a>
+                  {user && (
+                    <>
+                      <a 
+                        href="/admin" 
+                        className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Admin
+                      </a>
+                      <button 
+                        onClick={() => {
+                          handleLogout();
+                          setIsMenuOpen(false);
+                        }} 
+                        className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2 text-left"
+                      >
+                        Sair
+                      </button>
+                    </>
+                  )}
+                  {!user && (
+                    <a 
+                      href="/login" 
+                      className="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all duration-200 font-medium text-lg text-center"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Entrar
+                    </a>
+                  )}
+                </nav>
+              </div>
+            </motion.div>
           </>
         )}
       </AnimatePresence>
