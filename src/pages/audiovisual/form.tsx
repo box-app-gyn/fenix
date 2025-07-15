@@ -194,10 +194,10 @@ export default function AudiovisualFormPage() {
 
       setSuccess(true);
       
-      // Fechar janela após 3 segundos
-      setTimeout(() => {
-        window.close();
-      }, 3000);
+      // Remover o código que fecha a janela automaticamente
+      // setTimeout(() => {
+      //   window.close();
+      // }, 3000);
       
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
@@ -265,12 +265,15 @@ export default function AudiovisualFormPage() {
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">
                     Candidatura Enviada!
                   </h3>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 mb-6">
                     Sua candidatura foi recebida com sucesso. Entraremos em contato em breve.
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Esta janela será fechada automaticamente...
-                  </p>
+                  <a
+                    href="/hub"
+                    className="inline-block bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:ring-4 focus:ring-pink-200 transition-all duration-200"
+                  >
+                    Voltar ao Hub
+                  </a>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
