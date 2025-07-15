@@ -35,6 +35,10 @@
       upgrade-insecure-requests;
     " />
     
+    <!-- Cross-Origin Headers para permitir popup do Firebase Auth -->
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups" />
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="unsafe-none" />
+    
     <!-- Preconnect to external domains for better performance -->
     <link rel="preconnect" href="https://firebaseapp.com" />
     <link rel="preconnect" href="https://googleapis.com" />

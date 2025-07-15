@@ -86,9 +86,13 @@ function App() {
     );
   }
 
-  // Se está logado mas não tem perfil completo, redirecionar para setup
+  // Se está logado mas não tem perfil completo, mostrar setup
   if (!user.profileComplete) {
-    return <SetupProfile />;
+    return (
+      <FirebaseErrorBoundary>
+        <SetupProfile />
+      </FirebaseErrorBoundary>
+    );
   }
 
   return (

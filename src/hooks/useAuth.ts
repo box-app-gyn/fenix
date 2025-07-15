@@ -20,9 +20,13 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isSubscribed = true; // Flag para evitar race conditions
+    
     try {
       console.log('🔄 Inicializando listener de autenticação...');
       const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (!isSubscribed) return; // Evitar atualizações se componente foi desmontado
+        
         console.log('👤 Estado de autenticação alterado:', firebaseUser ? 'Usuário logado' : 'Usuário deslogado');
         if (firebaseUser) {
           try {
@@ -67,8 +71,10 @@ export function useAuth() {
                 profileComplete: userData?.profileComplete || false
               };
 
-              console.log('✅ Novo usuário criado e carregado com sucesso');
-              setUser(extendedUser);
+              if (isSubscribed) {
+                console.log('✅ Novo usuário criado e carregado com sucesso');
+                setUser(extendedUser);
+              }
             } else {
               // Buscar dados completos do usuário existente
               const userData = snapshot.data();
@@ -85,31 +91,44 @@ export function useAuth() {
                 profileComplete: userData?.profileComplete || false
               };
 
-              console.log('✅ Dados do usuário carregados com sucesso');
-              setUser(extendedUser);
+              if (isSubscribed) {
+                console.log('✅ Dados do usuário carregados com sucesso');
+                setUser(extendedUser);
+              }
             }
           } catch (error) {
             console.error('❌ Erro ao carregar dados do usuário:', error);
             // Em caso de erro, ainda definimos o usuário básico
-            setUser({
-              ...firebaseUser,
-              role: 'publico',
-              profileComplete: false
-            });
+            if (isSubscribed) {
+              setUser({
+                ...firebaseUser,
+                role: 'publico',
+                profileComplete: false
+              });
+            }
           }
         } else {
-          console.log('ℹ️ Nenhum usuário autenticado');
-          setUser(null);
+          if (isSubscribed) {
+            console.log('ℹ️ Nenhum usuário autenticado');
+            setUser(null);
+          }
         }
-        console.log('🏁 Finalizando carregamento de autenticação');
-        setLoading(false);
+        if (isSubscribed) {
+          console.log('🏁 Finalizando carregamento de autenticação');
+          setLoading(false);
+        }
       });
 
-      return () => unsubscribe();
+      return () => {
+        isSubscribed = false;
+        unsubscribe();
+      };
     } catch (error) {
       console.error('Erro ao inicializar autenticação:', error);
-      setLoading(false);
-      setUser(null);
+      if (isSubscribed) {
+        setLoading(false);
+        setUser(null);
+      }
     }
   }, []);
 
