@@ -26,7 +26,7 @@
 - **Solução**: Removido import desnecessário
 - **Arquivos afetados**: `src/components/Footer.tsx`
 
-## 🛣️ Rotas Funcionais
+## 🛣️ Rotas Funcionais (Baseado no código atual)
 
 ### ✅ Rotas Principais
 
@@ -37,10 +37,16 @@
 /leaderboard         → Ranking gamificado
 /audiovisual         → Análise de conteúdo
 /admin               → Painel administrativo
+/admin-painel        → Painel administrativo extra
+/dashboard-evento    → Dashboard do evento
 /sobre               → Sobre o projeto
+/links               → Encurtador de links
+/l/:shortCode        → Redirecionamento de link curto
+/perfil              → Perfil do usuário
+/cluster             → Página de cluster
 ```
 
-### ✅ Rotas de Cadastro (Temporárias)
+### ✅ Rotas de Cadastro
 
 ```
 /cadastro-atleta     → Cadastro de atleta
@@ -50,11 +56,10 @@
 /setup-profile       → Configuração de perfil
 ```
 
-### ✅ Rotas de Autenticação
+### ⚠️ Observações sobre Autenticação
 
-```
-/login               → Página de login (redirecionamento automático)
-```
+- Não existe rota explícita `/login`. O componente de login é exibido automaticamente quando o usuário não está autenticado.
+- Se desejar acessar `/login` diretamente, é necessário adicionar a rota manualmente no App.tsx.
 
 ## 🔧 Navegação Corrigida
 
@@ -66,13 +71,18 @@
 - ✅ Leaderboard (`/leaderboard`)
 - ✅ Audiovisual (`/audiovisual`)
 - ✅ Admin (`/admin`) - apenas usuários logados
+- ✅ Dashboard (`/dashboard-evento`) - apenas usuários com acesso
+- ✅ Perfil (`/perfil`) - apenas logado
+- ✅ Links extras: `/admin-painel`, `/links`, `/cluster` (se necessário)
 
 ### Footer
+
 - ✅ Sobre (`/sobre`)
 - ✅ Hub (`/hub`)
 - ✅ Audiovisual (`/audiovisual`)
 
 ### Componentes
+
 - ✅ TempoReal: link para `/hub`
 - ✅ AdminDashboard: redirecionamentos para `/admin`
 - ✅ CallToAction: link para `/audiovisual`

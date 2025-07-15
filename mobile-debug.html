@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Mobile - App Fenix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .debug-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #ec4899;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .success { background: #10b981; }
+        .error { background: #ef4444; }
+        .warning { background: #f59e0b; }
+        .info { background: #3b82f6; }
+        .test-button {
+            background: #ec4899;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .test-button:hover {
+            background: #db2777;
+        }
+        .log {
+            background: #000;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Mobile - App Fenix</h1>
+        
+        <div class="debug-section">
+            <h3>📱 Informações do Dispositivo</h3>
+            <div id="device-info"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🌐 Conectividade</h3>
+            <div id="connectivity-info"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🔧 Testes de Funcionalidade</h3>
+            <button class="test-button" onclick="testFirebase()">Testar Firebase</button>
+            <button class="test-button" onclick="testLocalStorage()">Testar LocalStorage</button>
+            <button class="test-button" onclick="testFetch()">Testar Fetch</button>
+            <button class="test-button" onclick="testVideo()">Testar Vídeo</button>
+            <button class="test-button" onclick="testCanvas()">Testar Canvas</button>
+        </div>
+
+        <div class="debug-section">
+            <h3>📋 Logs de Erro</h3>
+            <div id="error-log" class="log"></div>
+        </div>
+
+        <div class="debug-section">
+            <h3>🚀 Links de Teste</h3>
+            <a href="/" class="test-button" style="text-decoration: none; display: inline-block;">Testar App Principal</a>
+            <a href="/favicon-test.html" class="test-button" style="text-decoration: none; display: inline-block;">Testar Favicon</a>
+        </div>
+    </div>
+
+    <script>
+        // Capturar erros globais
+        window.addEventListener('error', function(e) {
+            logError('Erro JavaScript: ' + e.message + ' em ' + e.filename + ':' + e.lineno);
+        });
+
+        window.addEventListener('unhandledrejection', function(e) {
+            logError('Promise rejeitada: ' + e.reason);
+        });
+
+        function logError(message) {
+            const log = document.getElementById('error-log');
+            const timestamp = new Date().toLocaleTimeString();
+            log.innerHTML += `[${timestamp}] ${message}\n`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Informações do dispositivo
+        function showDeviceInfo() {
+            const deviceInfo = document.getElementById('device-info');
+            const info = {
+                'User Agent': navigator.userAgent,
+                'Platform': navigator.platform,
+                'Language': navigator.language,
+                'Cookie Enabled': navigator.cookieEnabled,
+                'Online': navigator.onLine,
+                'Screen Size': `${screen.width}x${screen.height}`,
+                'Viewport': `${window.innerWidth}x${window.innerHeight}`,
+                'Pixel Ratio': window.devicePixelRatio,
+                'Touch Support': 'ontouchstart' in window,
+                'Service Worker': 'serviceWorker' in navigator,
+                'WebGL': !!window.WebGLRenderingContext,
+                'Web Audio': !!window.AudioContext,
+                'IndexedDB': !!window.indexedDB,
+                'LocalStorage': !!window.localStorage
+            };
+
+            let html = '';
+            for (const [key, value] of Object.entries(info)) {
+                const statusClass = value ? 'success' : 'error';
+                html += `<div><strong>${key}:</strong> <span class="status ${statusClass}">${value}</span></div>`;
+            }
+            deviceInfo.innerHTML = html;
+        }
+
+        // Informações de conectividade
+        function showConnectivityInfo() {
+            const connectivityInfo = document.getElementById('connectivity-info');
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            
+            const info = {
+                'Online': navigator.onLine,
+                'Connection Type': connection ? connection.effectiveType : 'N/A',
+                'Downlink': connection ? connection.downlink + ' Mbps' : 'N/A',
+                'RTT': connection ? connection.rtt + ' ms' : 'N/A'
+            };
+
+            let html = '';
+            for (const [key, value] of Object.entries(info)) {
+                const statusClass = key === 'Online' ? (value ? 'success' : 'error') : 'info';
+                html += `<div><strong>${key}:</strong> <span class="status ${statusClass}">${value}</span></div>`;
+            }
+            connectivityInfo.innerHTML = html;
+        }
+
+        // Teste do Firebase
+        async function testFirebase() {
+            try {
+                logError('Testando Firebase...');
+                
+                // Verificar se as variáveis de ambiente estão definidas
+                const envVars = [
+                    'VITE_FIREBASE_API_KEY',
+                    'VITE_FIREBASE_AUTH_DOMAIN',
+                    'VITE_FIREBASE_PROJECT_ID'
+                ];
+                
+                for (const envVar of envVars) {
+                    if (!import.meta.env[envVar]) {
+                        logError(`❌ Variável de ambiente ${envVar} não definida`);
+                        return;
+                    }
+                }
+                
+                logError('✅ Variáveis de ambiente do Firebase encontradas');
+                
+                // Tentar carregar o Firebase
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+                logError('✅ Firebase SDK carregado com sucesso');
+                
+            } catch (error) {
+                logError('❌ Erro ao testar Firebase: ' + error.message);
+            }
+        }
+
+        // Teste do LocalStorage
+        function testLocalStorage() {
+            try {
+                localStorage.setItem('test', 'value');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (value === 'value') {
+                    logError('✅ LocalStorage funcionando corretamente');
+                } else {
+                    logError('❌ LocalStorage não está funcionando');
+                }
+            } catch (error) {
+                logError('❌ Erro no LocalStorage: ' + error.message);
+            }
+        }
+
+        // Teste do Fetch
+        async function testFetch() {
+            try {
+                logError('Testando Fetch...');
+                const response = await fetch('/favicon.ico');
+                if (response.ok) {
+                    logError('✅ Fetch funcionando corretamente');
+                } else {
+                    logError('❌ Fetch retornou status: ' + response.status);
+                }
+            } catch (error) {
+                logError('❌ Erro no Fetch: ' + error.message);
+            }
+        }
+
+        // Teste de vídeo
+        function testVideo() {
+            try {
+                const video = document.createElement('video');
+                video.src = '/videos/intro.mp4';
+                video.preload = 'metadata';
+                
+                video.addEventListener('loadedmetadata', () => {
+                    logError('✅ Vídeo carregado com sucesso');
+                });
+                
+                video.addEventListener('error', (e) => {
+                    logError('❌ Erro ao carregar vídeo: ' + e.message);
+                });
+                
+                video.load();
+            } catch (error) {
+                logError('❌ Erro no teste de vídeo: ' + error.message);
+            }
+        }
+
+        // Teste de Canvas
+        function testCanvas() {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                if (ctx) {
+                    ctx.fillStyle = '#ec4899';
+                    ctx.fillRect(0, 0, 100, 100);
+                    logError('✅ Canvas funcionando corretamente');
+                } else {
+                    logError('❌ Canvas não suportado');
+                }
+            } catch (error) {
+                logError('❌ Erro no Canvas: ' + error.message);
+            }
+        }
+
+        // Inicializar
+        showDeviceInfo();
+        showConnectivityInfo();
+        
+        // Monitorar mudanças de conectividade
+        window.addEventListener('online', () => {
+            logError('🌐 Conectado à internet');
+            showConnectivityInfo();
+        });
+        
+        window.addEventListener('offline', () => {
+            logError('❌ Desconectado da internet');
+            showConnectivityInfo();
+        });
+        
+        // Monitorar mudanças de orientação
+        window.addEventListener('orientationchange', () => {
+            logError('📱 Orientação alterada: ' + window.orientation);
+            setTimeout(showDeviceInfo, 100);
+        });
+    </script>
+</body>
+</html> 

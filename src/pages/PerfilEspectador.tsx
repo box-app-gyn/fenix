@@ -18,7 +18,7 @@ export default function PerfilEspectador() {
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
-    phone: '',
+    telefone: '',
     cidade: ''
   });
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -46,7 +46,7 @@ export default function PerfilEspectador() {
           setFormData({
             displayName: data.displayName || '',
             email: data.email || '',
-            phone: data.phone || '',
+            telefone: data.telefone || '',
             cidade: data.cidade || ''
           });
           if (data.photoURL) setPhotoPreview(data.photoURL);
@@ -103,10 +103,10 @@ export default function PerfilEspectador() {
       }
       const updateData: Partial<FirestoreUser> = {
         displayName: formData.displayName,
-        phone: formData.phone,
+        telefone: formData.telefone,
         cidade: formData.cidade,
         photoURL,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp() as any
       };
       await updateDoc(doc(db, 'users', user.uid), updateData);
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
@@ -178,7 +178,7 @@ export default function PerfilEspectador() {
               </div>
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Telefone</label>
-                <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 sm:text-sm" placeholder="(11) 99999-9999" />
+                <input type="tel" id="phone" name="phone" value={formData.telefone} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 sm:text-sm" placeholder="(11) 99999-9999" />
               </div>
               <div>
                 <label htmlFor="cidade" className="block text-sm font-medium text-gray-700">Cidade</label>

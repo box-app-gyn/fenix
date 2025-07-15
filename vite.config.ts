@@ -8,12 +8,15 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectManifest: {
+        swSrc: 'public/sw.js',
+        swDest: 'sw.js'
+      },
       includeAssets: [
         'favicon.ico',
-        'images/splash/apple-touch-icon.png',
-        'images/splash/masked-icon.svg',
-        'images/splash/favicon-16x16.png',
-        'images/splash/favicon-32x32.png'
+        'logos/logo_circulo.png',
+        'images/bg_rounded.png',
+        'images/twolines.png'
       ],
       manifest: {
         name: 'CERRADØ INTERBOX 2025',
@@ -24,6 +27,9 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/',
         scope: '/',
+        orientation: 'portrait-primary',
+        lang: 'pt-BR',
+        categories: ['sports', 'entertainment', 'social'],
         icons: [
           {
             src: 'favicon.ico',
@@ -31,35 +37,79 @@ export default defineConfig({
             type: 'image/x-icon'
           },
           {
-            src: 'images/splash/favicon-16x16.png',
+            src: 'favicon-16x16.png',
             sizes: '16x16',
             type: 'image/png'
           },
           {
-            src: 'images/splash/favicon-32x32.png',
+            src: 'favicon-32x32.png',
             sizes: '32x32',
             type: 'image/png'
           },
           {
-            src: 'images/splash/apple-touch-icon.png',
+            src: 'apple-touch-icon.png',
             sizes: '180x180',
             type: 'image/png'
           },
           {
-            src: 'images/splash/pwa-192x192.png',
+            src: 'logos/logo_circulo.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
           },
           {
-            src: 'images/splash/pwa-512x512.png',
+            src: 'logos/logo_circulo.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any maskable'
+          }
+        ],
+        shortcuts: [
+          {
+            name: 'Hub Principal',
+            short_name: 'Hub',
+            description: 'Acesse o hub principal',
+            url: '/hub',
+            icons: [
+              {
+                src: 'logos/logo_circulo.png',
+                sizes: '96x96'
+              }
+            ]
+          },
+          {
+            name: 'Tempo Real',
+            short_name: 'Tempo Real',
+            description: 'Veja dados em tempo real',
+            url: '/tempo-real',
+            icons: [
+              {
+                src: 'logos/logo_circulo.png',
+                sizes: '96x96'
+              }
+            ]
+          },
+          {
+            name: 'Leaderboard',
+            short_name: 'Ranking',
+            description: 'Veja o ranking gamificado',
+            url: '/leaderboard',
+            icons: [
+              {
+                src: 'logos/logo_circulo.png',
+                sizes: '96x96'
+              }
+            ]
           }
         ]
+      },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB, ajuste conforme necessário
       }
     })
   ],
   server: {
+    host: '0.0.0.0',
     port: 3002,
     open: true,
     hmr: {

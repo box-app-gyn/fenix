@@ -1,0 +1,450 @@
+[
+  {
+    "id": "src/App.tsx",
+    "name": "App.tsx",
+    "type": "file",
+    "level": 0
+  },
+  {
+    "id": "src/app",
+    "name": "app",
+    "type": "folder",
+    "level": 0,
+    "children": [
+      {
+        "id": "src/app/page.tsx",
+        "name": "page.tsx",
+        "type": "file",
+        "level": 1
+      }
+    ]
+  },
+  {
+    "id": "src/components",
+    "name": "components",
+    "type": "folder",
+    "level": 0,
+    "children": [
+      {
+        "id": "src/components/AudiovisualAnalysis.tsx",
+        "name": "AudiovisualAnalysis.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/CallToAction.tsx",
+        "name": "CallToAction.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/ConfettiExplosion.tsx",
+        "name": "ConfettiExplosion.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/FirebaseErrorBoundary.tsx",
+        "name": "FirebaseErrorBoundary.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/Footer.tsx",
+        "name": "Footer.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/GamifiedCTA.tsx",
+        "name": "GamifiedCTA.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/GamifiedLeaderboard.tsx",
+        "name": "GamifiedLeaderboard.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/Graph3D.tsx",
+        "name": "Graph3D.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/Header.tsx",
+        "name": "Header.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/Hero.tsx",
+        "name": "Hero.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/InitialLinkCreator.tsx",
+        "name": "InitialLinkCreator.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/LinkRedirect.tsx",
+        "name": "LinkRedirect.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/LinkShortener.tsx",
+        "name": "LinkShortener.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/LoadingSpinner.tsx",
+        "name": "LoadingSpinner.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/SEOHead.tsx",
+        "name": "SEOHead.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/Sobre.tsx",
+        "name": "Sobre.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/SplashScreen.tsx",
+        "name": "SplashScreen.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/components/TempoReal.tsx",
+        "name": "TempoReal.tsx",
+        "type": "file",
+        "level": 1
+      }
+    ]
+  },
+  {
+    "id": "src/hooks",
+    "name": "hooks",
+    "type": "folder",
+    "level": 0,
+    "children": [
+      {
+        "id": "src/hooks/useAnalytics.ts",
+        "name": "useAnalytics.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/hooks/useAuth.ts",
+        "name": "useAuth.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/hooks/useFirestore.ts",
+        "name": "useFirestore.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/hooks/useLeaderboard.ts",
+        "name": "useLeaderboard.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/hooks/useLinkShortener.ts",
+        "name": "useLinkShortener.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/hooks/usePWA.ts",
+        "name": "usePWA.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/hooks/useRateLimit.ts",
+        "name": "useRateLimit.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/hooks/useRitualAnimation.ts",
+        "name": "useRitualAnimation.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/hooks/useRoleRedirect.ts",
+        "name": "useRoleRedirect.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/hooks/useStorage.ts",
+        "name": "useStorage.ts",
+        "type": "file",
+        "level": 1
+      }
+    ]
+  },
+  {
+    "id": "src/lib",
+    "name": "lib",
+    "type": "folder",
+    "level": 0,
+    "children": [
+      {
+        "id": "src/lib/firebase.ts",
+        "name": "firebase.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/lib/index.ts",
+        "name": "index.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/lib/security.ts",
+        "name": "security.ts",
+        "type": "file",
+        "level": 1
+      }
+    ]
+  },
+  {
+    "id": "src/main.tsx",
+    "name": "main.tsx",
+    "type": "file",
+    "level": 0
+  },
+  {
+    "id": "src/pages",
+    "name": "pages",
+    "type": "folder",
+    "level": 0,
+    "children": [
+      {
+        "id": "src/pages/AdminDashboard.tsx",
+        "name": "AdminDashboard.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/AdminPainel.tsx",
+        "name": "AdminPainel.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/Audiovisual.tsx",
+        "name": "Audiovisual.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/CadastroAtleta.tsx",
+        "name": "CadastroAtleta.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/ClusterPage.tsx",
+        "name": "ClusterPage.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/DashboardEvento.tsx",
+        "name": "DashboardEvento.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/LinkShortenerPage.tsx",
+        "name": "LinkShortenerPage.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/Login.tsx",
+        "name": "Login.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/Perfil.tsx",
+        "name": "Perfil.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/PerfilEspectador.tsx",
+        "name": "PerfilEspectador.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/PerfilJudge.tsx",
+        "name": "PerfilJudge.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/PerfilMidia.tsx",
+        "name": "PerfilMidia.tsx",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/pages/audiovisual",
+        "name": "audiovisual",
+        "type": "folder",
+        "level": 1,
+        "children": [
+          {
+            "id": "src/pages/audiovisual/form.tsx",
+            "name": "form.tsx",
+            "type": "file",
+            "level": 2
+          }
+        ]
+      },
+      {
+        "id": "src/pages/index.tsx",
+        "name": "index.tsx",
+        "type": "file",
+        "level": 1
+      }
+    ]
+  },
+  {
+    "id": "src/test",
+    "name": "test",
+    "type": "folder",
+    "level": 0,
+    "children": [
+      {
+        "id": "src/test/setup.ts",
+        "name": "setup.ts",
+        "type": "file",
+        "level": 1
+      }
+    ]
+  },
+  {
+    "id": "src/types",
+    "name": "types",
+    "type": "folder",
+    "level": 0,
+    "children": [
+      {
+        "id": "src/types/__tests__",
+        "name": "__tests__",
+        "type": "folder",
+        "level": 1,
+        "children": [
+          {
+            "id": "src/types/__tests__/firestore.test.ts",
+            "name": "firestore.test.ts",
+            "type": "file",
+            "level": 2
+          }
+        ]
+      },
+      {
+        "id": "src/types/firestore.ts",
+        "name": "firestore.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/types/index.ts",
+        "name": "index.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/types/linkShortener.ts",
+        "name": "linkShortener.ts",
+        "type": "file",
+        "level": 1
+      }
+    ]
+  },
+  {
+    "id": "src/utils",
+    "name": "utils",
+    "type": "folder",
+    "level": 0,
+    "children": [
+      {
+        "id": "src/utils/__tests__",
+        "name": "__tests__",
+        "type": "folder",
+        "level": 1,
+        "children": [
+          {
+            "id": "src/utils/__tests__/storage.test.ts",
+            "name": "storage.test.ts",
+            "type": "file",
+            "level": 2
+          }
+        ]
+      },
+      {
+        "id": "src/utils/createInitialLinks.ts",
+        "name": "createInitialLinks.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/utils/graphData.ts",
+        "name": "graphData.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/utils/seedConfigData.ts",
+        "name": "seedConfigData.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/utils/seedData.ts",
+        "name": "seedData.ts",
+        "type": "file",
+        "level": 1
+      },
+      {
+        "id": "src/utils/storage.ts",
+        "name": "storage.ts",
+        "type": "file",
+        "level": 1
+      }
+    ]
+  },
+  {
+    "id": "src/vite-env.d.ts",
+    "name": "vite-env.d.ts",
+    "type": "file",
+    "level": 0
+  }
+]

@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signInWithPopup, signOut, User as FirebaseUser, getRedirectResult } from 'firebase/auth';
 import { auth, provider, db } from '../lib/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-interface User {
-  uid: string;
-  displayName: string | null;
-  email: string | null;
-  photoURL: string | null;
+interface User extends FirebaseUser {
+  role?: string;
+  telefone?: string | null;
+  whatsapp?: string | null;
+  box?: string;
+  categoria?: string;
+  cidade?: string;
+  mensagem?: string;
+  isActive?: boolean;
+  profileComplete?: boolean;
 }
 
 export function useAuth() {
@@ -42,20 +47,28 @@ export function useAuth() {
               });
             }
 
-            setUser({
-              uid: firebaseUser.uid,
-              displayName: firebaseUser.displayName,
-              email: firebaseUser.email,
-              photoURL: firebaseUser.photoURL
-            });
+            // Buscar dados completos do usuário
+            const userData = snapshot.data();
+            const extendedUser: User = {
+              ...firebaseUser,
+              role: userData?.role || 'publico',
+              telefone: userData?.telefone || null,
+              whatsapp: userData?.whatsapp || null,
+              box: userData?.box || '',
+              categoria: userData?.categoria || 'atleta',
+              cidade: userData?.cidade || '',
+              mensagem: userData?.mensagem || '',
+              isActive: userData?.isActive || true,
+              profileComplete: userData?.profileComplete || false
+            };
+
+            setUser(extendedUser);
           } catch (error) {
             console.error('Erro ao carregar dados do usuário:', error);
             // Em caso de erro, ainda definimos o usuário básico
             setUser({
-              uid: firebaseUser.uid,
-              displayName: firebaseUser.displayName,
-              email: firebaseUser.email,
-              photoURL: firebaseUser.photoURL
+              ...firebaseUser,
+              role: 'publico'
             });
           }
         } else {
@@ -116,6 +129,34 @@ export function useAuth() {
       }
     }
   };
+
+  // Função alternativa para login com redirecionamento (não usado atualmente)
+  // const loginWithRedirect = async () => {
+  //   try {
+  //     console.log('Tentando fazer login com redirecionamento...');
+  //     await signInWithRedirect(auth, provider);
+  //     console.log('Redirecionamento iniciado');
+  //   } catch (error) {
+  //     console.error('Erro no login com redirecionamento:', error);
+  //     throw error;
+  //   }
+  // };
+
+  // Verificar resultado do redirecionamento
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          console.log('Login com redirecionamento bem-sucedido:', result.user);
+        }
+      } catch (error) {
+        console.error('Erro ao verificar resultado do redirecionamento:', error);
+      }
+    };
+
+    checkRedirectResult();
+  }, []);
 
   const logout = async () => {
     try {

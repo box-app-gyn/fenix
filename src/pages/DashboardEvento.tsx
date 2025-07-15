@@ -119,10 +119,10 @@ const DashboardEvento: React.FC = () => {
 
   // Verificar se usuário tem acesso (admin ou roles específicos)
   const hasAccess = user && (
-    user.role === 'admin' || 
-    user.role === 'jurado' || 
-    user.role === 'midia' ||
-    user.role === 'fotografo'
+        (user as any).role === 'admin' ||
+    (user as any).role === 'jurado' ||
+    (user as any).role === 'midia' ||
+    (user as any).role === 'fotografo'
   );
 
   if (!hasAccess) {

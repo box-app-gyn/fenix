@@ -16,7 +16,7 @@ export default function Perfil() {
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
-    phone: '',
+    telefone: '',
     box: '',
     categoria: 'atleta' as const,
     cidade: ''
@@ -45,9 +45,9 @@ export default function Perfil() {
           setFormData({
             displayName: data.displayName || '',
             email: data.email || '',
-            phone: data.phone || '',
+            telefone: data.telefone || '',
             box: data.box || '',
-            categoria: data.role === 'atleta' ? 'atleta' : 'publico',
+            categoria: data.role === 'atleta' ? 'atleta' : 'publico' as any,
             cidade: data.cidade || ''
           });
           if (data.photoURL) {
@@ -121,12 +121,12 @@ export default function Perfil() {
       // Update user data
       const updateData: Partial<FirestoreUser> = {
         displayName: formData.displayName,
-        phone: formData.phone,
+        telefone: formData.telefone,
         box: formData.box,
         role: formData.categoria,
         cidade: formData.cidade,
         photoURL,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp() as any
       };
 
       await updateDoc(doc(db, 'users', user.uid), updateData);
@@ -269,7 +269,7 @@ export default function Perfil() {
                         type="tel"
                         id="phone"
                         name="phone"
-                        value={formData.phone}
+                        value={formData.telefone}
                         onChange={handleInputChange}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         placeholder="(11) 99999-9999"

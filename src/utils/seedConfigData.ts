@@ -151,6 +151,11 @@ export const updateMostrarNaHome = async (config: {
   fotografos?: boolean;
 }) => {
   return updateTempoRealData({
-    mostrarNaHome: config
+    mostrarNaHome: {
+      ingressos: config.ingressos ?? true,
+      token: config.token ?? true,
+      indicacoes: config.indicacoes ?? false,
+      fotografos: config.fotografos ?? false
+    }
   });
 }; 

@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { collection, getDocs, updateDoc, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { FirestoreUser, UserRole } from '../types/firestore';
-import { useNavigate } from 'react-router-dom';
 
-const USER_TYPES = {
+
+const USER_TYPES: Record<string, { color: string; icon: string; label: string }> = {
   atleta: { color: '#10B981', icon: '🏃‍♂️', label: 'Atleta' },
   espectador: { color: '#6B7280', icon: '👥', label: 'Espectador' },
   judge: { color: '#F59E0B', icon: '⚖️', label: 'Juiz' },
+  jurado: { color: '#F59E0B', icon: '⚖️', label: 'Jurado' },
   midia: { color: '#8B5CF6', icon: '📸', label: 'Mídia' },
   publico: { color: '#3B82F6', icon: '👤', label: 'Público' },
   admin: { color: '#EF4444', icon: '🛡️', label: 'Admin' },
@@ -18,7 +19,7 @@ const USER_TYPES = {
 
 export default function AdminPainel() {
   const { user } = useAuth();
-  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<FirestoreUser[]>([]);
   const [filter, setFilter] = useState<string>('');
@@ -57,7 +58,7 @@ export default function AdminPainel() {
     setEditData({
       displayName: u.displayName,
       email: u.email,
-      phone: u.phone,
+      telefone: u.telefone,
       role: u.role,
     });
   };
@@ -153,8 +154,8 @@ export default function AdminPainel() {
                   </td>
                   <td className="py-2 px-2">
                     {editingId === u.uid ? (
-                      <input value={editData.phone || ''} onChange={e => setEditData(ed => ({ ...ed, phone: e.target.value }))} className="border rounded px-1" />
-                    ) : u.phone}
+                      <input value={editData.telefone || ''} onChange={e => setEditData(ed => ({ ...ed, telefone: e.target.value }))} className="border rounded px-1" />
+                    ) : u.telefone}
                   </td>
                   <td className="py-2 px-2 flex gap-2">
                     {editingId === u.uid ? (

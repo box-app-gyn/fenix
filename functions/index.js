@@ -126,9 +126,12 @@ exports.validaAudiovisual = onCall(async (request) => {
 
 // TODO: Log de alterações em usuários - Temporariamente desabilitado
 // devido a problemas de permissão do Eventarc Service Agent
-// exports.logUserUpdate = onDocumentUpdated("users/{userId}", async (event) => {
-//   const before = event.data && event.data.before ? event.data.before.data() : null;
-//   const after = event.data && event.data.after ? event.data.after.data() : null;
+// exports.logUserUpdate = onDocumentUpdated("users/{userId}",
+//   async (event) => {
+//   const before = event.data && event.data.before ?
+//     event.data.before.data() : null;
+//   const after = event.data && event.data.after ?
+//     event.data.after.data() : null;
 //   const userId = event.params.userId;
 
 //   if (!before || !after) return;

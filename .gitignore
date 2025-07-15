@@ -50,3 +50,6 @@ out/
 Thumbs.db
 ehthumbs.db
 Desktop.ini 
+
+# Service Worker
+sw.js

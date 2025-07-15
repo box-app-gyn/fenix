@@ -17,6 +17,8 @@ import LinkShortenerPage from './pages/LinkShortenerPage';
 import LinkRedirect from './components/LinkRedirect';
 import ClusterPage from './pages/ClusterPage';
 import Perfil from './pages/Perfil';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
+import PWAUpdatePrompt from './components/PWAUpdatePrompt';
 
 function App() {
   const { user, loading } = useAuth();
@@ -64,6 +66,8 @@ function App() {
             </Routes>
           </main>
           <Footer />
+          <PWAInstallPrompt />
+          <PWAUpdatePrompt />
         </div>
       </Router>
     </FirebaseErrorBoundary>

@@ -7,6 +7,7 @@ O sistema de encurtamento de links do App Fenix permite criar URLs curtas e acom
 ## ✨ Funcionalidades
 
 ### ✅ Criação de Links
+
 - **URLs curtas**: Transforma URLs longas em links curtos e memoráveis
 - **Códigos customizados**: Permite definir códigos personalizados
 - **Categorização**: Organiza links por categoria (evento, ingresso, comunidade, etc.)
@@ -14,12 +15,14 @@ O sistema de encurtamento de links do App Fenix permite criar URLs curtas e acom
 - **Sanitização**: Remove caracteres perigosos e limita tamanhos
 
 ### ✅ Gerenciamento
+
 - **Dashboard completo**: Interface para gerenciar todos os links
 - **Edição em tempo real**: Modifica títulos, descrições e categorias
 - **Ativação/desativação**: Controle de status dos links
 - **Exclusão segura**: Remove links com confirmação
 
 ### ✅ Analytics Avançados
+
 - **Contadores de cliques**: Total e por período
 - **Dispositivos**: Desktop, mobile, tablet
 - **Geolocalização**: País de origem dos cliques
@@ -27,6 +30,7 @@ O sistema de encurtamento de links do App Fenix permite criar URLs curtas e acom
 - **Datas**: Evolução temporal dos cliques
 
 ### ✅ Redirecionamento Inteligente
+
 - **Página de preview**: Mostra informações antes do redirecionamento
 - **Registro automático**: Conta cliques automaticamente
 - **Detecção de dispositivo**: Identifica tipo de dispositivo
@@ -35,6 +39,7 @@ O sistema de encurtamento de links do App Fenix permite criar URLs curtas e acom
 ## 🛠️ Arquitetura
 
 ### Tipos TypeScript (`src/types/linkShortener.ts`)
+
 ```typescript
 interface ShortLink {
   id: string;
@@ -56,12 +61,14 @@ interface ShortLink {
 ```
 
 ### Hook Principal (`src/hooks/useLinkShortener.ts`)
+
 - **CRUD completo**: Criar, ler, atualizar, deletar links
 - **Tempo real**: Atualizações automáticas via Firestore
 - **Validação**: Verifica dados antes de salvar
 - **Analytics**: Calcula estatísticas automaticamente
 
 ### Componentes React
+
 - **LinkShortener**: Interface principal de gerenciamento
 - **LinkRedirect**: Página de redirecionamento
 - **InitialLinkCreator**: Ferramenta administrativa
@@ -69,12 +76,14 @@ interface ShortLink {
 ## 🚀 Como Usar
 
 ### 1. Acessar o Sistema
+
 ```
 URL: /links
 Requer: Login com Google
 ```
 
 ### 2. Criar Novo Link
+
 1. Clique em "+ Novo Link"
 2. Preencha a URL original
 3. Adicione título e descrição (opcional)
@@ -82,12 +91,14 @@ Requer: Login com Google
 5. Clique em "Criar Link"
 
 ### 3. Gerenciar Links
+
 - **Testar**: Abre o link em nova aba
 - **Copiar**: Copia URL curta para clipboard
 - **Editar**: Modifica informações do link
 - **Deletar**: Remove link permanentemente
 
 ### 4. Ver Estatísticas
+
 - **Dashboard**: Visão geral de todos os links
 - **Métricas**: Cliques por período, dispositivo, país
 - **Gráficos**: Evolução temporal dos cliques
@@ -95,6 +106,7 @@ Requer: Login com Google
 ## 📊 Estrutura do Firestore
 
 ### Coleção: `shortLinks`
+
 ```javascript
 {
   id: "auto-generated",
@@ -140,6 +152,7 @@ Requer: Login com Google
 ## 🔧 Configuração Inicial
 
 ### 1. Links Automáticos
+
 O sistema cria automaticamente links essenciais:
 
 ```javascript
@@ -154,7 +167,9 @@ O sistema cria automaticamente links essenciais:
 ```
 
 ### 2. Ferramenta Administrativa
+
 Acesse `/links` como admin para:
+
 - Criar links iniciais automaticamente
 - Criar links personalizados
 - Gerenciar todos os links do sistema
@@ -162,17 +177,20 @@ Acesse `/links` como admin para:
 ## 🛡️ Segurança
 
 ### Validação de Dados
+
 - **URLs**: Verifica protocolo e formato
 - **Códigos**: Caracteres permitidos apenas (a-z, 0-9, -, _)
 - **Tamanhos**: Limites máximos para todos os campos
 - **Códigos reservados**: Bloqueia palavras-chave do sistema
 
 ### Rate Limiting
+
 - **Cliques**: Máximo por sessão
 - **Criação**: Limite de links por usuário
 - **API**: Proteção contra spam
 
 ### Sanitização
+
 - **XSS**: Remove tags HTML perigosas
 - **Injection**: Escapa caracteres especiais
 - **Encoding**: Trata caracteres especiais corretamente
@@ -180,6 +198,7 @@ Acesse `/links` como admin para:
 ## 📱 URLs de Exemplo
 
 ### Links Criados
+
 ```
 /l/ingresso2025 → Comprar Ingresso
 /l/comunidade   → WhatsApp da Comunidade
@@ -189,6 +208,7 @@ Acesse `/links` como admin para:
 ```
 
 ### URLs Completas
+
 ```
 https://cerradointerbox.com.br/l/ingresso2025
 https://cerradointerbox.com.br/l/comunidade
@@ -198,6 +218,7 @@ https://cerradointerbox.com.br/l/instagram
 ## 🎨 Interface do Usuário
 
 ### Design System
+
 - **Cores**: Gradientes rosa/roxo do CERRADØ
 - **Animações**: Framer Motion para transições suaves
 - **Responsivo**: Mobile-first design

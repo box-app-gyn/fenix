@@ -1,4 +1,4 @@
-import { Timestamp } from 'firebase/firestore';
+import { Timestamp as FirebaseTimestamp } from 'firebase/firestore';
 
 // ============================================================================
 // TIPOS BASE E ENUMS
@@ -79,11 +79,8 @@ export type RewardStatus = 'disponivel' | 'resgatada' | 'expirada';
 // TIPOS AUXILIARES
 // ============================================================================
 
-// Timestamp do Firestore
-export interface Timestamp {
-  seconds: number;
-  nanoseconds: number;
-}
+// Alias para Timestamp do Firebase
+export type Timestamp = FirebaseTimestamp;
 
 // Geolocalização
 export interface GeoPoint {
@@ -107,6 +104,8 @@ export interface FirestoreUser {
   email: string;
   displayName: string;
   photoURL: string;
+  telefone?: string | null;
+  whatsapp?: string | null;
   role: UserRole;
   isActive: boolean;
   createdAt: Timestamp;
@@ -950,22 +949,15 @@ export const validateTeamData = (data: Partial<FirestoreTeam>): string[] => {
 
 // Funções utilitárias
 export const createTimestamp = (): Timestamp => {
-  const now = new Date();
-  return {
-    seconds: Math.floor(now.getTime() / 1000),
-    nanoseconds: (now.getTime() % 1000) * 1000000
-  };
+  return FirebaseTimestamp.now();
 };
 
 export const timestampToDate = (timestamp: Timestamp): Date => {
-  return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+  return timestamp.toDate();
 };
 
 export const dateToTimestamp = (date: Date): Timestamp => {
-  return {
-    seconds: Math.floor(date.getTime() / 1000),
-    nanoseconds: (date.getTime() % 1000) * 1000000
-  };
+  return FirebaseTimestamp.fromDate(date);
 };
 
 // 🎯 Funções para gamificação com tokens $BOX
