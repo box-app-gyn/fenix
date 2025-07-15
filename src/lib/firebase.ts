@@ -17,9 +17,9 @@ const firebaseConfig = {
 let app;
 try {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  console.log('Firebase inicializado com sucesso');
+  console.log('✅ Firebase inicializado com sucesso');
 } catch (error) {
-  console.error('Erro ao inicializar Firebase:', error);
+  console.error('❌ Erro ao inicializar Firebase:', error);
   throw error;
 }
 
@@ -29,9 +29,11 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const provider = new GoogleAuthProvider();
 
-// Configurar provider para desenvolvimento local
+// Configurar provider para melhor compatibilidade com pop-ups
 provider.setCustomParameters({
-  prompt: 'select_account'
+  prompt: 'select_account',
+  // Reduzir problemas com pop-ups
+  ux_mode: 'popup'
 });
 
 export default app; 

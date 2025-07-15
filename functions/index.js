@@ -1,4 +1,5 @@
-const functions = require("firebase-functions");
+const {onCall} = require("firebase-functions/v2/https");
+// const {onDocumentUpdated} = require("firebase-functions/v2/firestore");
 const admin = require("firebase-admin");
 
 if (!admin.apps.length) {
@@ -8,19 +9,16 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 // Função simples de teste
-exports.testFunction = functions.https.onCall(async (data, context) => {
+exports.testFunction = onCall(async (request) => {
   try {
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
-          "unauthenticated",
-          "Usuário não autenticado",
-      );
+    if (!request.auth) {
+      throw new Error("Usuário não autenticado");
     }
 
     return {
       success: true,
       message: "Função de teste funcionando!",
-      userId: context.auth.uid,
+      userId: request.auth.uid,
     };
   } catch (error) {
     console.error("Erro na função de teste:", error);
@@ -28,62 +26,18 @@ exports.testFunction = functions.https.onCall(async (data, context) => {
   }
 });
 
-// Trigger quando usuário é criado
-exports.onUserCreated = functions.auth.user().onCreate(async (user) => {
-  try {
-    const {uid, email, displayName, photoURL} = user;
-
-    // Criar documento do usuário no Firestore
-    const userData = {
-      uid,
-      email: email || "",
-      displayName: displayName || "",
-      photoURL: photoURL || "",
-      role: "publico",
-      isActive: true,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      // 🎯 GAMIFICAÇÃO CAMADA 1
-      gamification: {
-        points: 10, // Pontos iniciais por cadastro
-        level: "iniciante",
-        totalActions: 1,
-        lastActionAt: admin.firestore.FieldValue.serverTimestamp(),
-        achievements: ["first_blood"], // Primeira conquista
-        rewards: [],
-        streakDays: 1,
-        lastLoginStreak: admin.firestore.FieldValue.serverTimestamp(),
-        referralCode: `REF${uid.substring(0, 8).toUpperCase()}`,
-        referrals: [],
-        referralPoints: 0,
-      },
-    };
-
-    await db.collection("users").doc(uid).set(userData);
-    console.log("Novo usuário criado:", {email, displayName, uid});
-  } catch (error) {
-    console.error("Erro ao criar usuário:", error);
-  }
-});
-
 // Função para criar inscrição de time
-exports.criarInscricaoTime = functions.https.onCall(async (data, context) => {
+exports.criarInscricaoTime = onCall(async (request) => {
   try {
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
-        "unauthenticated",
-        "Usuário não autenticado",
-      );
+    if (!request.auth) {
+      throw new Error("Usuário não autenticado");
     }
 
-    const {userId, timeData} = data;
+    const {userId, timeData} = request.data;
 
     // Verificar se o usuário é o dono da inscrição
-    if (context.auth.uid !== userId) {
-      throw new functions.https.HttpsError(
-        "permission-denied",
-        "Usuário não autorizado",
-      );
+    if (request.auth.uid !== userId) {
+      throw new Error("Usuário não autorizado");
     }
 
     // Criar inscrição do time
@@ -107,24 +61,19 @@ exports.criarInscricaoTime = functions.https.onCall(async (data, context) => {
 });
 
 // Função para validar audiovisual
-exports.validaAudiovisual = functions.https.onCall(async (data, context) => {
+exports.validaAudiovisual = onCall(async (request) => {
   try {
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
-        "unauthenticated",
-        "Usuário não autenticado",
-      );
+    if (!request.auth) {
+      throw new Error("Usuário não autenticado");
     }
 
-    const {audiovisualId, adminId, aprovado, motivoRejeicao} = data;
+    const {audiovisualId, adminId, aprovado, motivoRejeicao} = request.data;
 
     // Verificar se é admin
     const adminUser = await db.collection("users").doc(adminId).get();
-    if (!adminUser.exists || (adminUser.data() && adminUser.data().role !== "admin")) {
-      throw new functions.https.HttpsError(
-          "permission-denied",
-          "Apenas admins podem validar profissionais audiovisuais",
-      );
+    if (!adminUser.exists ||
+        (adminUser.data() && adminUser.data().role !== "admin")) {
+      throw new Error("Apenas admins podem validar profissionais audiovisuais");
     }
 
     // Buscar profissional audiovisual
@@ -132,10 +81,7 @@ exports.validaAudiovisual = functions.https.onCall(async (data, context) => {
     const audiovisualDoc = await audiovisualRef.get();
 
     if (!audiovisualDoc.exists) {
-      throw new functions.https.HttpsError(
-        "not-found",
-        "Profissional audiovisual não encontrado",
-      );
+      throw new Error("Profissional audiovisual não encontrado");
     }
 
     const audiovisualData = audiovisualDoc.data();
@@ -177,3 +123,30 @@ exports.validaAudiovisual = functions.https.onCall(async (data, context) => {
     throw error;
   }
 });
+
+// TODO: Log de alterações em usuários - Temporariamente desabilitado
+// devido a problemas de permissão do Eventarc Service Agent
+// exports.logUserUpdate = onDocumentUpdated("users/{userId}", async (event) => {
+//   const before = event.data && event.data.before ? event.data.before.data() : null;
+//   const after = event.data && event.data.after ? event.data.after.data() : null;
+//   const userId = event.params.userId;
+
+//   if (!before || !after) return;
+
+//   // Detecta campos alterados
+//   const changes = {};
+//   Object.keys(after).forEach((key) => {
+//     if (JSON.stringify(before[key]) !== JSON.stringify(after[key])) {
+//       changes[key] = {before: before[key], after: after[key]};
+//     }
+//   });
+
+//   // Salva log
+//   return admin.firestore().collection("logs").add({
+//     type: "user_update",
+//     userId,
+//     changes,
+//     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+//     updatedBy: after.updatedBy || null,
+//   });
+// });

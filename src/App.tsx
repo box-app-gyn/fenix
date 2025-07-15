@@ -10,6 +10,8 @@ import GamifiedLeaderboard from './components/GamifiedLeaderboard';
 import CallToAction from './components/CallToAction';
 import Sobre from './components/Sobre';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminPainel from './pages/AdminPainel';
+import DashboardEvento from './pages/DashboardEvento';
 import Audiovisual from './pages/Audiovisual';
 import LinkShortenerPage from './pages/LinkShortenerPage';
 import LinkRedirect from './components/LinkRedirect';
@@ -47,6 +49,8 @@ function App() {
               <Route path="/leaderboard" element={<GamifiedLeaderboard />} />
               <Route path="/sobre" element={<Sobre />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin-painel" element={<AdminPainel />} />
+              <Route path="/dashboard-evento" element={<DashboardEvento />} />
               <Route path="/audiovisual" element={<Audiovisual />} />
               <Route path="/links" element={<LinkShortenerPage />} />
               <Route path="/l/:shortCode" element={<LinkRedirectWrapper />} />

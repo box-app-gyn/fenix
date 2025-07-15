@@ -5,6 +5,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
 import { FirestoreUser } from '../types/firestore';
 import { useNavigate } from 'react-router-dom';
+import imageCompression from 'browser-image-compression';
 
 export default function Perfil() {
   const { user } = useAuth();
@@ -65,20 +66,29 @@ export default function Perfil() {
   }, [user?.uid]);
 
   // Handle file selection
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         setMessage({ type: 'error', text: 'Arquivo muito grande. Máximo 5MB.' });
         return;
       }
-
-      setPhotoFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setPhotoPreview(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      // Compressão
+      try {
+        const compressedFile = await imageCompression(file, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 800,
+          useWebWorker: true,
+        });
+        setPhotoFile(compressedFile);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setPhotoPreview(e.target?.result as string);
+        };
+        reader.readAsDataURL(compressedFile);
+      } catch (err) {
+        setMessage({ type: 'error', text: 'Erro ao comprimir imagem.' });
+      }
     }
   };
 

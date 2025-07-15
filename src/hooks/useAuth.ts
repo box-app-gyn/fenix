@@ -75,6 +75,23 @@ export function useAuth() {
   const login = async () => {
     try {
       console.log('Tentando fazer login...');
+      
+      // Verificar se o popup está sendo bloqueado
+      const popupBlocked = await new Promise<boolean>((resolve) => {
+        const testPopup = window.open('', '_blank', 'width=1,height=1');
+        if (testPopup) {
+          testPopup.close();
+          resolve(false); // Popup não está bloqueado
+        } else {
+          resolve(true); // Popup está bloqueado
+        }
+      });
+
+      if (popupBlocked) {
+        alert('Pop-ups estão bloqueados pelo navegador. Por favor, permita pop-ups para este site e tente novamente.');
+        return;
+      }
+
       await signInWithPopup(auth, provider);
       console.log('Login realizado com sucesso');
     } catch (error: any) {
@@ -84,11 +101,14 @@ export function useAuth() {
         console.log('Login cancelado pelo usuário');
         return; // Não lança erro para popup fechado
       } else if (error.code === 'auth/popup-blocked') {
-        console.error('Popup bloqueado pelo navegador. Tente novamente.');
-        alert('Popup bloqueado pelo navegador. Tente novamente.');
+        console.error('Popup bloqueado pelo navegador.');
+        alert('Popup bloqueado pelo navegador. Por favor, permita pop-ups para este site e tente novamente.');
       } else if (error.code === 'auth/invalid-api-key') {
         console.error('API Key do Firebase inválida. Verifique as configurações.');
         alert('Erro de configuração. Entre em contato com o suporte.');
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        console.log('Requisição de popup cancelada');
+        return; // Não é um erro real
       } else {
         // Outros erros
         console.error('Erro no login:', error);

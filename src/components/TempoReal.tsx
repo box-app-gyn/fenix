@@ -18,9 +18,21 @@ interface TempoRealData {
     total: number;
     aprovados: number;
   };
-  xp: {
-    total: number;
-    media: number;
+  // 🎯 ATUALIZADO: Sistema de Tokens $BOX
+  token: {
+    box: {
+      total: number;    // Total distribuído de $BOX
+      media: number;    // Média de $BOX por usuário
+      holders: number;  // Número de holders
+      marketCap?: number; // Market cap simulado
+    };
+  };
+  // 🎯 NOVA CONFIGURAÇÃO: Controle do que mostrar na home
+  mostrarNaHome?: {
+    ingressos: boolean;
+    token: boolean;     // Alterado de 'xp' para 'token'
+    indicacoes: boolean;
+    fotografos: boolean;
   };
 }
 
@@ -29,7 +41,20 @@ const TempoReal: React.FC = () => {
     ingressos: { status: 'em_breve' },
     indicacoes: { total: 0, hoje: 0 },
     fotografos: { total: 0, aprovados: 0 },
-    xp: { total: 0, media: 0 }
+    token: {
+      box: {
+        total: 0,
+        media: 0,
+        holders: 0,
+        marketCap: 0
+      }
+    },
+    mostrarNaHome: {
+      ingressos: true,
+      token: true,      // Alterado de 'xp' para 'token'
+      indicacoes: false, // ❌ REMOVIDO da home
+      fotografos: false, // ❌ REMOVIDO da home
+    }
   });
 
   const [countdown, setCountdown] = useState<{
@@ -48,11 +73,85 @@ const TempoReal: React.FC = () => {
       doc(db, 'config', 'tempo_real'),
       (doc) => {
         if (doc.exists()) {
-          setData(doc.data() as TempoRealData);
+          const firestoreData = doc.data() as TempoRealData;
+          // 🎯 Aplicar configuração de exibição com fallback
+          setData({
+            ingressos: {
+              status: 'em_breve',
+              dataAbertura: firestoreData.ingressos?.dataAbertura,
+              loteAtual: firestoreData.ingressos?.loteAtual,
+              vagasRestantes: firestoreData.ingressos?.vagasRestantes
+            },
+            indicacoes: {
+              total: firestoreData.indicacoes?.total || 0,
+              hoje: firestoreData.indicacoes?.hoje || 0
+            },
+            fotografos: {
+              total: firestoreData.fotografos?.total || 0,
+              aprovados: firestoreData.fotografos?.aprovados || 0
+            },
+            token: {
+              box: {
+                total: firestoreData.token?.box?.total || 0,
+                media: firestoreData.token?.box?.media || 0,
+                holders: firestoreData.token?.box?.holders || 0,
+                marketCap: firestoreData.token?.box?.marketCap || 0
+              }
+            },
+            mostrarNaHome: {
+              ingressos: true,
+              token: true,      // Alterado de 'xp' para 'token'
+              indicacoes: false, // Sempre false na home
+              fotografos: false, // Sempre false na home
+              ...firestoreData.mostrarNaHome
+            }
+          });
+        } else {
+          // 🎯 Dados padrão se documento não existir
+          console.log('📊 Documento config/tempo_real não encontrado. Usando dados padrão.');
+          setData({
+            ingressos: { status: 'em_breve' },
+            indicacoes: { total: 0, hoje: 0 },
+            fotografos: { total: 0, aprovados: 0 },
+            token: {
+              box: {
+                total: 0,
+                media: 0,
+                holders: 0,
+                marketCap: 0
+              }
+            },
+            mostrarNaHome: {
+              ingressos: true,
+              token: true,
+              indicacoes: false,
+              fotografos: false,
+            }
+          });
         }
       },
       (error) => {
-        console.error('Erro ao carregar dados em tempo real:', error);
+        console.error('❌ Erro ao carregar dados em tempo real:', error);
+        // 🎯 Fallback em caso de erro
+        setData({
+          ingressos: { status: 'em_breve' },
+          indicacoes: { total: 0, hoje: 0 },
+          fotografos: { total: 0, aprovados: 0 },
+          token: {
+            box: {
+              total: 0,
+              media: 0,
+              holders: 0,
+              marketCap: 0
+            }
+          },
+          mostrarNaHome: {
+            ingressos: true,
+            token: true,
+            indicacoes: false,
+            fotografos: false,
+          }
+        });
       }
     );
 
@@ -125,6 +224,83 @@ const TempoReal: React.FC = () => {
 
   const ingressosInfo = getIngressosText();
 
+  // 🎯 FILTRAR CARDS PARA MOSTRAR APENAS OS ESSENCIAIS NA HOME
+  const cardsParaMostrar = [
+    // ✅ INGRESSOS - SEMPRE MOSTRAR (conversão)
+    ...(data.mostrarNaHome?.ingressos ? [{
+      id: 'ingressos',
+      component: (
+        <motion.div
+          key="ingressos"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          viewport={{ once: true }}
+          className={`rounded-xl p-6 border transition-all duration-300 ${
+            getIngressosStatus() === 'em_breve' 
+              ? 'opacity-60 border-gray-700 bg-black/40' 
+              : getIngressosStatus() === 'disponivel'
+              ? 'border-green-500/50 bg-green-500/10'
+              : 'border-red-500/50 bg-red-500/10'
+          }`}
+        >
+          <div className="text-center">
+            <p className="text-sm text-gray-400 mb-2">{ingressosInfo.title}</p>
+            <p className={`text-xl font-bold mb-1 ${
+              getIngressosStatus() === 'em_breve' 
+                ? 'text-pink-500' 
+                : getIngressosStatus() === 'disponivel'
+                ? 'text-green-400'
+                : 'text-red-400'
+            }`}>
+              {ingressosInfo.subtitle}
+            </p>
+            <p className="text-xs text-gray-500">{ingressosInfo.description}</p>
+            
+            {/* Contagem regressiva detalhada */}
+            {getIngressosStatus() === 'em_breve' && countdown.days > 0 && (
+              <div className="mt-3 text-xs text-gray-400">
+                <div className="flex justify-center space-x-2">
+                  <span>{countdown.days}d</span>
+                  <span>{countdown.hours}h</span>
+                  <span>{countdown.minutes}m</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )
+    }] : []),
+
+    // ✅ TOKENS $BOX - MOSTRAR SE GAMIFICAÇÃO ATIVA (engajamento)
+    ...(data.mostrarNaHome?.token ? [{
+      id: 'token',
+      component: (
+        <motion.div
+          key="token"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="rounded-xl p-6 border border-pink-500/50 bg-pink-500/10"
+        >
+          <div className="text-center">
+            <p className="text-sm text-gray-400 mb-2">🎯 $BOX Distribuído</p>
+            <p className="text-2xl font-bold text-pink-400 mb-1">
+              {data.token.box.total !== undefined ? data.token.box.total.toLocaleString() : '0'}
+            </p>
+            <p className="text-xs text-gray-500">
+              Média: {data.token.box.media} $BOX • {data.token.box.holders} holders
+            </p>
+          </div>
+        </motion.div>
+      )
+    }] : []),
+
+    // ❌ INDICAÇÕES - REMOVIDO da home (vai para dashboard)
+    // ❌ FOTÓGRAFOS - REMOVIDO da home (vai para dashboard)
+  ];
+
   return (
     <section className="py-16 bg-gradient-to-br from-black via-gray-900 to-black">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -146,108 +322,18 @@ const TempoReal: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Cards em tempo real */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
-          {/* Card de Ingressos */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            viewport={{ once: true }}
-            className={`rounded-xl p-6 border transition-all duration-300 ${
-              getIngressosStatus() === 'em_breve' 
-                ? 'opacity-60 border-gray-700 bg-black/40' 
-                : getIngressosStatus() === 'disponivel'
-                ? 'border-green-500/50 bg-green-500/10'
-                : 'border-red-500/50 bg-red-500/10'
-            }`}
-          >
-            <div className="text-center">
-              <p className="text-sm text-gray-400 mb-2">{ingressosInfo.title}</p>
-              <p className={`text-xl font-bold mb-1 ${
-                getIngressosStatus() === 'em_breve' 
-                  ? 'text-pink-500' 
-                  : getIngressosStatus() === 'disponivel'
-                  ? 'text-green-400'
-                  : 'text-red-400'
-              }`}>
-                {ingressosInfo.subtitle}
-              </p>
-              <p className="text-xs text-gray-500">{ingressosInfo.description}</p>
-              
-              {/* Contagem regressiva detalhada */}
-              {getIngressosStatus() === 'em_breve' && countdown.days > 0 && (
-                <div className="mt-3 text-xs text-gray-400">
-                  <div className="flex justify-center space-x-2">
-                    <span>{countdown.days}d</span>
-                    <span>{countdown.hours}h</span>
-                    <span>{countdown.minutes}m</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Card de Indicações */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="rounded-xl p-6 border border-blue-500/50 bg-blue-500/10"
-          >
-            <div className="text-center">
-              <p className="text-sm text-gray-400 mb-2">👥 Indicações</p>
-              <p className="text-2xl font-bold text-blue-400 mb-1">
-                {data.indicacoes.total !== undefined ? data.indicacoes.total.toLocaleString() : '0'}
-              </p>
-              <p className="text-xs text-gray-500">
-                +{data.indicacoes.hoje} hoje
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Card de Fotógrafos */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            viewport={{ once: true }}
-            className="rounded-xl p-6 border border-purple-500/50 bg-purple-500/10"
-          >
-            <div className="text-center">
-              <p className="text-sm text-gray-400 mb-2">📸 Fotógrafos</p>
-              <p className="text-2xl font-bold text-purple-400 mb-1">
-                {data.fotografos.total}
-              </p>
-              <p className="text-xs text-gray-500">
-                {data.fotografos.aprovados} aprovados
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Card de XP */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="rounded-xl p-6 border border-pink-500/50 bg-pink-500/10"
-          >
-            <div className="text-center">
-              <p className="text-sm text-gray-400 mb-2">⭐ XP Total</p>
-              <p className="text-2xl font-bold text-pink-400 mb-1">
-                {data.xp.total !== undefined ? data.xp.total.toLocaleString() : '0'}
-              </p>
-              <p className="text-xs text-gray-500">
-                Média: {data.xp.media} XP
-              </p>
-            </div>
-          </motion.div>
+        {/* Cards em tempo real - APENAS ESSENCIAIS */}
+        <div className={`grid gap-6 ${
+          cardsParaMostrar.length === 1 
+            ? 'grid-cols-1 max-w-md mx-auto' 
+            : cardsParaMostrar.length === 2 
+            ? 'grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto'
+            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+        }`}>
+          {cardsParaMostrar.map(card => card.component)}
         </div>
 
-        {/* Call to Action */}
+        {/* Call to Action - FOCO TOTAL NA CONVERSÃO */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

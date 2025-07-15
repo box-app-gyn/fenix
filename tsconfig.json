@@ -26,7 +26,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "seedBoxUsers.js"],
   "exclude": [
     "src/**/__tests__/**",
     "src/**/*.test.ts",

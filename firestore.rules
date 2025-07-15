@@ -1,43 +1,29 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Função helper para verificar se usuário está autenticado
+
+    // Funções auxiliares
     function isAuthenticated() {
       return request.auth != null;
     }
-    
-    // Função helper para verificar se é admin
     function isAdmin() {
-      return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
-    
-    // Função helper para verificar se é o próprio usuário
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-    
+
     // Coleção: users
     match /users/{userId} {
-      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
-      allow create: if isAuthenticated() && isOwner(userId);
-      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
-      allow delete: if isAdmin();
+      allow read, write: if request.auth.uid == userId;
     }
-    
-    // Coleção: pedidos
-    match /pedidos/{pedidoId} {
-      allow read: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid || isAdmin()
-      );
-      allow create: if isAuthenticated();
-      allow update: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid || isAdmin()
-      );
-      allow delete: if isAdmin();
+    // Coleção: box_rewards
+    match /box_rewards/{docId} {
+      allow read, write: if request.auth != null;
     }
-    
+    // Coleção: box_stats
+    match /box_stats/{docId} {
+      allow read: if true;
+      allow write: if request.auth.token.admin == true;
+    }
     // Coleção: audiovisual (engloba fotógrafos, videomakers, etc.)
     match /audiovisual/{audiovisualId} {
       allow read: if isAuthenticated();
@@ -45,12 +31,10 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
-    
     // Coleção: adminLogs (apenas admins)
     match /adminLogs/{logId} {
       allow read, write: if isAdmin();
     }
-    
     // Coleção: teams
     match /teams/{teamId} {
       allow read: if isAuthenticated();
@@ -60,7 +44,6 @@ service cloud.firestore {
       );
       allow delete: if isAdmin();
     }
-    
     // Coleção: convites_times
     match /convites_times/{conviteId} {
       allow read: if isAuthenticated() && (
@@ -76,7 +59,6 @@ service cloud.firestore {
       );
       allow delete: if isAdmin();
     }
-    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_actions
     match /gamification_actions/{actionId} {
       allow read: if isAuthenticated() && (
@@ -87,7 +69,6 @@ service cloud.firestore {
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
-    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_leaderboard
     match /gamification_leaderboard/{userId} {
       allow read: if isAuthenticated();
@@ -97,13 +78,11 @@ service cloud.firestore {
         resource.data.userId == request.auth.uid;
       allow delete: if isAdmin();
     }
-    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_rewards
     match /gamification_rewards/{rewardId} {
       allow read: if isAuthenticated();
       allow create, update, delete: if isAdmin();
     }
-    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_user_rewards
     match /gamification_user_rewards/{userRewardId} {
       allow read: if isAuthenticated() && (
@@ -115,25 +94,21 @@ service cloud.firestore {
         resource.data.userId == request.auth.uid;
       allow delete: if isAdmin();
     }
-    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_achievements
     match /gamification_achievements/{achievementId} {
       allow read: if isAuthenticated();
       allow create, update, delete: if isAdmin();
     }
-    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_community_highlights
     match /gamification_community_highlights/{highlightId} {
       allow read: if isAuthenticated();
       allow create, update, delete: if isAdmin();
     }
-    
     // 📊 CONFIGURAÇÕES - Coleção: config
     match /config/{configId} {
       allow read: if true; // Dados públicos para o componente TempoReal
-      allow create, update, delete: if true; // <- liberar temporariamente
+      allow create, update, delete: if isAdmin(); // Apenas admins podem modificar
     }
-    
     // Bloquear acesso a todas as outras coleções
     match /{document=**} {
       allow read, write: if false;

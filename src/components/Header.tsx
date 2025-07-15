@@ -2,12 +2,22 @@ import { useState, useEffect } from 'react'
 import { onAuthStateChanged, signOut, User } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useAuth } from '../hooks/useAuth'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
+  const { user: authUser } = useAuth()
+
+  // Verificar se usuário tem acesso ao dashboard
+  const hasDashboardAccess = authUser && (
+    authUser.role === 'admin' || 
+    authUser.role === 'jurado' || 
+    authUser.role === 'midia' ||
+    authUser.role === 'fotografo'
+  )
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -121,6 +131,9 @@ export default function Header() {
               {user && (
                 <>
                   <a href="/perfil" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Perfil</a>
+                  {hasDashboardAccess && (
+                    <a href="/dashboard-evento" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">📊 Dashboard</a>
+                  )}
                   <a href="/admin" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Admin</a>
                   <button onClick={handleLogout} className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Sair</button>
                 </>
@@ -228,6 +241,15 @@ export default function Header() {
                       >
                         Perfil
                       </a>
+                      {hasDashboardAccess && (
+                        <a 
+                          href="/dashboard-evento" 
+                          className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          📊 Dashboard
+                        </a>
+                      )}
                       <a 
                         href="/admin" 
                         className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"

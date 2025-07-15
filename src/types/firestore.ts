@@ -1,9 +1,21 @@
+import { Timestamp } from 'firebase/firestore';
+
 // ============================================================================
 // TIPOS BASE E ENUMS
 // ============================================================================
 
 // Tipos de usuário
-export type UserRole = 'publico' | 'fotografo' | 'videomaker' | 'patrocinador' | 'apoio' | 'judge' | 'atleta' | 'admin';
+export type UserRole = 
+  | 'publico' 
+  | 'atleta' 
+  | 'jurado' 
+  | 'midia' 
+  | 'fotografo' 
+  | 'admin' 
+  | 'patrocinador' 
+  | 'apoio' 
+  | 'espectador' 
+  | 'judge';
 
 // Status de pagamento
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded' | 'expired';
@@ -36,29 +48,29 @@ export type StatusPatrocinador = 'ativo' | 'pendente' | 'inativo' | 'cancelado';
 // GAMIFICAÇÃO - TIPOS E ENUMS
 // ============================================================================
 
-// 🎯 GAMIFICAÇÃO CAMADA 1 - Tipos de ação que geram pontos
+// 🎯 GAMIFICAÇÃO CAMADA 1 - Tipos de ação que geram tokens $BOX
 export type GamificationAction = 
-  | 'cadastro'           // +10 XP
-  | 'indicacao_confirmada' // +50 XP
-  | 'compra_ingresso'    // +100 XP
-  | 'envio_conteudo'     // +75 XP
-  | 'qr_scan_evento'     // +25 XP (variável)
-  | 'prova_extra'        // +50 XP (variável)
-  | 'participacao_enquete' // +15 XP
-  | 'acesso_spoiler'     // +20 XP
-  | 'checkin_evento'     // +30 XP
-  | 'compartilhamento'   // +10 XP
-  | 'login_diario'       // +5 XP
-  | 'completar_perfil'   // +25 XP;
+  | 'cadastro'           // +10 $BOX
+  | 'indicacao_confirmada' // +50 $BOX
+  | 'compra_ingresso'    // +100 $BOX
+  | 'envio_conteudo'     // +75 $BOX
+  | 'qr_scan_evento'     // +25 $BOX (variável)
+  | 'prova_extra'        // +50 $BOX (variável)
+  | 'participacao_enquete' // +15 $BOX
+  | 'acesso_spoiler'     // +20 $BOX
+  | 'checkin_evento'     // +30 $BOX
+  | 'compartilhamento'   // +10 $BOX
+  | 'login_diario'       // +5 $BOX
+  | 'completar_perfil'   // +25 $BOX;
 
-// Níveis de gamificação
+// Níveis de gamificação baseados em $BOX
 export type GamificationLevel = 
-  | 'iniciante'    // 0-99 XP
-  | 'bronze'       // 100-299 XP
-  | 'prata'        // 300-599 XP
-  | 'ouro'         // 600-999 XP
-  | 'platina'      // 1000-1999 XP
-  | 'diamante'     // 2000+ XP;
+  | 'iniciante'    // 0-99 $BOX
+  | 'bronze'       // 100-299 $BOX
+  | 'prata'        // 300-599 $BOX
+  | 'ouro'         // 600-999 $BOX
+  | 'platina'      // 1000-1999 $BOX
+  | 'diamante'     // 2000+ $BOX;
 
 // Status de recompensa
 export type RewardStatus = 'disponivel' | 'resgatada' | 'expirada';
@@ -89,73 +101,48 @@ export interface DocumentReference {
 // INTERFACES PRINCIPAIS
 // ============================================================================
 
-// Coleção: users
+// Interface principal para usuários do sistema
 export interface FirestoreUser {
   uid: string;
   email: string;
-  displayName?: string;
-  photoURL?: string;
+  displayName: string;
+  photoURL: string;
   role: UserRole;
-  phone?: string;
+  isActive: boolean;
   createdAt: Timestamp;
   updatedAt: Timestamp;
-  isActive: boolean;
-  metadata?: {
-    lastLogin?: Timestamp;
-    loginCount?: number;
-    preferences?: Record<string, any>;
-    deviceInfo?: {
-      userAgent: string;
-      platform: string;
-      screenSize: string;
-    };
-    analytics?: {
-      firstVisit: Timestamp;
-      totalVisits: number;
-      lastVisit: Timestamp;
-      referrer?: string;
-      utmSource?: string;
-      utmMedium?: string;
-      utmCampaign?: string;
-    };
-  };
-  // 🎯 GAMIFICAÇÃO CAMADA 1
+  // 🎯 GAMIFICAÇÃO - Sistema de Tokens $BOX
   gamification?: {
-    points: number;                    // Pontos totais (XP)
-    level: GamificationLevel;          // Nível atual
-    totalActions: number;              // Total de ações realizadas
-    lastActionAt?: Timestamp;          // Última ação realizada
-    achievements: string[];            // Conquistas desbloqueadas
-    rewards: string[];                 // Recompensas resgatadas
-    streakDays: number;                // Dias consecutivos de login
-    lastLoginStreak?: Timestamp;       // Último login para streak
-    referralCode?: string;             // Código de referência único
-    referredBy?: string;               // Quem indicou este usuário
-    referrals: string[];               // Usuários indicados
-    referralPoints: number;            // Pontos ganhos por indicações
-    // Novos campos para gamificação avançada
-    weeklyPoints: number;              // Pontos da semana atual
-    monthlyPoints: number;             // Pontos do mês atual
-    yearlyPoints: number;              // Pontos do ano atual
-    bestStreak: number;                // Melhor streak de todos os tempos
-    badges: string[];                  // Badges especiais
-    challenges: Array<{
-      id: string;
-      progress: number;
-      completed: boolean;
-      completedAt?: Timestamp;
-    }>;
+    tokens: {
+      box: {
+        balance: number;
+        totalEarned: number;
+        totalSpent: number;
+        lastTransaction: Timestamp;
+      };
+    };
+    level: string;
+    totalActions: number;
+    lastActionAt: Timestamp;
+    achievements: string[];
+    rewards: any[];
+    streakDays: number;
+    lastLoginStreak: Timestamp;
+    referralCode: string;
+    referrals: string[];
+    referralTokens: number;
+    weeklyTokens: number;
+    monthlyTokens: number;
+    yearlyTokens: number;
+    bestStreak: number;
+    badges: string[];
+    challenges: any[];
   };
-  // Campos de segurança e auditoria
-  security?: {
-    lastPasswordChange?: Timestamp;
-    failedLoginAttempts: number;
-    lastFailedLogin?: Timestamp;
-    accountLocked?: boolean;
-    lockExpiresAt?: Timestamp;
-    twoFactorEnabled: boolean;
-    backupCodes?: string[];
-  };
+  // Campos adicionais para perfis
+  box?: string;
+  cidade?: string;
+  categoria?: string;
+  updatedBy?: string;
 }
 
 // Coleção: teams
@@ -895,8 +882,8 @@ export const isValidGamificationLevel = (level: string): level is GamificationLe
   return ['iniciante', 'bronze', 'prata', 'ouro', 'platina', 'diamante'].includes(level);
 };
 
-// Cálculo de pontos por ação
-export const GAMIFICATION_POINTS: Record<GamificationAction, number> = {
+// 🎯 Cálculo de tokens $BOX por ação
+export const GAMIFICATION_TOKENS: Record<GamificationAction, number> = {
   cadastro: 10,
   indicacao_confirmada: 50,
   compra_ingresso: 100,
@@ -911,13 +898,16 @@ export const GAMIFICATION_POINTS: Record<GamificationAction, number> = {
   completar_perfil: 25
 };
 
-// Cálculo de nível baseado em pontos
-export const calculateGamificationLevel = (points: number): GamificationLevel => {
-  if (points >= 2000) return 'diamante';
-  if (points >= 1000) return 'platina';
-  if (points >= 600) return 'ouro';
-  if (points >= 300) return 'prata';
-  if (points >= 100) return 'bronze';
+// Alias para compatibilidade (deprecated)
+export const GAMIFICATION_POINTS = GAMIFICATION_TOKENS;
+
+// 🎯 Cálculo de nível baseado em tokens $BOX
+export const calculateGamificationLevel = (tokens: number): GamificationLevel => {
+  if (tokens >= 2000) return 'diamante';
+  if (tokens >= 1000) return 'platina';
+  if (tokens >= 600) return 'ouro';
+  if (tokens >= 300) return 'prata';
+  if (tokens >= 100) return 'bronze';
   return 'iniciante';
 };
 
@@ -933,8 +923,8 @@ export const validateUserData = (data: Partial<FirestoreUser>): string[] => {
     errors.push('Tipo de usuário inválido');
   }
   
-  if (data.gamification?.points && data.gamification.points < 0) {
-    errors.push('Pontos não podem ser negativos');
+  if (data.gamification?.tokens?.box?.balance && data.gamification.tokens.box.balance < 0) {
+    errors.push('Tokens não podem ser negativos');
   }
   
   return errors;
@@ -978,17 +968,20 @@ export const dateToTimestamp = (date: Date): Timestamp => {
   };
 };
 
-// Funções para gamificação
-export const calculatePointsForAction = (action: GamificationAction, metadata?: Record<string, any>): number => {
-  const basePoints = GAMIFICATION_POINTS[action];
+// 🎯 Funções para gamificação com tokens $BOX
+export const calculateTokensForAction = (action: GamificationAction, metadata?: Record<string, any>): number => {
+  const baseTokens = GAMIFICATION_TOKENS[action];
   
   // Multiplicadores baseados em metadata
   if (metadata?.multiplier) {
-    return Math.floor(basePoints * metadata.multiplier);
+    return Math.floor(baseTokens * metadata.multiplier);
   }
   
-  return basePoints;
+  return baseTokens;
 };
+
+// Alias para compatibilidade (deprecated)
+export const calculatePointsForAction = calculateTokensForAction;
 
 export const generateReferralCode = (userId: string): string => {
   const prefix = 'REF';

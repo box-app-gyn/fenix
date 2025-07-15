@@ -4,6 +4,7 @@ import { collection, getDocs, doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../lib/firebase'
 import { useAnalytics } from '../hooks/useAnalytics'
 import { seedLeaderboardData } from '../utils/seedData'
+import { seedConfigData } from '../utils/seedConfigData'
 
 interface UserData {
   uid: string
@@ -24,6 +25,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('stats')
   const [seeding, setSeeding] = useState(false)
+  const [seedingConfig, setSeedingConfig] = useState(false)
   const [stats, setStats] = useState<Stats>({
     totalUsers: 0,
     totalTeams: 0,
@@ -156,6 +158,23 @@ export default function AdminDashboard() {
       alert('Erro ao adicionar dados de exemplo')
     } finally {
       setSeeding(false)
+    }
+  }
+
+  const handleSeedConfigData = async () => {
+    setSeedingConfig(true)
+    try {
+      const success = await seedConfigData()
+      if (success) {
+        alert('✅ Configuração tempo_real criada com sucesso!')
+      } else {
+        alert('❌ Erro ao criar configuração')
+      }
+    } catch (error) {
+      console.error('Erro ao criar configuração:', error)
+      alert('❌ Erro ao criar configuração')
+    } finally {
+      setSeedingConfig(false)
     }
   }
 
@@ -398,6 +417,24 @@ export default function AdminDashboard() {
                   }`}
                 >
                   {seeding ? 'Adicionando...' : 'Adicionar Dados de Exemplo'}
+                </button>
+              </div>
+
+              <div className="bg-gray-700 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold mb-3">Configuração Tempo Real</h3>
+                <p className="text-gray-300 mb-4">
+                  Crie a configuração inicial para o componente TempoReal da home.
+                </p>
+                <button
+                  onClick={handleSeedConfigData}
+                  disabled={seedingConfig}
+                  className={`px-4 py-2 rounded font-medium ${
+                    seedingConfig
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  {seedingConfig ? 'Criando...' : 'Criar Configuração Tempo Real'}
                 </button>
               </div>
 
