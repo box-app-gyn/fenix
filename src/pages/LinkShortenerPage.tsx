@@ -8,8 +8,8 @@ export default function LinkShortenerPage() {
   return (
     <>
       <SEOHead
-        title="Encurtador de Links - CERRADØ INTERBOX 2025"
-        description="Crie links curtos e acompanhe suas estatísticas. Ferramenta gratuita para encurtar URLs do evento CERRADØ INTERBOX 2025."
+        title="Encurtador de Links - CERRADO INTERBØX 2025"
+        description="Crie links curtos e acompanhe suas estatísticas. Ferramenta gratuita para encurtar URLs do evento CERRADO INTERBØX 2025."
         image="/images/og-interbox.png"
       />
       
@@ -25,7 +25,7 @@ export default function LinkShortenerPage() {
             </h1>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               Crie links curtos e acompanhe suas estatísticas em tempo real. 
-              Ferramenta gratuita para o CERRADØ INTERBOX 2025.
+              Ferramenta gratuita para o CERRADO INTERBØX 2025.
             </p>
           </motion.div>
 

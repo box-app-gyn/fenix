@@ -6,6 +6,11 @@ import { db, storage } from '../lib/firebase';
 import { FirestoreUser } from '../types/firestore';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+
+// Mock de visibilidade (em produção, virá do Firestore)
+// Removido pois não está sendo utilizado no novo layout
 
 export default function Perfil() {
   const { user } = useAuth();
@@ -22,7 +27,6 @@ export default function Perfil() {
     cidade: ''
   });
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string>('');
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Redirecionar se não estiver logado
@@ -51,7 +55,11 @@ export default function Perfil() {
             cidade: data.cidade || ''
           });
           if (data.photoURL) {
-            setPhotoPreview(data.photoURL);
+            // setPhotoPreview(data.photoURL); // This line is removed
+          }
+          // Carregar visibilidade se existir
+          if ((data as any).visibility) {
+            // This block is removed as visibility state is removed
           }
         }
       } catch (error) {
@@ -69,11 +77,10 @@ export default function Perfil() {
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         setMessage({ type: 'error', text: 'Arquivo muito grande. Máximo 5MB.' });
         return;
       }
-      // Compressão
       try {
         const compressedFile = await imageCompression(file, {
           maxSizeMB: 1,
@@ -82,8 +89,8 @@ export default function Perfil() {
         });
         setPhotoFile(compressedFile);
         const reader = new FileReader();
-        reader.onload = (e) => {
-          setPhotoPreview(e.target?.result as string);
+        reader.onload = () => {
+          // setPhotoPreview(e.target?.result as string); // This line is removed
         };
         reader.readAsDataURL(compressedFile);
       } catch (err) {
@@ -111,14 +118,12 @@ export default function Perfil() {
     try {
       let photoURL = userData?.photoURL;
 
-      // Upload photo if changed
       if (photoFile) {
         const photoRef = ref(storage, `users/${user.uid}/profile-photo`);
         await uploadBytes(photoRef, photoFile);
         photoURL = await getDownloadURL(photoRef);
       }
 
-      // Update user data
       const updateData: Partial<FirestoreUser> = {
         displayName: formData.displayName,
         telefone: formData.telefone,
@@ -134,7 +139,6 @@ export default function Perfil() {
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
       setPhotoFile(null);
       
-      // Reload user data
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (userDoc.exists()) {
         setUserData(userDoc.data() as FirestoreUser);
@@ -149,224 +153,228 @@ export default function Perfil() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando perfil...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+          <p className="mt-4 text-white">Carregando perfil...</p>
         </div>
       </div>
     );
   }
 
   if (!user) {
-    return null; // Será redirecionado pelo useEffect
+    return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Meu Perfil</h1>
-          <p className="mt-2 text-gray-600">Gerencie suas informações pessoais</p>
-        </div>
-
-        {/* Message */}
-        {message && (
-          <div className={`mb-6 p-4 rounded-md ${
-            message.type === 'success' 
-              ? 'bg-green-50 border border-green-200 text-green-800' 
-              : 'bg-red-50 border border-red-200 text-red-800'
-          }`}>
-            {message.text}
+    <div className="min-h-screen bg-black flex flex-col">
+      <Header />
+      
+      {/* Background com imagem principal */}
+      <div 
+        className="flex-1 relative"
+        style={{
+          backgroundImage: 'url(/images/bg_main.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay gradiente */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60"></div>
+        
+        {/* Conteúdo principal */}
+        <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white">Meu Perfil</h1>
+            <p className="mt-2 text-gray-300">Gerencie suas informações pessoais</p>
           </div>
-        )}
 
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Photo Section */}
-              <div className="lg:col-span-1">
-                <div className="text-center">
-                  <div className="relative inline-block">
-                    <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mx-auto">
-                      {photoPreview ? (
-                        <img 
-                          src={photoPreview} 
-                          alt="Foto de perfil" 
-                          className="w-full h-full object-cover"
+          {message && (
+            <div className={`mb-6 p-4 rounded-md ${
+              message.type === 'success' 
+                ? 'bg-green-50 border border-green-200 text-green-800' 
+                : 'bg-red-50 border border-red-200 text-red-800'
+            }`}>
+              {message.text}
+            </div>
+          )}
+
+          <div className="bg-white/95 backdrop-blur-sm shadow-2xl rounded-lg border border-white/20">
+            <div className="px-6 py-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-1">
+                  <div className="text-center">
+                    <div className="relative inline-block">
+                      <div className="w-32 h-32 bg-gradient-to-r from-pink-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                        {userData?.photoURL ? (
+                          <img 
+                            src={userData.photoURL} 
+                            alt={userData.displayName || 'Usuário'} 
+                            className="w-28 h-28 rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-4xl text-white">
+                            {userData?.displayName?.charAt(0) || 'U'}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <label className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-pink-600 to-blue-600 text-white text-sm font-medium rounded-md hover:from-pink-700 hover:to-blue-700 transition-all duration-300 cursor-pointer">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Alterar Foto
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handlePhotoChange}
+                          className="hidden"
                         />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <svg className="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      )}
+                      </label>
                     </div>
-                    
-                    <label className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handlePhotoChange}
-                        className="sr-only"
-                      />
-                      {photoFile ? 'Foto selecionada' : 'Alterar foto'}
-                    </label>
+
+                    {/* Informações do usuário */}
+                    <div className="mt-6 text-center">
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        {userData?.displayName || 'Usuário'}
+                      </h2>
+                      <p className="text-gray-600">{userData?.email}</p>
+                      <div className="mt-2">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {userData?.role || 'Usuário'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Tokens $BOX */}
+                    {userData?.gamification?.tokens?.box && (
+                      <div className="mt-6 p-4 bg-gradient-to-r from-pink-500/10 to-blue-500/10 rounded-lg border border-pink-200/20">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-pink-600">
+                            {userData.gamification.tokens.box.balance} ₿
+                          </div>
+                          <div className="text-sm text-gray-600">Saldo $BOX</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  
-                  {photoFile && (
-                    <p className="mt-2 text-sm text-gray-500">
-                      {photoFile.name} ({(photoFile.size / 1024 / 1024).toFixed(2)} MB)
-                    </p>
-                  )}
+                </div>
+
+                <div className="lg:col-span-2">
+                  <form className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Nome Completo
+                        </label>
+                        <input
+                          type="text"
+                          name="displayName"
+                          value={formData.displayName}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          disabled
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Email não pode ser alterado</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Telefone
+                        </label>
+                        <input
+                          type="tel"
+                          name="telefone"
+                          value={formData.telefone}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Box/Academia
+                        </label>
+                        <input
+                          type="text"
+                          name="box"
+                          value={formData.box}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Categoria
+                        </label>
+                        <select
+                          name="categoria"
+                          value={formData.categoria}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        >
+                          <option value="atleta">Atleta</option>
+                          <option value="jurado">Jurado</option>
+                          <option value="midia">Mídia</option>
+                          <option value="espectador">Espectador</option>
+                          <option value="publico">Público Geral</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Cidade
+                        </label>
+                        <input
+                          type="text"
+                          name="cidade"
+                          value={formData.cidade}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end space-x-4">
+                      <button
+                        type="button"
+                        onClick={() => navigate('/hub')}
+                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="px-6 py-2 bg-gradient-to-r from-pink-600 to-blue-600 text-white rounded-md hover:from-pink-700 hover:to-blue-700 disabled:bg-gray-400 transition-all duration-300 font-medium"
+                      >
+                        {saving ? 'Salvando...' : 'Salvar Alterações'}
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
-
-              {/* Form Section */}
-              <div className="lg:col-span-2">
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Nome */}
-                    <div>
-                      <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
-                        Nome completo
-                      </label>
-                      <input
-                        type="text"
-                        id="displayName"
-                        name="displayName"
-                        value={formData.displayName}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Seu nome completo"
-                      />
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        disabled
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-500 sm:text-sm"
-                      />
-                      <p className="mt-1 text-xs text-gray-500">Email não pode ser alterado</p>
-                    </div>
-
-                    {/* Telefone */}
-                    <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                        Telefone
-                      </label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.telefone}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="(11) 99999-9999"
-                      />
-                    </div>
-
-                    {/* Box */}
-                    <div>
-                      <label htmlFor="box" className="block text-sm font-medium text-gray-700">
-                        Box/Academia
-                      </label>
-                      <input
-                        type="text"
-                        id="box"
-                        name="box"
-                        value={formData.box}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Nome da sua box"
-                      />
-                    </div>
-
-                    {/* Categoria */}
-                    <div>
-                      <label htmlFor="categoria" className="block text-sm font-medium text-gray-700">
-                        Categoria
-                      </label>
-                      <select
-                        id="categoria"
-                        name="categoria"
-                        value={formData.categoria}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                      >
-                        <option value="atleta">Atleta</option>
-                        <option value="publico">Público</option>
-                        <option value="fotografo">Fotógrafo</option>
-                        <option value="videomaker">Videomaker</option>
-                        <option value="patrocinador">Patrocinador</option>
-                        <option value="apoio">Apoio</option>
-                      </select>
-                    </div>
-
-                    {/* Cidade */}
-                    <div>
-                      <label htmlFor="cidade" className="block text-sm font-medium text-gray-700">
-                        Cidade
-                      </label>
-                      <input
-                        type="text"
-                        id="cidade"
-                        name="cidade"
-                        value={formData.cidade}
-                        onChange={handleInputChange}
-                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        placeholder="Sua cidade"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Save Button */}
-                  <div className="flex justify-end pt-6 border-t border-gray-200">
-                    <button
-                      type="button"
-                      onClick={handleSave}
-                      disabled={saving}
-                      className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {saving ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Salvando...
-                        </>
-                      ) : (
-                        'Salvar Alterações'
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Gamification Section - Placeholder for future expansion */}
-        <div className="mt-8 bg-white shadow rounded-lg">
-          <div className="px-6 py-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Gamificação</h2>
-            <div className="text-center py-8 text-gray-500">
-              <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <p>Seção de conquistas e gamificação em desenvolvimento</p>
             </div>
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 } 

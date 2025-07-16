@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { onAuthStateChanged, signInWithPopup, signOut, User as FirebaseUser, getRedirectResult } from 'firebase/auth';
+import { onAuthStateChanged, signInWithRedirect, signOut, User as FirebaseUser, getRedirectResult } from 'firebase/auth';
 import { auth, provider, db } from '../lib/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, updateDoc, increment, addDoc, collection } from 'firebase/firestore';
+import { GAMIFICATION_TOKENS } from '../types/firestore';
 
 interface User extends FirebaseUser {
   role?: string;
@@ -18,6 +19,79 @@ interface User extends FirebaseUser {
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Função para verificar e processar login diário
+  const processDailyLogin = async (userId: string, userData: any) => {
+    try {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Data atual sem hora
+      
+      // Verificar se já recebeu login diário hoje
+      const lastLoginStreak = userData?.gamification?.lastLoginStreak;
+      let lastLoginDate: Date | null = null;
+      
+      if (lastLoginStreak) {
+        // Converter Timestamp do Firestore para Date
+        if (lastLoginStreak.toDate) {
+          lastLoginDate = lastLoginStreak.toDate();
+        } else if (lastLoginStreak.seconds) {
+          lastLoginDate = new Date(lastLoginStreak.seconds * 1000);
+        }
+      }
+      
+      // Se não tem data de último login ou se é um novo dia
+      if (!lastLoginDate || lastLoginDate < today) {
+        const tokensToAward = GAMIFICATION_TOKENS.login_diario; // 5 $BOX
+        const currentStreak = userData?.gamification?.streakDays || 0;
+        const newStreak = lastLoginDate && 
+          lastLoginDate.getTime() >= today.getTime() - 24 * 60 * 60 * 1000 ? 
+          currentStreak + 1 : 1; // Se foi ontem, incrementa streak, senão reseta para 1
+        
+        console.log(`🎯 Login diário detectado! +${tokensToAward} $BOX (Streak: ${newStreak} dias)`);
+        
+        // Atualizar gamificação do usuário
+        await updateDoc(doc(db, 'users', userId), {
+          'gamification.tokens.box.balance': increment(tokensToAward),
+          'gamification.tokens.box.totalEarned': increment(tokensToAward),
+          'gamification.tokens.box.lastTransaction': serverTimestamp(),
+          'gamification.totalActions': increment(1),
+          'gamification.lastActionAt': serverTimestamp(),
+          'gamification.streakDays': newStreak,
+          'gamification.lastLoginStreak': serverTimestamp(),
+          'gamification.weeklyTokens': increment(tokensToAward),
+          'gamification.monthlyTokens': increment(tokensToAward),
+          'gamification.yearlyTokens': increment(tokensToAward),
+          'gamification.bestStreak': Math.max(newStreak, userData?.gamification?.bestStreak || 0),
+          updatedAt: serverTimestamp()
+        });
+
+        // Registrar a ação de gamificação
+        await addDoc(collection(db, 'gamification_actions'), {
+          userId,
+          userEmail: userData.email,
+          userName: userData.displayName || 'Usuário',
+          action: 'login_diario',
+          points: tokensToAward,
+          description: `Login diário - Streak: ${newStreak} dias`,
+          metadata: {
+            streakDays: newStreak,
+            previousStreak: currentStreak,
+            loginDate: today.toISOString()
+          },
+          createdAt: serverTimestamp(),
+          processed: true,
+          processedAt: serverTimestamp()
+        });
+
+        return { awarded: true, tokens: tokensToAward, streak: newStreak };
+      }
+      
+      return { awarded: false, reason: 'Já recebeu login diário hoje' };
+    } catch (error) {
+      console.error('❌ Erro ao processar login diário:', error);
+      return { awarded: false, error: error };
+    }
+  };
 
   useEffect(() => {
     let isSubscribed = true; // Flag para evitar race conditions
@@ -78,6 +152,17 @@ export function useAuth() {
             } else {
               // Buscar dados completos do usuário existente
               const userData = snapshot.data();
+              
+              // Processar login diário para usuários existentes
+              if (userData?.gamification) {
+                const dailyLoginResult = await processDailyLogin(firebaseUser.uid, userData);
+                if (dailyLoginResult.awarded) {
+                  console.log(`🎉 Login diário processado: +${dailyLoginResult.tokens} $BOX, Streak: ${dailyLoginResult.streak} dias`);
+                } else {
+                  console.log(`ℹ️ Login diário: ${dailyLoginResult.reason}`);
+                }
+              }
+              
               const extendedUser: User = {
                 ...firebaseUser,
                 role: userData?.role || 'publico',
@@ -134,13 +219,18 @@ export function useAuth() {
 
   // Verificar resultado do redirecionamento ao carregar a página (para casos onde ainda pode ter redirect)
   useEffect(() => {
+    // Não verificar se já há usuário logado ou se ainda está carregando
+    if (user || loading) {
+      return;
+    }
+
     const checkRedirectResult = async () => {
       try {
-        console.log('Verificando resultado do redirecionamento...');
+        console.log('🔍 Verificando resultado do redirecionamento...');
         
-        // Aumentar timeout para 10 segundos para conexões mais lentas
+        // Reduzir timeout para 5 segundos e melhorar performance
         const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Timeout ao verificar redirecionamento')), 10000);
+          setTimeout(() => reject(new Error('Timeout ao verificar redirecionamento')), 5000);
         });
         
         const resultPromise = getRedirectResult(auth);
@@ -153,15 +243,13 @@ export function useAuth() {
           console.log('ℹ️ Nenhum resultado de redirecionamento encontrado');
         }
       } catch (error: any) {
-        console.error('❌ Erro ao verificar resultado do redirecionamento:', error);
-        
-        // Se for timeout, apenas logar e continuar
+        // Se for timeout, apenas logar e continuar (não é um erro crítico)
         if (error.message === 'Timeout ao verificar redirecionamento') {
           console.log('⏰ Timeout ao verificar redirecionamento - continuando normalmente');
           return;
         }
         
-        // Tratamento específico para diferentes tipos de erro
+        // Para outros erros, apenas logar (não são críticos para o funcionamento)
         if (error.code === 'auth/account-exists-with-different-credential') {
           console.warn('⚠️ Conta já existe com credencial diferente');
         } else if (error.code === 'auth/invalid-credential') {
@@ -175,48 +263,35 @@ export function useAuth() {
         } else if (error.code === 'auth/weak-password') {
           console.warn('⚠️ Senha muito fraca');
         } else {
-          console.error('Erro desconhecido no login:', error);
+          console.log('ℹ️ Erro não crítico ao verificar redirecionamento:', error.message);
         }
       }
     };
 
-    // Adicionar pequeno delay para evitar conflitos
-    const timer = setTimeout(checkRedirectResult, 100);
+    // Verificar apenas se não há usuário logado (otimização)
+    const timer = setTimeout(checkRedirectResult, 200);
     return () => clearTimeout(timer);
-  }, []);
+  }, [user, loading]);
 
   const login = async () => {
     try {
-      console.log('🔄 Iniciando login com popup...');
+      console.log('🔄 Iniciando login com redirecionamento...');
       
-      // Tentar popup primeiro (melhor para PWA)
-      try {
-        const result = await signInWithPopup(auth, provider);
-        console.log('✅ Login com popup bem-sucedido:', result.user.displayName);
-        return;
-      } catch (popupError: any) {
-        console.log('⚠️ Popup bloqueado, tentando redirect...', popupError.code);
-        
-        // Se popup falhar (geralmente bloqueado), tentar redirect
-        if (popupError.code === 'auth/popup-blocked' || 
-            popupError.code === 'auth/popup-closed-by-user' ||
-            popupError.code === 'auth/cancelled-popup-request') {
-          
-          console.log('🔄 Tentando login com redirect...');
-          // Importar signInWithRedirect dinamicamente
-          const { signInWithRedirect } = await import('firebase/auth');
-          await signInWithRedirect(auth, provider);
-          console.log('✅ Redirecionamento iniciado com sucesso');
-          return;
-        }
-        
-        // Se for outro erro, relançar
-        throw popupError;
-      }
+      // Usar apenas redirect (mais confiável)
+      await signInWithRedirect(auth, provider);
+      console.log('✅ Redirecionamento iniciado com sucesso');
     } catch (error: any) {
       console.error('❌ Erro ao iniciar login:', error);
       
-      // Não usar alert() - deixar o componente tratar o erro
+      // Tratamento específico para diferentes tipos de erro
+      if (error.code === 'auth/operation-not-allowed') {
+        console.warn('⚠️ Login com Google não está habilitado');
+      } else if (error.code === 'auth/invalid-api-key') {
+        console.warn('⚠️ Erro de configuração do Firebase');
+      } else {
+        console.error('Erro desconhecido no login:', error);
+      }
+      
       throw error;
     }
   };

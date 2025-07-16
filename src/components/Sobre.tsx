@@ -14,7 +14,7 @@ const Sobre: React.FC = () => {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight"
           >
-            Isso não é um evento.
+            Você não escolheu competir. Você foi convocado.
           </motion.h2>
           <div className="w-16 h-1 bg-gradient-to-r from-pink-500 to-cyan-400 mx-auto mb-8 rounded-full" />
           
@@ -35,7 +35,7 @@ const Sobre: React.FC = () => {
             viewport={{ once: true }}
             className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto mb-12"
           >
-            Mais que competição — é comunidade, dados, pertencimento. A arena não começa no dia do evento. Ela começa quando você entra na CERRADØ 𝗜𝗡𝗧𝗘𝗥𝗕𝗢𝗫.
+            Mais que competição, ecosistema de pessoas em comunidade, propósito e pertencimento.
           </motion.p>
 
           <motion.div 
@@ -46,7 +46,7 @@ const Sobre: React.FC = () => {
             className="mt-16"
           >
             <p className="text-lg md:text-xl text-gray-800 font-medium mb-6">
-              Pré-temporada digital. Arena física gamificada. Pós-evento com comunidade em fluxo.
+              Pré-temporada iniciada digitalmente. 
             </p>
           </motion.div>
         </div>

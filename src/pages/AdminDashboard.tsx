@@ -5,6 +5,8 @@ import { auth, db } from '../lib/firebase'
 import { useAnalytics } from '../hooks/useAnalytics'
 import { seedLeaderboardData } from '../utils/seedData'
 import { seedConfigData } from '../utils/seedConfigData'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 interface UserData {
   uid: string
@@ -80,8 +82,6 @@ export default function AdminDashboard() {
       console.error('Erro ao carregar times:', error)
     }
   }, [])
-
-
 
   const loadAudiovisual = useCallback(async () => {
     try {
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-pink-500 mx-auto mb-4"></div>
           <p>Carregando painel...</p>
@@ -191,14 +191,14 @@ export default function AdminDashboard() {
 
   if (!userData || !['admin', 'marketing'].includes(userData.role)) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
           <button 
             onClick={() => window.location.href = '/admin'}
-            className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded"
+            className="bg-gradient-to-r from-pink-600 to-blue-600 hover:from-pink-700 hover:to-blue-700 text-white px-4 py-2 rounded transition-all duration-300"
           >
-            Voltar
+            Voltar ao Login
           </button>
         </div>
       </div>
@@ -206,250 +206,332 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* Header customizado */}
-      <header className="bg-black border-b border-gray-800 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <img src="/logos/logo_circulo.png" width={40} height={40} alt="Logo" />
-            <div className="text-xl font-bold">PAINEL ADMINISTRATIVO</div>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-gray-400">Olá, {userData.displayName}</span>
-            <button 
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-            >
-              Sair
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Navegação tabs */}
-      <nav className="bg-gray-800 border-b border-gray-700">
-        <div className="flex space-x-8 px-6">
-          <button
-            onClick={() => setActiveTab('stats')}
-            className={`py-4 px-2 border-b-2 font-medium ${
-              activeTab === 'stats' 
-                ? 'border-pink-500 text-pink-500' 
-                : 'border-transparent text-gray-300 hover:text-white'
-            }`}
-          >
-            Estatísticas
-          </button>
-          <button
-            onClick={() => setActiveTab('users')}
-            className={`py-4 px-2 border-b-2 font-medium ${
-              activeTab === 'users' 
-                ? 'border-pink-500 text-pink-500' 
-                : 'border-transparent text-gray-300 hover:text-white'
-            }`}
-          >
-            Usuários
-          </button>
-          <button
-            onClick={() => setActiveTab('teams')}
-            className={`py-4 px-2 border-b-2 font-medium ${
-              activeTab === 'teams' 
-                ? 'border-pink-500 text-pink-500' 
-                : 'border-transparent text-gray-300 hover:text-white'
-            }`}
-          >
-            Times
-          </button>
-          <button
-            onClick={() => setActiveTab('audiovisual')}
-            className={`py-4 px-2 border-b-2 font-medium ${
-              activeTab === 'audiovisual' 
-                ? 'border-pink-500 text-pink-500' 
-                : 'border-transparent text-gray-300 hover:text-white'
-            }`}
-          >
-            Audiovisual
-          </button>
-          <button
-            onClick={() => setActiveTab('config')}
-            className={`py-4 px-2 border-b-2 font-medium ${
-              activeTab === 'config' 
-                ? 'border-pink-500 text-pink-500' 
-                : 'border-transparent text-gray-300 hover:text-white'
-            }`}
-          >
-            Configurações
-          </button>
-        </div>
-      </nav>
-
-      {/* Conteúdo conforme activeTab */}
-      <main className="p-6">
-        {activeTab === 'stats' && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">Total de Usuários</h3>
-              <p className="text-3xl font-bold text-pink-500">{stats.totalUsers}</p>
-            </div>
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">Total de Times</h3>
-              <p className="text-3xl font-bold text-pink-500">{stats.totalTeams}</p>
-            </div>
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">Total de Pedidos</h3>
-              <p className="text-3xl font-bold text-pink-500">{stats.totalPedidos}</p>
-            </div>
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">Candidatos Audiovisual</h3>
-              <p className="text-3xl font-bold text-pink-500">{stats.totalAudiovisual}</p>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'users' && (
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Usuários ({users.length})</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-700">
-                    <th className="text-left py-2">Nome</th>
-                    <th className="text-left py-2">Email</th>
-                    <th className="text-left py-2">Categoria</th>
-                    <th className="text-left py-2">Cidade</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user: any) => (
-                    <tr key={user.id} className="border-b border-gray-700">
-                      <td className="py-2">{user.displayName}</td>
-                      <td className="py-2">{user.email}</td>
-                      <td className="py-2">{user.categoria}</td>
-                      <td className="py-2">{user.cidade}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'teams' && (
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Times ({teams.length})</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-700">
-                    <th className="text-left py-2">Nome do Time</th>
-                    <th className="text-left py-2">Categoria</th>
-                    <th className="text-left py-2">Cidade</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {teams.map((team: any) => (
-                    <tr key={team.id} className="border-b border-gray-700">
-                      <td className="py-2">{team.nome}</td>
-                      <td className="py-2">{team.categoria}</td>
-                      <td className="py-2">{team.cidade}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'audiovisual' && (
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Candidatos Audiovisual ({audiovisual.length})</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-gray-700">
-                    <th className="text-left py-2">Nome</th>
-                    <th className="text-left py-2">Email</th>
-                    <th className="text-left py-2">Área</th>
-                    <th className="text-left py-2">Cidade</th>
-                    <th className="text-left py-2">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {audiovisual.map((candidato: any) => (
-                    <tr key={candidato.id} className="border-b border-gray-700">
-                      <td className="py-2">{candidato.nome}</td>
-                      <td className="py-2">{candidato.email}</td>
-                      <td className="py-2">{candidato.areaAtuacao}</td>
-                      <td className="py-2">{candidato.cidade}</td>
-                      <td className="py-2">
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          candidato.status === 'pendente' 
-                            ? 'bg-yellow-600 text-yellow-100' 
-                            : 'bg-green-600 text-green-100'
-                        }`}>
-                          {candidato.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'config' && (
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Configurações do Sistema</h2>
-            
-            <div className="space-y-6">
-              <div className="bg-gray-700 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold mb-3">Dados de Exemplo</h3>
-                <p className="text-gray-300 mb-4">
-                  Adicione dados de exemplo ao leaderboard para testar a funcionalidade.
-                </p>
+    <div className="min-h-screen bg-black flex flex-col">
+      <Header />
+      
+      {/* Background com imagem principal */}
+      <div 
+        className="flex-1 relative"
+        style={{
+          backgroundImage: 'url(/images/bg_main.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay gradiente */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80"></div>
+        
+        {/* Conteúdo principal */}
+        <div className="relative z-10 container mx-auto px-4 py-8">
+          {/* Header do Admin */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6 mb-8 border border-white/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800">Painel Administrativo</h1>
+                <p className="text-gray-600">Bem-vindo, {userData.displayName}</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <span className="bg-gradient-to-r from-pink-500 to-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {userData.role.toUpperCase()}
+                </span>
                 <button
-                  onClick={handleSeedData}
-                  disabled={seeding}
-                  className={`px-4 py-2 rounded font-medium ${
-                    seeding
-                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                      : 'bg-green-600 hover:bg-green-700 text-white'
-                  }`}
+                  onClick={handleLogout}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors"
                 >
-                  {seeding ? 'Adicionando...' : 'Adicionar Dados de Exemplo'}
+                  Sair
                 </button>
               </div>
+            </div>
+          </div>
 
-              <div className="bg-gray-700 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold mb-3">Configuração Tempo Real</h3>
-                <p className="text-gray-300 mb-4">
-                  Crie a configuração inicial para o componente TempoReal da home.
-                </p>
-                <button
-                  onClick={handleSeedConfigData}
-                  disabled={seedingConfig}
-                  className={`px-4 py-2 rounded font-medium ${
-                    seedingConfig
-                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
-                  }`}
-                >
-                  {seedingConfig ? 'Criando...' : 'Criar Configuração Tempo Real'}
-                </button>
-              </div>
+          {/* Tabs */}
+          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6 mb-8 border border-white/20">
+            <div className="flex space-x-4 mb-6">
+              <button
+                onClick={() => setActiveTab('stats')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeTab === 'stats'
+                    ? 'bg-gradient-to-r from-pink-600 to-blue-600 text-white'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                📊 Estatísticas
+              </button>
+              <button
+                onClick={() => setActiveTab('users')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeTab === 'users'
+                    ? 'bg-gradient-to-r from-pink-600 to-blue-600 text-white'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                👥 Usuários
+              </button>
+              <button
+                onClick={() => setActiveTab('teams')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeTab === 'teams'
+                    ? 'bg-gradient-to-r from-pink-600 to-blue-600 text-white'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                🏆 Times
+              </button>
+              <button
+                onClick={() => setActiveTab('audiovisual')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeTab === 'audiovisual'
+                    ? 'bg-gradient-to-r from-pink-600 to-blue-600 text-white'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                🎬 Audiovisual
+              </button>
+              <button
+                onClick={() => setActiveTab('tools')}
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  activeTab === 'tools'
+                    ? 'bg-gradient-to-r from-pink-600 to-blue-600 text-white'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                🔧 Ferramentas
+              </button>
+            </div>
 
-              <div className="bg-gray-700 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold mb-3">Informações do Projeto</h3>
-                <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Projeto Firebase:</span> interbox-box-app25</p>
-                  <p><span className="font-medium">Analytics ID:</span> G-VRZEQPCZ55</p>
-                  <p><span className="font-medium">Versão:</span> 1.0.0</p>
+            {/* Conteúdo das tabs */}
+            {activeTab === 'stats' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm opacity-90">Total de Usuários</p>
+                      <p className="text-3xl font-bold">{stats.totalUsers}</p>
+                    </div>
+                    <div className="text-3xl">👥</div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm opacity-90">Total de Times</p>
+                      <p className="text-3xl font-bold">{stats.totalTeams}</p>
+                    </div>
+                    <div className="text-3xl">🏆</div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm opacity-90">Audiovisual</p>
+                      <p className="text-3xl font-bold">{stats.totalAudiovisual}</p>
+                    </div>
+                    <div className="text-3xl">🎬</div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm opacity-90">Pedidos</p>
+                      <p className="text-3xl font-bold">{stats.totalPedidos}</p>
+                    </div>
+                    <div className="text-3xl">📋</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {activeTab === 'users' && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Usuário
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Email
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Role
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {users.slice(0, 10).map((user: any) => (
+                      <tr key={user.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-10 w-10">
+                              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-pink-500 to-blue-600 flex items-center justify-center">
+                                <span className="text-white font-medium">
+                                  {user.displayName?.charAt(0) || 'U'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {user.displayName || 'Sem nome'}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {user.email}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                            {user.role || 'user'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            user.isActive 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {user.isActive ? 'Ativo' : 'Inativo'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {activeTab === 'teams' && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Time
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Categoria
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Membros
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {teams.slice(0, 10).map((team: any) => (
+                      <tr key={team.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {team.name || 'Sem nome'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {team.categoria || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {team.members?.length || 0}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                            Ativo
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {activeTab === 'audiovisual' && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Título
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Autor
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Tipo
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {audiovisual.slice(0, 10).map((item: any) => (
+                      <tr key={item.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {item.titulo || 'Sem título'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {item.autor || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {item.tipo || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            Pendente
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {activeTab === 'tools' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+                    <h3 className="text-lg font-semibold mb-4">🎯 Seed de Dados</h3>
+                    <p className="text-sm opacity-90 mb-4">
+                      Adiciona dados de exemplo para o leaderboard
+                    </p>
+                    <button
+                      onClick={handleSeedData}
+                      disabled={seeding}
+                      className="bg-white text-green-600 px-4 py-2 rounded-md font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
+                    >
+                      {seeding ? 'Adicionando...' : 'Adicionar Dados'}
+                    </button>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+                    <h3 className="text-lg font-semibold mb-4">⚙️ Configuração</h3>
+                    <p className="text-sm opacity-90 mb-4">
+                      Cria configuração para tempo real
+                    </p>
+                    <button
+                      onClick={handleSeedConfigData}
+                      disabled={seedingConfig}
+                      className="bg-white text-blue-600 px-4 py-2 rounded-md font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
+                    >
+                      {seedingConfig ? 'Criando...' : 'Criar Config'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </main>
+        </div>
+      </div>
+      
+      <Footer />
     </div>
   )
 } 

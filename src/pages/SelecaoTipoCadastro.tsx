@@ -5,6 +5,8 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../hooks/useAuth';
 import confetti from 'canvas-confetti';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const TIPOS_CADASTRO = [
   {
@@ -92,7 +94,7 @@ export default function SelecaoTipoCadastro() {
         gamification: {
           tokens: {
             box: {
-              balance: 50, // +50 $BOX por cadastro
+              balance: 50, // +50 ₿ por cadastro
               totalEarned: 50,
               totalSpent: 0,
               lastTransaction: serverTimestamp()
@@ -121,14 +123,15 @@ export default function SelecaoTipoCadastro() {
       confetti({
         particleCount: 100,
         spread: 70,
-        origin: { y: 0.6 }
+        origin: { y: 0.6 },
+        colors: ['#fb05e4', '#00259f', '#10B981', '#F59E0B']
       });
 
       // Show success message with gamification
       setTimeout(() => {
         alert(`🎉 Cadastro realizado com sucesso! 
         
-🏆 Primeira Conquista: +50 $BOX
+🏆 Primeira Conquista: +50 ₿
 🎯 Nível: Iniciante
 📈 Streak: 1 dia
 
@@ -154,238 +157,241 @@ Bem-vindo ao Interbox 2025!`);
   const selectedTipo = TIPOS_CADASTRO.find(t => t.id === selectedType);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black py-20">
-      <div className="max-w-4xl mx-auto px-4">
-        <AnimatePresence mode="wait">
-          {!showForm ? (
-            <motion.div
-              key="selection"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-12"
-            >
-              <h1 className="text-4xl font-bold text-white mb-4">
-                🎯 Como você quer participar?
-              </h1>
-              <p className="text-xl text-gray-300">
-                Escolha o tipo de cadastro que melhor representa você no Interbox 2025
-              </p>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-12"
-            >
-              <h1 className="text-4xl font-bold text-white mb-4">
-                {selectedTipo?.emoji} {selectedTipo?.titulo.split(' ').slice(1).join(' ')}
-              </h1>
-              <p className="text-xl text-gray-300">
-                Complete seus dados para finalizar o cadastro
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <div className="min-h-screen bg-black flex flex-col">
+      <Header />
+      
+      {/* Background com imagem principal */}
+      <div 
+        className="flex-1 relative"
+        style={{
+          backgroundImage: 'url(/images/bg_main.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay gradiente */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80"></div>
+        
+        {/* Conteúdo principal */}
+        <div className="relative z-10 max-w-4xl mx-auto px-4 py-20">
+          <AnimatePresence mode="wait">
+            {!showForm ? (
+              <motion.div
+                key="selection"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.8 }}
+                className="text-center mb-12"
+              >
+                <h1 className="text-4xl font-bold text-white mb-4">
+                  🎯 Como você quer participar?
+                </h1>
+                <p className="text-xl text-gray-300">
+                  Escolha o tipo de cadastro que melhor representa você no Interbox 2025
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="form"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.8 }}
+                className="text-center mb-12"
+              >
+                <h1 className="text-4xl font-bold text-white mb-4">
+                  {selectedTipo?.emoji} {selectedTipo?.titulo.split(' ').slice(1).join(' ')}
+                </h1>
+                <p className="text-xl text-gray-300">
+                  Complete seus dados para finalizar o cadastro
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        <AnimatePresence mode="wait">
-          {!showForm ? (
-            <motion.div
-              key="types"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {TIPOS_CADASTRO.map((tipo, index) => (
-                <motion.div
-                  key={tipo.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
-                  className="group cursor-pointer"
-                  onClick={() => handleTypeSelect(tipo.id)}
-                >
-                  <div className={`
-                    bg-gradient-to-br ${tipo.cor} ${tipo.hover}
-                    rounded-xl p-6 h-full
-                    transform transition-all duration-300
-                    group-hover:scale-105 group-hover:shadow-2xl
-                    border-2 border-transparent group-hover:border-white/20
-                  `}>
-                    <div className="text-center">
-                      <div className="text-4xl mb-4">{tipo.titulo.split(' ')[0]}</div>
-                      <h3 className="text-xl font-bold text-white mb-2">
-                        {tipo.titulo.split(' ').slice(1).join(' ')}
-                      </h3>
-                      <p className="text-white/90 text-sm">
-                        {tipo.descricao}
-                      </p>
-                    </div>
-                    
-                    <div className="mt-6 text-center">
-                      <div className="inline-flex items-center text-white/80 group-hover:text-white transition-colors">
-                        <span className="text-sm">Selecionar</span>
-                        <svg className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+          <AnimatePresence mode="wait">
+            {!showForm ? (
+              <motion.div
+                key="types"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
+                {TIPOS_CADASTRO.map((tipo, index) => (
+                  <motion.div
+                    key={tipo.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                    className="group cursor-pointer"
+                    onClick={() => handleTypeSelect(tipo.id)}
+                  >
+                    <div className={`
+                      bg-gradient-to-br ${tipo.cor} ${tipo.hover}
+                      rounded-xl p-6 h-full
+                      transform transition-all duration-300
+                      group-hover:scale-105 group-hover:shadow-2xl
+                      border-2 border-transparent group-hover:border-white/20
+                    `}>
+                      <div className="text-center">
+                        <div className="text-4xl mb-4">{tipo.titulo.split(' ')[0]}</div>
+                        <h3 className="text-xl font-bold text-white mb-2">
+                          {tipo.titulo.split(' ').slice(1).join(' ')}
+                        </h3>
+                        <p className="text-white/90 text-sm">
+                          {tipo.descricao}
+                        </p>
+                      </div>
+                      
+                      <div className="mt-6 text-center">
+                        <div className="inline-flex items-center text-white/80 group-hover:text-white transition-colors">
+                          <span className="text-sm">Selecionar</span>
+                          <svg className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="form-content"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.5 }}
-              className="max-w-2xl mx-auto"
-            >
-              <div className="bg-white rounded-lg shadow-xl p-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nome Completo *
-                      </label>
-                      <input
-                        type="text"
-                        name="nome"
-                        value={formData.nome}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                      />
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="form-content"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+                className="max-w-2xl mx-auto"
+              >
+                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-8 border border-white/20">
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Nome Completo *
+                        </label>
+                        <input
+                          type="text"
+                          name="nome"
+                          value={formData.nome}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Email *
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Telefone
+                        </label>
+                        <input
+                          type="tel"
+                          name="telefone"
+                          value={formData.telefone}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          WhatsApp
+                        </label>
+                        <input
+                          type="tel"
+                          name="whatsapp"
+                          value={formData.whatsapp}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Box/Academia
+                        </label>
+                        <input
+                          type="text"
+                          name="box"
+                          value={formData.box}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Cidade *
+                        </label>
+                        <input
+                          type="text"
+                          name="cidade"
+                          value={formData.cidade}
+                          onChange={handleChange}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        />
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email *
+                        Mensagem/Motivação
                       </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
+                      <textarea
+                        name="mensagem"
+                        value={formData.mensagem}
                         onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                        rows={4}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        placeholder="Conte um pouco sobre sua motivação para participar do evento..."
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Telefone
-                      </label>
-                      <input
-                        type="tel"
-                        name="telefone"
-                        value={formData.telefone}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                      />
+                    <div className="flex justify-end space-x-4">
+                      <button
+                        type="button"
+                        onClick={() => setShowForm(false)}
+                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                      >
+                        Voltar
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="px-6 py-2 bg-gradient-to-r from-pink-600 to-blue-600 text-white rounded-md hover:from-pink-700 hover:to-blue-700 disabled:bg-gray-400 transition-all duration-300 font-medium"
+                      >
+                        {loading ? 'Cadastrando...' : 'Finalizar Cadastro'}
+                      </button>
                     </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        WhatsApp
-                      </label>
-                      <input
-                        type="tel"
-                        name="whatsapp"
-                        value={formData.whatsapp}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Box/Academia
-                      </label>
-                      <input
-                        type="text"
-                        name="box"
-                        value={formData.box}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Cidade *
-                      </label>
-                      <input
-                        type="text"
-                        name="cidade"
-                        value={formData.cidade}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Mensagem/Motivação
-                    </label>
-                    <textarea
-                      name="mensagem"
-                      value={formData.mensagem}
-                      onChange={handleChange}
-                      rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                      placeholder="Conte um pouco sobre sua motivação para participar do evento..."
-                    />
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <button
-                      type="button"
-                      onClick={() => setShowForm(false)}
-                      className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
-                    >
-                      ← Voltar
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="px-6 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 disabled:bg-gray-400 transition-colors"
-                    >
-                      {loading ? 'Cadastrando...' : '🎉 Finalizar Cadastro'}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {!showForm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="text-center mt-12"
-          >
-            <button
-              onClick={() => navigate('/hub')}
-              className="text-gray-400 hover:text-white transition-colors text-sm"
-            >
-              Já tenho cadastro, ir para o Hub →
-            </button>
-          </motion.div>
-        )}
+                  </form>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
+      
+      <Footer />
     </div>
   );
 } 

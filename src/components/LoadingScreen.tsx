@@ -23,7 +23,7 @@ export default function LoadingScreen({
         <div className="relative mb-6">
           <div className="w-20 h-20 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto"></div>
           <div className="absolute inset-0 w-20 h-20 border-4 border-transparent border-t-pink-400 rounded-full animate-spin mx-auto" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
-          
+      
           {/* Logo central */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -31,7 +31,7 @@ export default function LoadingScreen({
             </div>
           </div>
         </div>
-
+        
         {/* Mensagem */}
         <motion.p 
           initial={{ opacity: 0, y: 10 }}
@@ -39,11 +39,11 @@ export default function LoadingScreen({
           transition={{ delay: 0.2, duration: 0.5 }}
           className="text-white/90 text-lg font-medium mb-4"
         >
-          {message}
+            {message}
         </motion.p>
-
+          
         {/* Barra de progresso (opcional) */}
-        {showProgress && (
+          {showProgress && (
           <motion.div 
             initial={{ opacity: 0, width: 0 }}
             animate={{ opacity: 1, width: '100%' }}
@@ -70,10 +70,10 @@ export default function LoadingScreen({
             <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
             <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
             <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-          </div>
+        </div>
           <span>Conectando...</span>
         </motion.div>
-
+        
         {/* Informações adicionais */}
         <motion.div 
           initial={{ opacity: 0 }}

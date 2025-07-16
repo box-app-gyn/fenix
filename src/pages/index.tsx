@@ -1,6 +1,7 @@
 import Header from '../components/Header'
 import Hero from '../components/Hero'
 import Sobre from '../components/Sobre'
+import Comunidade from '../components/Comunidade'
 import TempoReal from '../components/TempoReal'
 import CallToAction from '../components/CallToAction'
 import Footer from '../components/Footer'
@@ -40,6 +41,8 @@ export default function Home() {
         <Hero />
         <LinhaDelicada />
         <Sobre />
+        <LinhaDelicada />
+        <Comunidade />
         <LinhaDelicada />
         <TempoReal />
         <LinhaDelicada />

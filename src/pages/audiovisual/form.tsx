@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { doc, setDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { db } from '../../lib/firebase';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 // import Image from 'next/image';
-import { useAnalytics } from '@/hooks/useAnalytics';
-import { useAuth } from '@/hooks/useAuth';
-import SEOHead from '@/components/SEOHead';
+import { useAnalytics } from '../../hooks/useAnalytics';
+import { useAuth } from '../../hooks/useAuth';
+import SEOHead from '../../components/SEOHead';
 import { 
   FirestoreAudiovisual, 
   AudiovisualTipo, 
@@ -15,7 +15,7 @@ import {
   validateAudiovisualData,
   sanitizeAudiovisualData,
   GAMIFICATION_TOKENS
-} from '@/types/firestore';
+} from '../../types/firestore';
 
 // Tipos para o formulário
 interface AudiovisualFormData {

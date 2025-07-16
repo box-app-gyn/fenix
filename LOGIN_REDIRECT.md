@@ -2,7 +2,7 @@
 
 ## 🎯 **MUDANÇA IMPLEMENTADA**
 
-O sistema de autenticação foi migrado de **popup** para **redirect**, uma abordagem mais moderna e confiável.
+O sistema de autenticação foi migrado para usar **apenas redirect**, uma abordagem mais moderna, confiável e sem riscos de bloqueio.
 
 ## ✅ **Vantagens do Redirect**
 
@@ -50,13 +50,15 @@ Login bem-sucedido
 - ❌ Removido: `signInWithPopup`
 - ✅ Adicionado: `signInWithRedirect`
 - ✅ Adicionado: `getRedirectResult`
-- ✅ Melhorado: Tratamento de erros específicos
+- ✅ Simplificado: Apenas redirect, sem fallback
 
 ### ✅ **src/lib/firebase.ts**
 - ✅ Atualizado: `ux_mode: 'redirect'`
 - ✅ Otimizado: Configuração do provider
 
 ### ✅ **src/pages/Login.tsx**
+- ✅ Simplificado: Apenas estado 'redirect'
+- ✅ Removido: Lógica de popup
 - ✅ Melhorado: Interface de loading
 - ✅ Adicionado: Ícone do Google
 - ✅ Atualizado: Mensagens informativas
@@ -80,14 +82,14 @@ Login bem-sucedido
 
 ### **Erros Específicos**
 ```typescript
-// Conta já existe com credencial diferente
-auth/account-exists-with-different-credential
+// Login não habilitado
+auth/operation-not-allowed
+
+// Erro de configuração
+auth/invalid-api-key
 
 // Credenciais inválidas
 auth/invalid-credential
-
-// Login não habilitado
-auth/operation-not-allowed
 
 // Usuário desabilitado
 auth/user-disabled
@@ -177,6 +179,7 @@ Verificando resultado do redirecionamento...
 - ✅ **Mais seguro**: Melhor tratamento de erros
 - ✅ **Mais moderno**: Abordagem atual do Firebase
 - ✅ **Melhor UX**: Interface mais clara e informativa
+- ✅ **Mais simples**: Código mais limpo e direto
 
 ## 🔄 **Rollback (se necessário)**
 

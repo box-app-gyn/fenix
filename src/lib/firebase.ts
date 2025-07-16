@@ -34,8 +34,8 @@ export const provider = new GoogleAuthProvider();
 // Configurar provider para melhor compatibilidade com PWA
 provider.setCustomParameters({
   prompt: 'select_account',
-  // Configurações otimizadas para PWA
-  ux_mode: 'popup',
+  // Configurações otimizadas para redirect
+  ux_mode: 'redirect',
   // Adicionar escopo para melhor experiência
   scope: 'email profile'
 });

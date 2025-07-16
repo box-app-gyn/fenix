@@ -110,7 +110,7 @@ export default function Header() {
                   src="/logos/nome_hrz.png"
                   alt="Interbox 2025"
                   className="transition-all duration-300"
-                  style={{ width: isScrolled ? 80 : 100, height: 'auto' }}
+                  style={{ width: isScrolled ? 60 : 80, height: 'auto' }}
                 />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-400/20 to-transparent"
@@ -123,9 +123,9 @@ export default function Header() {
 
             {/* Menu Desktop */}
             <nav className="hidden md:flex items-center space-x-8">
-              <a href="/" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Home</a>
+              <a href="/hub" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Home</a>
               <a href="/hub" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Hub</a>
-              <a href="/tempo-real" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Tempo Real</a>
+
               <a href="/leaderboard" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Leaderboard</a>
               <a href="/audiovisual" className="text-pink-400 hover:text-pink-300 transition-all duration-300 font-medium text-sm">Audiovisual</a>
               {user && (
@@ -197,7 +197,7 @@ export default function Header() {
                 
                 <nav className="flex flex-col space-y-4">
                   <a 
-                    href="/" 
+                    href="/hub" 
                     className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -210,13 +210,7 @@ export default function Header() {
                   >
                     Hub
                   </a>
-                  <a 
-                    href="/tempo-real" 
-                    className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Tempo Real
-                  </a>
+
                   <a 
                     href="/leaderboard" 
                     className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"

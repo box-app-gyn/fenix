@@ -3,16 +3,18 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useMobile } from './hooks/useMobile';
 import LoginPage from './pages/Login';
+import Home from './pages/index';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { FirebaseErrorBoundary } from './components/FirebaseErrorBoundary';
-import TempoReal from './components/TempoReal';
+
 import GamifiedLeaderboard from './components/GamifiedLeaderboard';
 import Sobre from './components/Sobre';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminPainel from './pages/AdminPainel';
 import DashboardEvento from './pages/DashboardEvento';
 import Audiovisual from './pages/Audiovisual';
+import AudiovisualForm from './pages/audiovisual/form';
 import LinkShortenerPage from './pages/LinkShortenerPage';
 import LinkRedirect from './components/LinkRedirect';
 import ClusterPage from './pages/ClusterPage';
@@ -32,7 +34,6 @@ import CookieBanner from './components/CookieBanner';
 import LoadingScreen from './components/LoadingScreen';
 import DesktopWarning from './components/DesktopWarning';
 import ProtectedRoute from './components/ProtectedRoute';
-import LoginTest from './components/LoginTest';
 
 function App() {
   const { user, loading } = useAuth();
@@ -74,14 +75,43 @@ function App() {
     return <LoadingScreen message="Conectando com Firebase..." />;
   }
 
-  // Se não está logado, mostrar página de login
+  // Se não está logado, mostrar landing page (não LoginPage)
   if (!user) {
     return (
       <>
-        <LoginPage />
+        <Router>
+          <Routes>
+            {/* Landing page pública para visitantes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            
+            {/* Rotas que requerem login */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/hub" element={<Navigate to="/login" replace />} />
+
+            <Route path="/leaderboard" element={<Navigate to="/login" replace />} />
+            <Route path="/sobre" element={<Navigate to="/login" replace />} />
+            <Route path="/admin" element={<Navigate to="/login" replace />} />
+            <Route path="/admin-painel" element={<Navigate to="/login" replace />} />
+            <Route path="/dashboard-evento" element={<Navigate to="/login" replace />} />
+            <Route path="/audiovisual" element={<Navigate to="/login" replace />} />
+            <Route path="/links" element={<Navigate to="/login" replace />} />
+            <Route path="/l/:shortCode" element={<LinkRedirectWrapper />} />
+            <Route path="/selecao-cadastro" element={<Navigate to="/login" replace />} />
+            <Route path="/cadastro-atleta" element={<Navigate to="/login" replace />} />
+            <Route path="/cadastro-jurado" element={<Navigate to="/login" replace />} />
+            <Route path="/cadastro-midialouca" element={<Navigate to="/login" replace />} />
+            <Route path="/cadastro-curioso" element={<Navigate to="/login" replace />} />
+            <Route path="/setup-profile" element={<Navigate to="/login" replace />} />
+            <Route path="/perfil" element={<Navigate to="/login" replace />} />
+            <Route path="/cluster" element={<Navigate to="/login" replace />} />
+            
+            {/* Fallback para landing page */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
         <CacheDebug />
         <CookieBanner />
-        <LoginTest />
       </>
     );
   }
@@ -116,11 +146,7 @@ function App() {
                 </ProtectedRoute>
               } />
               
-              <Route path="/tempo-real" element={
-                <ProtectedRoute>
-                  <TempoReal />
-                </ProtectedRoute>
-              } />
+
               
               <Route path="/leaderboard" element={
                 <ProtectedRoute>
@@ -155,6 +181,12 @@ function App() {
               <Route path="/audiovisual" element={
                 <ProtectedRoute>
                   <Audiovisual />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/audiovisual/form" element={
+                <ProtectedRoute>
+                  <AudiovisualForm />
                 </ProtectedRoute>
               } />
               

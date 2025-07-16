@@ -82,7 +82,7 @@ export default function GamifiedLeaderboard({
         animate={showAnimations ? { opacity: 1, y: 0 } : false}
         transition={{ duration: 0.5 }}
       >
-        🏆 Ranking
+        🏆 Ranking $BOX
       </motion.h2>
 
       <div className="space-y-3">
@@ -97,19 +97,19 @@ export default function GamifiedLeaderboard({
                 duration: 0.3, 
                 delay: showAnimations ? index * 0.1 : 0 
               }}
-              className={`flex items-center space-x-4 p-4 rounded-lg border border-pink-500/10 hover:border-pink-500/30 transition-all duration-300 ${getRankColor(entry.rank)}`}
+              className={`flex items-center space-x-4 p-4 rounded-lg border border-pink-500/10 hover:border-pink-500/30 transition-all duration-300 ${getRankColor(entry.position)}`}
             >
               {/* Rank */}
               <div className="flex-shrink-0">
                 <span className="text-2xl font-bold text-white">
-                  {getRankIcon(entry.rank)}
+                  {getRankIcon(entry.position)}
                 </span>
               </div>
 
               {/* Avatar */}
               <div className="flex-shrink-0">
                 <img
-                  src={sanitizeUrl(entry.userPhotoURL)}
+                  src={sanitizeUrl(entry.userPhotoURL || '')}
                   alt={sanitizeText(entry.userName)}
                   width={40}
                   height={40}
@@ -123,16 +123,18 @@ export default function GamifiedLeaderboard({
                   {sanitizeText(entry.userName)}
                 </h3>
                 <p className="text-gray-300 text-sm">
-                  {entry.category || 'Geral'}
+                  {entry.userRole || 'Geral'} • Nível {entry.level}
                 </p>
               </div>
 
-              {/* Score */}
+              {/* $BOX Tokens */}
               <div className="flex-shrink-0 text-right">
                 <div className="text-white font-bold text-lg">
-                  {entry.score !== undefined ? entry.score.toLocaleString() : '—'}
+                  {entry.points !== undefined ? entry.points.toLocaleString() : '—'} $BOX
                 </div>
-                <div className="text-gray-300 text-xs">pontos</div>
+                <div className="text-gray-300 text-xs">
+                  {entry.totalActions || 0} ações
+                </div>
               </div>
             </motion.div>
           ))}
@@ -146,7 +148,7 @@ export default function GamifiedLeaderboard({
           className="text-center py-8"
         >
           <p className="text-gray-400">Nenhum participante ainda</p>
-          <p className="text-gray-500 text-sm">Seja o primeiro!</p>
+          <p className="text-gray-500 text-sm">Seja o primeiro a ganhar $BOX!</p>
         </motion.div>
       )}
     </div>

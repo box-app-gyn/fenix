@@ -23,7 +23,7 @@ export default function Footer() {
         height={12}
       />
 
-      {/* Frase Suor + Tecnologia + Linha lado a lado */}
+      {/* Slogan + Linha lado a lado */}
       <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-4 mt-8 w-full">
         <img
           src="/images/twolines.png"
@@ -34,9 +34,9 @@ export default function Footer() {
           height={48}
         />
         <p className="text-lg md:text-2xl font-semibold text-gray-500 font-tech text-center md:text-left leading-tight">
-          Suor + Tecnologia.
+          ᴄᴏᴍᴘᴇᴛɪçãᴏ. ᴄᴏᴍᴜɴɪᴅᴀᴅᴇ. ᴘʀᴏᴘóꜱɪᴛᴏ.
           <br />
-          <span className="text-white">O cerrado vai virar arena novamente.</span>
+          <span className="text-white">Interbox 2025</span>
         </p>
       </div>
 
@@ -53,7 +53,7 @@ export default function Footer() {
       {/* Footer */}
       <div className="mt-32 text-sm border-t border-neutral-800 pt-6 w-full text-center">
         <p className="text-white">
-          © {new Date().getFullYear()} Cerrado Interbox. Todos os direitos reservados.
+          © {new Date().getFullYear()} Interbox 2025. Todos os direitos reservados.
         </p>
         <p className="mt-1 italic text-neutral-500">
           Desenvolvido por Protocolo <span className="text-pink-500">NEØ</span>

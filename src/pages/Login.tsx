@@ -1,6 +1,7 @@
 import { useAuth } from '../hooks/useAuth';
 import { useState } from 'react';
-import { clearCacheAndReload } from '../utils/clearCache';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 // Componente de Loading Screen otimizado
 const LoadingScreen = ({ message = "Carregando..." }) => (
@@ -47,7 +48,7 @@ const SuccessAlert = ({ message }: { message: string }) => (
 
 export default function LoginPage() {
   const { login, loading } = useAuth();
-  const [loginState, setLoginState] = useState<'idle' | 'popup' | 'redirect'>('idle');
+  const [loginState, setLoginState] = useState<'idle' | 'redirect'>('idle');
   const [showError, setShowError] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -55,25 +56,16 @@ export default function LoginPage() {
   console.log('🔍 LoginPage - Estado atual:', { loading, loginState });
 
   const handleLogin = async () => {
-    setLoginState('popup');
+    setLoginState('redirect');
     setShowError(false);
     setErrorMessage('');
     
     try {
       await login();
-      setLoginState('redirect');
       setShowSuccess(true);
       // O redirecionamento será feito automaticamente pelo useAuth
     } catch (error: any) {
       console.error('Erro no login:', error);
-      
-      // Se for erro de popup bloqueado, tentar redirect
-      if (error.code === 'auth/popup-blocked' || 
-          error.code === 'auth/popup-closed-by-user') {
-        setLoginState('redirect');
-        // O login já tentará redirect automaticamente
-        return;
-      }
       
       // Definir mensagem de erro específica
       let message = 'Erro ao fazer login. Tente novamente.';
@@ -81,10 +73,6 @@ export default function LoginPage() {
         message = 'Login com Google não está habilitado. Entre em contato com o suporte.';
       } else if (error.code === 'auth/invalid-api-key') {
         message = 'Erro de configuração. Entre em contato com o suporte.';
-      } else if (error.code === 'auth/popup-blocked') {
-        message = 'Popup bloqueado pelo navegador. Permita popups para este site e tente novamente.';
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        message = 'Login cancelado. Tente novamente.';
       }
       
       setErrorMessage(message);
@@ -95,8 +83,6 @@ export default function LoginPage() {
 
   const getButtonText = () => {
     switch (loginState) {
-      case 'popup':
-        return 'Abrindo popup...';
       case 'redirect':
         return 'Redirecionando...';
       default:
@@ -142,88 +128,87 @@ export default function LoginPage() {
   }
 
   return (
-    <div 
-      className="h-screen flex items-center justify-center text-white relative overflow-hidden"
-      style={{
-        backgroundImage: 'url(/images/bg_rounded.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
-      {/* Alertas */}
-      {showError && errorMessage && (
-        <ErrorAlert 
-          error={errorMessage} 
-          onDismiss={() => setShowError(false)} 
-        />
-      )}
+    <div className="min-h-screen bg-black flex flex-col">
+      <Header />
       
-      {showSuccess && (
-        <SuccessAlert message="Login realizado com sucesso!" />
-      )}
-
-      <div className="text-center space-y-8 max-w-md mx-auto px-4 relative z-10">
-        <div className="space-y-4">
-          <img 
-            src="/logos/oficial_logo.png" 
-            alt="INTERBOX Logo" 
-            className="mx-auto max-w-xs"
-          />
-          <p className="text-gray-300 text-lg">
-            O maior evento fitness do Brasil
-          </p>
-        </div>
+      {/* Background com imagem principal */}
+      <div 
+        className="flex-1 relative flex items-center justify-center"
+        style={{
+          backgroundImage: 'url(/images/bg_main.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay gradiente */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80"></div>
         
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
-          <button
-            onClick={handleLogin}
-            disabled={isButtonDisabled}
-            className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 px-8 py-4 rounded-xl text-white text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] disabled:scale-100 shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center space-x-3"
-          >
-            {getButtonIcon()}
-            <span>{getButtonText()}</span>
-          </button>
+        {/* Conteúdo principal */}
+        <div className="relative z-10 text-center space-y-8 max-w-md mx-auto px-4">
+          {/* Alertas */}
+          {showError && errorMessage && (
+            <ErrorAlert 
+              error={errorMessage} 
+              onDismiss={() => setShowError(false)} 
+            />
+          )}
+          
+          {showSuccess && (
+            <SuccessAlert message="Login realizado com sucesso!" />
+          )}
 
-          {/* Indicador de estado */}
-          {loginState !== 'idle' && (
-            <div className="mt-4 text-center">
-              <div className="flex items-center justify-center gap-2 text-white/60 text-sm">
-                <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span>
-                  {loginState === 'popup' && 'Aguardando autorização...'}
-                  {loginState === 'redirect' && 'Processando login...'}
-                </span>
+          <div className="space-y-4">
+            <img 
+              src="/logos/oficial_logo.png" 
+              alt="INTERBOX Logo" 
+              className="mx-auto max-w-xs"
+            />
+            <p className="text-gray-300 text-lg">
+              ᴄᴏᴍᴘᴇᴛɪçãᴏ. ᴄᴏᴍᴜɴɪᴅᴀᴅᴇ. ᴘʀᴏᴘóꜱɪᴛᴏ.
+            </p>
+          </div>
+          
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
+            <button
+              onClick={handleLogin}
+              disabled={isButtonDisabled}
+              className="w-full bg-gradient-to-r from-pink-600 to-blue-600 hover:from-pink-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 px-8 py-4 rounded-xl text-white text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] disabled:scale-100 shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center space-x-3"
+            >
+              {getButtonIcon()}
+              <span>{getButtonText()}</span>
+            </button>
+
+            {/* Indicador de estado */}
+            {loginState !== 'idle' && (
+              <div className="mt-4 text-center">
+                <div className="flex items-center justify-center gap-2 text-white/60 text-sm">
+                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span>
+                    {loginState === 'redirect' && 'Processando login...'}
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          
+          <div className="text-sm text-gray-400 space-y-2">
+            <p>Faça login para acessar o ecossistema Interbox 2025</p>
+            {loginState === 'redirect' && (
+              <p className="text-xs text-blue-300">
+                🔄 Redirecionando para o Google...
+              </p>
+            )}
+            <p className="text-xs">Você será redirecionado para o Google e retornará automaticamente</p>
+          </div>
+          
+          {/* Botão de debug removido para produção */}
         </div>
-        
-        <div className="text-sm text-gray-400 space-y-2">
-          <p>Faça login para acessar o ecosistema CERRADO INTERBØX</p>
-          {loginState === 'popup' && (
-            <p className="text-xs text-yellow-300">
-              ⚠️ Se o popup não abrir, permita popups para este site
-            </p>
-          )}
-          {loginState === 'redirect' && (
-            <p className="text-xs text-blue-300">
-              🔄 Redirecionando para o Google...
-            </p>
-          )}
-          <p className="text-xs">Você será redirecionado para o Google e retornará automaticamente</p>
-        </div>
-        
-        {/* Botão de debug para limpar cache */}
-        <button
-          onClick={clearCacheAndReload}
-          className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-        >
-          🔧 Limpar cache e recarregar
-        </button>
       </div>
+      
+      <Footer />
     </div>
   );
 } 

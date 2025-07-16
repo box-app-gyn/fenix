@@ -55,6 +55,10 @@ export const SECURITY_CONSTANTS = {
       "'unsafe-inline'",
       'https://www.googletagmanager.com',
       'https://www.google-analytics.com',
+      'https://apis.google.com',
+      'https://accounts.google.com',
+      'https://firebase.googleapis.com',
+      'https://www.gstatic.com'
     ],
     'style-src': [
       "'self'",
@@ -77,8 +81,19 @@ export const SECURITY_CONSTANTS = {
       'https://api.flowpay.com.br',
       'https://www.google-analytics.com',
       'https://firestore.googleapis.com',
+      'https://firebase.googleapis.com',
+      'https://identitytoolkit.googleapis.com',
+      'https://securetoken.googleapis.com',
+      'https://accounts.google.com',
+      'https://apis.google.com',
+      'https://*.googleapis.com'
     ],
-    'frame-src': ["'none'"],
+    'frame-src': [
+      "'self'",
+      'https://accounts.google.com',
+      'https://*.firebaseapp.com',
+      'https://firebaseapp.com'
+    ],
     'object-src': ["'none'"],
     'base-uri': ["'self'"],
     'form-action': ["'self'"],
