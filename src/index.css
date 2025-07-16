@@ -144,3 +144,50 @@ html {
     min-width: 44px;
   }
 }
+
+/* Menu Mobile Fixes */
+.menu-mobile-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 320px;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.menu-mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9998;
+}
+
+/* Hamburger button fixes */
+.hamburger-button {
+  position: relative;
+  z-index: 10000;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.hamburger-button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.hamburger-line {
+  background-color: currentColor !important;
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}

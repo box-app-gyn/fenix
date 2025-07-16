@@ -3,8 +3,6 @@ import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore'
 import { auth, db } from '../lib/firebase'
 import { useAnalytics } from '../hooks/useAnalytics'
-import { seedLeaderboardData } from '../utils/seedData'
-import { seedConfigData } from '../utils/seedConfigData'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
@@ -26,8 +24,6 @@ export default function AdminDashboard() {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('stats')
-  const [seeding, setSeeding] = useState(false)
-  const [seedingConfig, setSeedingConfig] = useState(false)
   const [stats, setStats] = useState<Stats>({
     totalUsers: 0,
     totalTeams: 0,
@@ -108,7 +104,7 @@ export default function AdminDashboard() {
       const userDoc = await getDoc(doc(db, 'users', uid))
       if (userDoc.exists()) {
         const userData = userDoc.data() as UserData
-        if (!['admin', 'marketing'].includes(userData.role)) {
+        if (!['admin', 'marketing', 'dev'].includes(userData.role)) {
           window.location.href = '/admin'
           return
         }
@@ -148,36 +144,6 @@ export default function AdminDashboard() {
     window.location.href = '/'
   }
 
-  const handleSeedData = async () => {
-    setSeeding(true)
-    try {
-      await seedLeaderboardData()
-      alert('Dados de exemplo adicionados com sucesso!')
-    } catch (error) {
-      console.error('Erro ao adicionar dados:', error)
-      alert('Erro ao adicionar dados de exemplo')
-    } finally {
-      setSeeding(false)
-    }
-  }
-
-  const handleSeedConfigData = async () => {
-    setSeedingConfig(true)
-    try {
-      const success = await seedConfigData()
-      if (success) {
-        alert('✅ Configuração tempo_real criada com sucesso!')
-      } else {
-        alert('❌ Erro ao criar configuração')
-      }
-    } catch (error) {
-      console.error('Erro ao criar configuração:', error)
-      alert('❌ Erro ao criar configuração')
-    } finally {
-      setSeedingConfig(false)
-    }
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -189,7 +155,7 @@ export default function AdminDashboard() {
     )
   }
 
-  if (!userData || !['admin', 'marketing'].includes(userData.role)) {
+  if (!userData || !['admin', 'marketing', 'dev'].includes(userData.role)) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
@@ -288,16 +254,6 @@ export default function AdminDashboard() {
               >
                 🎬 Audiovisual
               </button>
-              <button
-                onClick={() => setActiveTab('tools')}
-                className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                  activeTab === 'tools'
-                    ? 'bg-gradient-to-r from-pink-600 to-blue-600 text-white'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                🔧 Ferramentas
-              </button>
             </div>
 
             {/* Conteúdo das tabs */}
@@ -365,36 +321,19 @@ export default function AdminDashboard() {
                     {users.slice(0, 10).map((user: any) => (
                       <tr key={user.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10">
-                              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-pink-500 to-blue-600 flex items-center justify-center">
-                                <span className="text-white font-medium">
-                                  {user.displayName?.charAt(0) || 'U'}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">
-                                {user.displayName || 'Sem nome'}
-                              </div>
-                            </div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {user.displayName || 'Sem nome'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {user.email}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {user.role || 'user'}
-                          </span>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {user.role || 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            user.isActive 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {user.isActive ? 'Ativo' : 'Inativo'}
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                            Ativo
                           </span>
                         </td>
                       </tr>
@@ -455,16 +394,16 @@ export default function AdminDashboard() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Título
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Autor
+                        Profissional
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Tipo
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Data
                       </th>
                     </tr>
                   </thead>
@@ -473,58 +412,31 @@ export default function AdminDashboard() {
                       <tr key={item.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {item.titulo || 'Sem título'}
+                            {item.displayName || 'Sem nome'}
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {item.autor || 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {item.tipo || 'N/A'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            Pendente
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            item.aprovado 
+                              ? 'bg-green-100 text-green-800' 
+                              : item.aprovado === false 
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {item.aprovado === true ? 'Aprovado' : 
+                             item.aprovado === false ? 'Rejeitado' : 'Pendente'}
                           </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {item.createdAt ? new Date(item.createdAt.toDate()).toLocaleDateString() : 'N/A'}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
-            )}
-
-            {activeTab === 'tools' && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
-                    <h3 className="text-lg font-semibold mb-4">🎯 Seed de Dados</h3>
-                    <p className="text-sm opacity-90 mb-4">
-                      Adiciona dados de exemplo para o leaderboard
-                    </p>
-                    <button
-                      onClick={handleSeedData}
-                      disabled={seeding}
-                      className="bg-white text-green-600 px-4 py-2 rounded-md font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
-                    >
-                      {seeding ? 'Adicionando...' : 'Adicionar Dados'}
-                    </button>
-                  </div>
-                  
-                  <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
-                    <h3 className="text-lg font-semibold mb-4">⚙️ Configuração</h3>
-                    <p className="text-sm opacity-90 mb-4">
-                      Cria configuração para tempo real
-                    </p>
-                    <button
-                      onClick={handleSeedConfigData}
-                      disabled={seedingConfig}
-                      className="bg-white text-blue-600 px-4 py-2 rounded-md font-medium hover:bg-gray-100 transition-colors disabled:opacity-50"
-                    >
-                      {seedingConfig ? 'Criando...' : 'Criar Config'}
-                    </button>
-                  </div>
-                </div>
               </div>
             )}
           </div>

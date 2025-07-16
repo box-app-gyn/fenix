@@ -36,7 +36,11 @@ interface TempoRealData {
   };
 }
 
-const TempoReal: React.FC = () => {
+interface TempoRealProps {
+  isPublic?: boolean; // Nova prop para controlar versão pública
+}
+
+const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
   const [data, setData] = useState<TempoRealData>({
     ingressos: { status: 'em_breve' },
     indicacoes: { total: 0, hoje: 0 },
@@ -68,6 +72,11 @@ const TempoReal: React.FC = () => {
   const DATA_ABERTURA_LOTE1 = useMemo(() => new Date('2025-07-13T00:00:00-03:00'), []);
 
   useEffect(() => {
+    // Se for versão pública, não carregar dados sensíveis
+    if (isPublic) {
+      return;
+    }
+
     // Escutar dados em tempo real do Firestore
     const unsubscribe = onSnapshot(
       doc(db, 'config', 'tempo_real'),
@@ -156,7 +165,7 @@ const TempoReal: React.FC = () => {
     );
 
     return () => unsubscribe();
-  }, []);
+  }, [isPublic]);
 
   useEffect(() => {
     // Contagem regressiva para abertura dos ingressos
@@ -272,8 +281,8 @@ const TempoReal: React.FC = () => {
       )
     }] : []),
 
-    // ✅ TOKENS $BOX - MOSTRAR SE GAMIFICAÇÃO ATIVA (engajamento)
-    ...(data.mostrarNaHome?.token ? [{
+    // ✅ TOKENS $BOX - MOSTRAR SE GAMIFICAÇÃO ATIVA (engajamento) - APENAS SE NÃO FOR PÚBLICO
+    ...(data.mostrarNaHome?.token && !isPublic ? [{
       id: 'token',
       component: (
         <motion.div

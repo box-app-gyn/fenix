@@ -352,7 +352,7 @@ export default function Perfil() {
                     <div className="flex justify-end space-x-4">
                       <button
                         type="button"
-                        onClick={() => navigate('/hub')}
+                        onClick={() => navigate('/home')}
                         className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
                       >
                         Cancelar

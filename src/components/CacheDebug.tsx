@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { clearAppCache, checkForUpdates, forceReload, detectCacheIssues, clearCacheAndReload } from '../utils/cacheUtils';
 import { checkLoadIssues, detectSpecificIssues, LoadMonitor, LoadIssue } from '../utils/loadUtils';
-import { resetIntro } from '../utils/resetIntro';
 import { logPWADebug, clearAllCaches, forceUpdateServiceWorker } from '../utils/pwaUtils';
 
 export default function CacheDebug() {
@@ -214,12 +213,7 @@ export default function CacheDebug() {
           🔄 Forçar Reload
         </button>
         
-        <button
-          onClick={resetIntro}
-          className="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs py-1 px-2 rounded"
-        >
-          🎬 Resetar Intro
-        </button>
+
         
         <button
           onClick={async () => {

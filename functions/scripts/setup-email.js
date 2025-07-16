@@ -15,12 +15,22 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
+/**
+ * Faz uma pergunta ao usuário via linha de comando
+ * @param {string} prompt - A pergunta a ser exibida
+ * @return {Promise<string>} Resposta do usuário
+ */
 function question(prompt) {
   return new Promise((resolve) => {
     rl.question(prompt, resolve);
   });
 }
 
+/**
+ * Exibe uma mensagem colorida no console
+ * @param {string} message - Mensagem a ser exibida
+ * @param {string} type - Tipo da mensagem (info, success, warning, error)
+ */
 function log(message, type = "info") {
   const colors = {
     info: "\x1b[36m", // Cyan
@@ -33,6 +43,9 @@ function log(message, type = "info") {
   console.log(`${colors[type]}${message}${colors.reset}`);
 }
 
+/**
+ * Função principal para configurar o sistema de email
+ */
 async function setupEmail() {
   log("🎯 Configuração do Sistema de Email - Interbox 2025", "info");
   log("==================================================", "info");
@@ -42,7 +55,8 @@ async function setupEmail() {
     try {
       execSync("firebase --version", {stdio: "ignore"});
     } catch (error) {
-      log("❌ Firebase CLI não encontrado. Instale com: npm install -g firebase-tools", "error");
+      log("❌ Firebase CLI não encontrado. Instale com: " +
+          "npm install -g firebase-tools", "error");
       process.exit(1);
     }
 
@@ -91,6 +105,9 @@ async function setupEmail() {
   }
 }
 
+/**
+ * Configura as credenciais do Gmail
+ */
 async function setupGmail() {
   log("\n📧 Configurando Gmail...", "info");
 
@@ -103,21 +120,30 @@ async function setupGmail() {
   }
 
   try {
-    execSync(`firebase functions:config:set email.user="${gmailUser}"`, {stdio: "ignore"});
-    execSync(`firebase functions:config:set email.password="${gmailPassword}"`, {stdio: "ignore"});
+    execSync(`firebase functions:config:set email.user="${gmailUser}"`,
+        {stdio: "ignore"});
+    execSync(
+        `firebase functions:config:set email.password="${gmailPassword}"`,
+        {stdio: "ignore"},
+    );
 
     log("✅ Configuração Gmail salva", "success");
-    log("💡 Dica: Use senha de app, não sua senha principal do Gmail", "warning");
+    log("💡 Dica: Use senha de app, não sua senha principal do Gmail",
+        "warning");
   } catch (error) {
     log(`❌ Erro ao configurar Gmail: ${error.message}`, "error");
   }
 }
 
+/**
+ * Configura as credenciais do SendGrid
+ */
 async function setupSendGrid() {
   log("\n📧 Configurando SendGrid...", "info");
 
   const sendgridApiKey = await question("Digite sua API Key do SendGrid: ");
-  const sendgridFrom = await question("Digite o email remetente (ex: noreply@interbox2025.com): ");
+  const sendgridFrom = await question(
+      "Digite o email remetente (ex: noreply@interbox2025.com): ");
 
   if (!sendgridApiKey || !sendgridFrom) {
     log("❌ API Key e email remetente são obrigatórios", "error");
@@ -125,8 +151,12 @@ async function setupSendGrid() {
   }
 
   try {
-    execSync(`firebase functions:config:set sendgrid.api_key="${sendgridApiKey}"`, {stdio: "ignore"});
-    execSync(`firebase functions:config:set sendgrid.from="${sendgridFrom}"`, {stdio: "ignore"});
+    execSync(
+      `firebase functions:config:set sendgrid.api_key="${sendgridApiKey}"`,
+      {stdio: "ignore"}
+    );
+    execSync(`firebase functions:config:set sendgrid.from="${sendgridFrom}"`,
+        {stdio: "ignore"});
 
     log("✅ Configuração SendGrid salva", "success");
   } catch (error) {
@@ -134,13 +164,19 @@ async function setupSendGrid() {
   }
 }
 
+/**
+ * Configura domínios de email permitidos
+ */
 async function setupAllowedDomains() {
   log("\n🌐 Configurando domínios permitidos...", "info");
 
-  const useRestriction = await question("Deseja restringir domínios de email? (s/n): ");
+  const useRestriction = await question(
+      "Deseja restringir domínios de email? (s/n): ",
+  );
 
   if (useRestriction.toLowerCase() === "s") {
-    const domains = await question("Digite os domínios permitidos (separados por vírgula): ");
+    const domains = await question(
+        "Digite os domínios permitidos (separados por vírgula): ");
 
     if (domains) {
       const domainList = domains.split(",").map((d) => d.trim());
@@ -152,6 +188,9 @@ async function setupAllowedDomains() {
   }
 }
 
+/**
+ * Configura templates de email
+ */
 async function setupTemplates() {
   log("\n📝 Configurando templates...", "info");
 
@@ -161,21 +200,30 @@ async function setupTemplates() {
   log("  - Notificação admin", "info");
   log("  - Boas-vindas", "info");
 
-  const customizeTemplates = await question("Deseja personalizar os templates? (s/n): ");
+  const customizeTemplates = await question(
+      "Deseja personalizar os templates? (s/n): ",
+  );
 
   if (customizeTemplates.toLowerCase() === "s") {
     log("💡 Edite os templates no arquivo config/email.ts", "warning");
-    log("💡 Use variáveis: ${data.userName}, ${data.userEmail}, etc.", "warning");
+    log(
+        "💡 Use variáveis: ${data.userName}, ${data.userEmail}, etc.",
+        "warning",
+    );
   }
 }
 
-// Função para testar configuração
+/**
+ * Testa a configuração do sistema de email
+ */
 async function testEmailConfig() {
   log("\n🧪 Testando configuração...", "info");
 
   try {
     // Verificar configurações
-    const config = execSync("firebase functions:config:get", {encoding: "utf8"});
+    const config = execSync("firebase functions:config:get", {
+      encoding: "utf8",
+    });
     log("✅ Configurações carregadas", "success");
 
     // Verificar se há pelo menos um provedor configurado

@@ -123,7 +123,7 @@ export default function Header() {
 
             {/* Menu Desktop */}
             <nav className="hidden md:flex items-center space-x-8">
-              <a href="/hub" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Home</a>
+              <a href="/home" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Home</a>
               <a href="/hub" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Hub</a>
 
               <a href="/leaderboard" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Leaderboard</a>
@@ -145,19 +145,20 @@ export default function Header() {
             {/* Menu Mobile (Hambúrguer) */}
             <motion.button
               onClick={toggleMenu}
-              className="md:hidden relative z-50 flex flex-col justify-center items-center w-8 h-8 text-white hover:text-pink-400 transition-colors duration-300"
+              className="md:hidden hamburger-button flex flex-col justify-center items-center w-8 h-8 text-white hover:text-pink-400 transition-colors duration-300"
               whileTap={{ scale: 0.95 }}
+              aria-label="Abrir menu"
             >
               <motion.span
-                className="absolute w-6 h-0.5 bg-current transform transition-all duration-300"
+                className="absolute w-6 h-0.5 hamburger-line transform transition-all duration-300"
                 animate={{ rotate: isMenuOpen ? 45 : 0, y: isMenuOpen ? 0 : -6 }}
               />
               <motion.span
-                className="absolute w-6 h-0.5 bg-current transform transition-all duration-300"
+                className="absolute w-6 h-0.5 hamburger-line transform transition-all duration-300"
                 animate={{ opacity: isMenuOpen ? 0 : 1, scale: isMenuOpen ? 0 : 1 }}
               />
               <motion.span
-                className="absolute w-6 h-0.5 bg-current transform transition-all duration-300"
+                className="absolute w-6 h-0.5 hamburger-line transform transition-all duration-300"
                 animate={{ rotate: isMenuOpen ? -45 : 0, y: isMenuOpen ? 0 : 6 }}
               />
             </motion.button>
@@ -174,7 +175,11 @@ export default function Header() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-lg z-40"
+              className="md:hidden menu-mobile-overlay backdrop-blur-fallback"
+              style={{
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)'
+              }}
               onClick={() => setIsMenuOpen(false)}
             />
             <motion.div
@@ -182,7 +187,11 @@ export default function Header() {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="md:hidden fixed top-0 right-0 h-full w-80 bg-black/95 backdrop-blur-lg border-l border-pink-500/20 z-50"
+              className="md:hidden menu-mobile-container border-l border-pink-500/20 backdrop-blur-fallback menu-mobile-fix"
+              style={{
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)'
+              }}
             >
               <div className="flex flex-col h-full p-6">
                 <div className="flex justify-between items-center mb-8">
@@ -197,7 +206,7 @@ export default function Header() {
                 
                 <nav className="flex flex-col space-y-4">
                   <a 
-                    href="/hub" 
+                    href="/home" 
                     className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >

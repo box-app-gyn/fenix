@@ -44,7 +44,7 @@ export default function Home() {
         <LinhaDelicada />
         <Comunidade />
         <LinhaDelicada />
-        <TempoReal />
+        <TempoReal isPublic={true} />
         <LinhaDelicada />
         <CallToAction />
         <Footer />

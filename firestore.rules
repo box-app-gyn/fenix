@@ -114,5 +114,29 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if false;
     }
+
+    // Regras para flowpay_checkouts
+    match /flowpay_checkouts/{checkoutId} {
+      // Usuário pode ler apenas seus próprios checkouts
+      // Admin pode ler todos
+      allow read: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || 
+         request.auth.token.admin == true);
+      
+      // Usuário pode criar apenas seus próprios checkouts
+      allow create: if request.auth != null && 
+        request.auth.uid == resource.data.userId &&
+        request.resource.data.userId == request.auth.uid;
+      
+      // Usuário pode atualizar apenas seus próprios checkouts
+      // Admin pode atualizar qualquer checkout
+      allow update: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || 
+         request.auth.token.admin == true);
+      
+      // Apenas admin pode deletar
+      allow delete: if request.auth != null && 
+        request.auth.token.admin == true;
+    }
   }
 } 

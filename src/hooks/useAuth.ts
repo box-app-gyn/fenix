@@ -14,6 +14,16 @@ interface User extends FirebaseUser {
   mensagem?: string;
   isActive?: boolean;
   profileComplete?: boolean;
+  adminVerification?: {
+    required?: boolean;
+    cnh?: {
+      frente: string;
+      verso: string;
+      uploadedAt: any;
+      status: 'pending' | 'approved' | 'rejected';
+    };
+    completedAt?: any;
+  };
 }
 
 export function useAuth() {
@@ -163,6 +173,12 @@ export function useAuth() {
                 }
               }
               
+              // Verificar se é admin que precisa de verificação de CNH
+              const adminEmails = ['avanticrossfit@gmail.com', 'gopersonal82@gmail.com'];
+              const needsCNHVerification = adminEmails.includes(firebaseUser.email || '') && 
+                (userData?.role === 'admin' || userData?.role === 'dev') &&
+                !userData?.adminVerification?.completedAt;
+
               const extendedUser: User = {
                 ...firebaseUser,
                 role: userData?.role || 'publico',
@@ -173,7 +189,12 @@ export function useAuth() {
                 cidade: userData?.cidade || '',
                 mensagem: userData?.mensagem || '',
                 isActive: userData?.isActive || true,
-                profileComplete: userData?.profileComplete || false
+                profileComplete: userData?.profileComplete || false,
+                adminVerification: {
+                  required: needsCNHVerification,
+                  cnh: userData?.adminVerification?.cnh,
+                  completedAt: userData?.adminVerification?.completedAt
+                }
               };
 
               if (isSubscribed) {

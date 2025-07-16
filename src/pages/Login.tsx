@@ -2,9 +2,10 @@ import { useAuth } from '../hooks/useAuth';
 import { useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 // Componente de Loading Screen otimizado
-const LoadingScreen = ({ message = "Carregando..." }) => (
+const LoadingScreen = ({ message = "Conectando com NEØ..." }: { message?: string }) => (
   <div className="h-screen flex items-center justify-center bg-black text-white">
     <div className="text-center">
       <div className="relative">
@@ -48,10 +49,19 @@ const SuccessAlert = ({ message }: { message: string }) => (
 
 export default function LoginPage() {
   const { login, loading } = useAuth();
-  const [loginState, setLoginState] = useState<'idle' | 'redirect'>('idle');
+  const [loginState, setLoginState] = useState<'idle' | 'redirect' | 'register' | 'access'>('idle');
   const [showError, setShowError] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  // Estados para cadastro
+  const [registerName, setRegisterName] = useState('');
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [registerLoading, setRegisterLoading] = useState(false);
+  // Estados para login
+  const [accessEmail, setAccessEmail] = useState('');
+  const [accessPassword, setAccessPassword] = useState('');
+  const [accessLoading, setAccessLoading] = useState(false);
 
   console.log('🔍 LoginPage - Estado atual:', { loading, loginState });
 
@@ -78,6 +88,94 @@ export default function LoginPage() {
       setErrorMessage(message);
       setShowError(true);
       setLoginState('idle');
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowError(false);
+    setErrorMessage('');
+    setRegisterLoading(true);
+    // Validação básica
+    if (!registerName.trim()) {
+      setErrorMessage('Digite seu nome completo.');
+      setShowError(true);
+      setRegisterLoading(false);
+      return;
+    }
+    if (!registerEmail.includes('@')) {
+      setErrorMessage('Digite um e-mail válido.');
+      setShowError(true);
+      setRegisterLoading(false);
+      return;
+    }
+    if (registerPassword.length < 6) {
+      setErrorMessage('A senha deve ter pelo menos 6 caracteres.');
+      setShowError(true);
+      setRegisterLoading(false);
+      return;
+    }
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        require('../lib/firebase').auth,
+        registerEmail,
+        registerPassword
+      );
+      await updateProfile(userCredential.user, { displayName: registerName });
+      setShowSuccess(true);
+      setLoginState('idle');
+      // O fluxo de login automático será feito pelo onAuthStateChanged
+    } catch (error: any) {
+      let message = 'Erro ao cadastrar. Tente novamente.';
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'Este e-mail já está em uso.';
+      } else if (error.code === 'auth/invalid-email') {
+        message = 'E-mail inválido.';
+      } else if (error.code === 'auth/weak-password') {
+        message = 'Senha muito fraca.';
+      }
+      setErrorMessage(message);
+      setShowError(true);
+    } finally {
+      setRegisterLoading(false);
+    }
+  };
+
+  const handleAccess = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowError(false);
+    setErrorMessage('');
+    setAccessLoading(true);
+    if (!accessEmail.includes('@')) {
+      setErrorMessage('Digite um e-mail válido.');
+      setShowError(true);
+      setAccessLoading(false);
+      return;
+    }
+    if (accessPassword.length < 6) {
+      setErrorMessage('A senha deve ter pelo menos 6 caracteres.');
+      setShowError(true);
+      setAccessLoading(false);
+      return;
+    }
+    try {
+      await signInWithEmailAndPassword(require('../lib/firebase').auth, accessEmail, accessPassword);
+      setShowSuccess(true);
+      setLoginState('idle');
+      // O fluxo de login automático será feito pelo onAuthStateChanged
+    } catch (error: any) {
+      let message = 'E-mail ou senha incorretos.';
+      if (error.code === 'auth/user-not-found') {
+        message = 'Usuário não encontrado.';
+      } else if (error.code === 'auth/wrong-password') {
+        message = 'Senha incorreta.';
+      } else if (error.code === 'auth/invalid-email') {
+        message = 'E-mail inválido.';
+      }
+      setErrorMessage(message);
+      setShowError(true);
+    } finally {
+      setAccessLoading(false);
     }
   };
 
@@ -121,10 +219,8 @@ export default function LoginPage() {
     );
   };
 
-  const isButtonDisabled = loginState !== 'idle' || loading;
-
   if (loading) {
-    return <LoadingScreen message="Conectando com Firebase..." />;
+    return <LoadingScreen message="Conectando com NEØ..." />;
   }
 
   return (
@@ -155,7 +251,7 @@ export default function LoginPage() {
           )}
           
           {showSuccess && (
-            <SuccessAlert message="Login realizado com sucesso!" />
+            <SuccessAlert message="Acesso/Cadastro/Login realizado com sucesso!" />
           )}
 
           <div className="space-y-4">
@@ -169,18 +265,103 @@ export default function LoginPage() {
             </p>
           </div>
           
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20 space-y-4">
+            {/* Botão Google */}
             <button
               onClick={handleLogin}
-              disabled={isButtonDisabled}
+              disabled={loginState !== 'idle' || loading}
               className="w-full bg-gradient-to-r from-pink-600 to-blue-600 hover:from-pink-700 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 px-8 py-4 rounded-xl text-white text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] disabled:scale-100 shadow-lg hover:shadow-xl disabled:shadow-none flex items-center justify-center space-x-3"
             >
               {getButtonIcon()}
               <span>{getButtonText()}</span>
             </button>
-
-            {/* Indicador de estado */}
-            {loginState !== 'idle' && (
+            {/* Botão Acessar com E-mail */}
+            <button
+              onClick={() => setLoginState(loginState === 'access' ? 'idle' : 'access')}
+              disabled={loginState === 'redirect' || loading}
+              className="w-full bg-gradient-to-r from-blue-600 to-gray-700 hover:from-blue-700 hover:to-black px-8 py-4 rounded-xl text-white text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl mt-2 flex items-center justify-center space-x-3"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" /></svg>
+              <span>{loginState === 'access' ? 'Voltar' : 'Acessar com E-mail'}</span>
+            </button>
+            {/* Botão Cadastro com E-mail */}
+            <button
+              onClick={() => setLoginState(loginState === 'register' ? 'idle' : 'register')}
+              disabled={loginState === 'redirect' || loading}
+              className="w-full bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black px-8 py-4 rounded-xl text-white text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl mt-2 flex items-center justify-center space-x-3"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12H8m4-4v8" /></svg>
+              <span>{loginState === 'register' ? 'Voltar' : 'Cadastrar com E-mail'}</span>
+            </button>
+            {/* Formulário de login (Acessar) */}
+            {loginState === 'access' && (
+              <form onSubmit={handleAccess} className="space-y-4 mt-4 text-left">
+                <input
+                  type="email"
+                  placeholder="E-mail"
+                  value={accessEmail}
+                  onChange={e => setAccessEmail(e.target.value)}
+                  className="input bg-white/80 text-gray-900 placeholder-gray-500"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Senha"
+                  value={accessPassword}
+                  onChange={e => setAccessPassword(e.target.value)}
+                  className="input bg-white/80 text-gray-900 placeholder-gray-500"
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="submit"
+                  disabled={accessLoading}
+                  className="w-full bg-gradient-to-r from-blue-600 to-gray-700 hover:from-blue-700 hover:to-black px-8 py-3 rounded-xl text-white text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:from-gray-400 disabled:to-gray-500 disabled:scale-100 disabled:shadow-none"
+                >
+                  {accessLoading ? 'Acessando...' : 'Acessar'}
+                </button>
+              </form>
+            )}
+            {/* Formulário de cadastro */}
+            {loginState === 'register' && (
+              <form onSubmit={handleRegister} className="space-y-4 mt-4 text-left">
+                <input
+                  type="text"
+                  placeholder="Nome completo"
+                  value={registerName}
+                  onChange={e => setRegisterName(e.target.value)}
+                  className="input bg-white/80 text-gray-900 placeholder-gray-500"
+                  autoFocus
+                  required
+                />
+                <input
+                  type="email"
+                  placeholder="E-mail"
+                  value={registerEmail}
+                  onChange={e => setRegisterEmail(e.target.value)}
+                  className="input bg-white/80 text-gray-900 placeholder-gray-500"
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Senha (mín. 6 caracteres)"
+                  value={registerPassword}
+                  onChange={e => setRegisterPassword(e.target.value)}
+                  className="input bg-white/80 text-gray-900 placeholder-gray-500"
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="submit"
+                  disabled={registerLoading}
+                  className="w-full bg-gradient-to-r from-pink-600 to-blue-600 hover:from-pink-700 hover:to-blue-700 px-8 py-3 rounded-xl text-white text-lg font-semibold transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:from-gray-400 disabled:to-gray-500 disabled:scale-100 disabled:shadow-none"
+                >
+                  {registerLoading ? 'Cadastrando...' : 'Cadastrar'}
+                </button>
+              </form>
+            )}
+            {/* Indicador de estado login Google */}
+            {loginState === 'redirect' && (
               <div className="mt-4 text-center">
                 <div className="flex items-center justify-center gap-2 text-white/60 text-sm">
                   <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,9 +374,8 @@ export default function LoginPage() {
               </div>
             )}
           </div>
-          
           <div className="text-sm text-gray-400 space-y-2">
-            <p>Faça login para acessar o ecossistema Interbox 2025</p>
+            <p>Faça login, acesse ou cadastre-se para acessar o ecossistema Interbox 2025</p>
             {loginState === 'redirect' && (
               <p className="text-xs text-blue-300">
                 🔄 Redirecionando para o Google...

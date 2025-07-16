@@ -97,4 +97,19 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+  
+  /* Fallback para backdrop-blur */
+  @supports not (backdrop-filter: blur(10px)) {
+    .backdrop-blur-fallback {
+      background-color: rgba(0, 0, 0, 0.95) !important;
+    }
+  }
+  
+  /* Melhorias para menu mobile */
+  .menu-mobile-fix {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
 }

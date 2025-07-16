@@ -7,6 +7,8 @@ interface ProtectedRouteProps {
   requireAuth?: boolean;
   requireProfile?: boolean;
   requireAdmin?: boolean;
+  requireDev?: boolean;
+  requireMarketing?: boolean;
   redirectTo?: string;
 }
 
@@ -15,6 +17,8 @@ export default function ProtectedRoute({
   requireAuth = true, 
   requireProfile = false,
   requireAdmin = false,
+  requireDev = false,
+  requireMarketing = false,
   redirectTo = '/'
 }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
@@ -34,12 +38,25 @@ export default function ProtectedRoute({
   }
 
   // Se requer perfil completo mas o perfil não está completo
+  // NOTA: Não redirecionamos automaticamente aqui para permitir que useRoleRedirect controle o fluxo
   if (requireProfile && !user.profileComplete) {
-    return <Navigate to="/setup-profile" replace />;
+    console.log('⚠️ ProtectedRoute: Perfil incompleto, mas permitindo renderização para useRoleRedirect controlar');
+    // Retornamos children para permitir que o useRoleRedirect faça o redirecionamento apropriado
+    return <>{children}</>;
   }
 
   // Se requer admin mas o usuário não é admin
   if (requireAdmin && user.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+
+  // Se requer dev mas o usuário não é dev
+  if (requireDev && user.role !== 'dev') {
+    return <Navigate to="/" replace />;
+  }
+
+  // Se requer marketing mas o usuário não é marketing
+  if (requireMarketing && user.role !== 'marketing') {
     return <Navigate to="/" replace />;
   }
 

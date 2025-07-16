@@ -1,20 +1,13 @@
 import { useState, useEffect } from 'react';
-import { doc, setDoc, updateDoc, increment, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 // import Image from 'next/image';
 import { useAnalytics } from '../../hooks/useAnalytics';
-import { useAuth } from '../../hooks/useAuth';
 import SEOHead from '../../components/SEOHead';
 import { 
-  FirestoreAudiovisual, 
-  AudiovisualTipo, 
-  ApprovalStatus,
-  createTimestamp,
-  validateAudiovisualData,
-  sanitizeAudiovisualData,
-  GAMIFICATION_TOKENS
+  AudiovisualTipo,
+  sanitizeAudiovisualData
 } from '../../types/firestore';
 
 // Tipos para o formulário
@@ -96,8 +89,10 @@ export default function AudiovisualFormPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState<string[]>([]);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [checkoutData, setCheckoutData] = useState<any>(null);
   const { trackPage, trackFormSubmit, trackAudiovisual } = useAnalytics();
-  const { user } = useAuth();
+  const functions = getFunctions();
 
   useEffect(() => {
     trackPage('audiovisual_form');
@@ -141,118 +136,65 @@ export default function AudiovisualFormPage() {
       // Sanitizar dados
       const sanitizedData = sanitizeAudiovisualData(formData);
       
-      // Criar documento Firestore
-      const audiovisualData: Omit<FirestoreAudiovisual, 'id'> = {
-        userId: `temp_${Date.now()}`, // Será atualizado quando usuário fizer login
+      // Preparar dados para o checkout FlowPay
+      const checkoutPayload = {
         userEmail: sanitizedData.email,
-        nome: sanitizedData.nome,
+        userName: sanitizedData.nome,
         telefone: sanitizedData.telefone,
         tipo: sanitizedData.tipo,
-        portfolio: {
-          urls: sanitizedData.portfolio.split('\n').filter((url: string) => url.trim()),
-          descricao: sanitizedData.motivacao,
-          experiencia: sanitizedData.experiencia,
-          equipamentos: sanitizedData.equipamentos.split('\n').filter((item: string) => item.trim()),
-          especialidades: sanitizedData.especialidades.split('\n').filter((esp: string) => esp.trim())
-        },
-        termosAceitos: true,
-        termosAceitosEm: createTimestamp(),
-        status: 'pending' as ApprovalStatus,
-        createdAt: createTimestamp(),
-        updatedAt: createTimestamp(),
-        metadata: {
-          source: 'app',
-          ipAddress: '', // Será preenchido pelo backend
-          userAgent: navigator.userAgent,
-          referrer: document.referrer
-        },
-        credentials: {
-          accessLevel: 'basic',
-          areas: [sanitizedData.tipo],
-          schedule: []
-        },
-        payment: {
-          required: false
-        },
-        communication: {
-          emailNotifications: true,
-          smsNotifications: false,
-          whatsappNotifications: false
-        }
+        experiencia: sanitizedData.experiencia,
+        portfolio: sanitizedData.portfolio,
+        equipamentos: sanitizedData.equipamentos,
+        especialidades: sanitizedData.especialidades,
+        disponibilidade: sanitizedData.disponibilidade,
+        motivacao: sanitizedData.motivacao,
+        cidade: sanitizedData.cidade,
+        estado: sanitizedData.estado
       };
 
-      // Validar dados antes de salvar
-      const validationErrors = validateAudiovisualData(audiovisualData);
-      if (validationErrors.length > 0) {
-        throw new Error(`Erro de validação: ${validationErrors.join(', ')}`);
+      // Criar checkout na FlowPay
+      const criarCheckoutFlowPay = httpsCallable(functions, 'criarCheckoutFlowPay');
+      const result = await criarCheckoutFlowPay(checkoutPayload);
+      const checkoutResult = result.data as any;
+
+      if (checkoutResult.success) {
+        setCheckoutData(checkoutResult);
+        setShowPaymentModal(true);
+        
+        // Analytics
+        trackFormSubmit('formulario_audiovisual_checkout');
+        trackAudiovisual('checkout_created', `${sanitizedData.tipo}_${sanitizedData.cidade}`);
+      } else {
+        throw new Error('Erro ao criar checkout');
       }
-
-      // Salvar no Firestore
-      const docId = `${Date.now()}-${sanitizedData.email.replace(/[^a-zA-Z0-9]/g, '')}`;
-      await setDoc(doc(db, 'audiovisual', docId), audiovisualData);
-
-      // 🎯 DISTRIBUIR $BOX TOKENS
-      if (user) {
-        try {
-          const tokensToAward = GAMIFICATION_TOKENS.envio_conteudo; // 75 $BOX por envio de conteúdo
-          
-          // Atualizar tokens do usuário
-          await updateDoc(doc(db, 'users', user.uid), {
-            'gamification.tokens.box.balance': increment(tokensToAward),
-            'gamification.tokens.box.totalEarned': increment(tokensToAward),
-            'gamification.tokens.box.lastTransaction': serverTimestamp(),
-            'gamification.totalActions': increment(1),
-            'gamification.lastActionAt': serverTimestamp(),
-            'gamification.weeklyTokens': increment(tokensToAward),
-            'gamification.monthlyTokens': increment(tokensToAward),
-            'gamification.yearlyTokens': increment(tokensToAward),
-            updatedAt: serverTimestamp()
-          });
-
-          // Registrar a ação de gamificação
-          await setDoc(doc(db, 'gamification_actions', `${user.uid}_${Date.now()}`), {
-            userId: user.uid,
-            userEmail: user.email,
-            userName: user.displayName || 'Usuário',
-            action: 'envio_conteudo',
-            points: tokensToAward,
-            description: `Envio de candidatura audiovisual - ${sanitizedData.tipo}`,
-            metadata: {
-              audiovisualId: docId,
-              tipo: sanitizedData.tipo,
-              cidade: sanitizedData.cidade
-            },
-            createdAt: serverTimestamp(),
-            processed: true,
-            processedAt: serverTimestamp()
-          });
-
-          console.log(`🎯 +${tokensToAward} $BOX distribuídos para ${user.email}`);
-        } catch (tokenError) {
-          console.error('Erro ao distribuir tokens $BOX:', tokenError);
-          // Não falhar o envio do formulário se a distribuição de tokens falhar
-        }
-      }
-
-      // Analytics
-      trackFormSubmit('formulario_audiovisual');
-      trackAudiovisual('submit_form', `${sanitizedData.tipo}_${sanitizedData.cidade}`);
-
-      setSuccess(true);
-      
-      // Remover o código que fecha a janela automaticamente
-      // setTimeout(() => {
-      //   window.close();
-      // }, 3000);
       
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      setError(`Erro ao enviar formulário: ${errorMessage}`);
-      console.error('Erro ao enviar formulário:', error);
-      trackAudiovisual('form_error', 'erro_envio');
+      setError(`Erro ao processar formulário: ${errorMessage}`);
+      console.error('Erro ao processar formulário:', error);
+      trackAudiovisual('form_error', 'erro_checkout');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePaymentRedirect = () => {
+    if (checkoutData?.checkoutUrl) {
+      // Abrir checkout em nova aba
+      window.open(checkoutData.checkoutUrl, '_blank');
+      
+      // Mostrar mensagem de sucesso
+      setSuccess(true);
+      setShowPaymentModal(false);
+      
+      // Analytics
+      trackAudiovisual('checkout_redirected', 'flowpay');
+    }
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPaymentModal(false);
+    setCheckoutData(null);
   };
 
   const handleReset = () => {
@@ -301,7 +243,51 @@ export default function AudiovisualFormPage() {
               <p className="text-gray-600 mb-2">
                 Preencha seus dados para participar do time audiovisual da CERRADØ 𝗜𝗡𝗧𝗘𝗥𝗕𝗢𝗫.
               </p>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
+                <p className="text-yellow-800 font-semibold mb-1">💰 Taxa de Inscrição</p>
+                <p className="text-yellow-700 text-sm">
+                  Taxa única de <span className="font-bold">R$ 29,90</span> para processar sua candidatura
+                </p>
+              </div>
             </div>
+
+            {/* Modal de Pagamento */}
+            {showPaymentModal && checkoutData && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center">
+                  <div className="text-green-600 text-6xl mb-4">💳</div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    Finalizar Inscrição
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Sua candidatura foi processada com sucesso! Agora você será redirecionado para o pagamento seguro da FlowPay.
+                  </p>
+                  
+                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <p className="text-gray-800 font-semibold mb-2">Resumo do Pagamento</p>
+                    <div className="flex justify-between text-sm">
+                      <span>Taxa de Inscrição:</span>
+                      <span className="font-bold">R$ 29,90</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <button
+                      onClick={handlePaymentRedirect}
+                      className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 focus:ring-4 focus:ring-green-200 transition-all duration-200"
+                    >
+                      Pagar com Segurança
+                    </button>
+                    <button
+                      onClick={handlePaymentCancel}
+                      className="w-full bg-gray-300 text-gray-700 py-2 px-6 rounded-lg font-medium hover:bg-gray-400 transition-all duration-200"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Card do formulário */}
             <div className="bg-gray-50 border border-pink-300 rounded-2xl shadow-[0_8px_32px_0_rgba(236,72,153,0.25)] p-8 text-left relative grunge-card">
@@ -312,16 +298,16 @@ export default function AudiovisualFormPage() {
                     Candidatura Enviada!
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    Sua candidatura foi recebida com sucesso. Entraremos em contato em breve.
+                    Sua candidatura foi processada com sucesso. Complete o pagamento para finalizar sua inscrição.
                   </p>
-                  {user && (
-                    <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mb-6">
-                      <p className="text-pink-800 font-semibold mb-2">🎯 Recompensa Ganha!</p>
-                      <p className="text-pink-700 text-sm">
-                        Você ganhou <span className="font-bold">+{GAMIFICATION_TOKENS.envio_conteudo} $BOX</span> por enviar sua candidatura!
-                      </p>
-                    </div>
-                  )}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p className="text-blue-800 font-semibold mb-2">📋 Próximos Passos</p>
+                    <ul className="text-blue-700 text-sm space-y-1 text-left">
+                      <li>• Complete o pagamento de R$ 29,90</li>
+                      <li>• Aguarde a confirmação por email</li>
+                      <li>• Entraremos em contato em breve</li>
+                    </ul>
+                  </div>
                   <a
                     href="/hub"
                     className="inline-block bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:ring-4 focus:ring-pink-200 transition-all duration-200"
@@ -592,7 +578,17 @@ export default function AudiovisualFormPage() {
                       disabled={loading}
                       className="flex-1 bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:ring-4 focus:ring-pink-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                     >
-                      {loading ? 'Enviando...' : 'Enviar Candidatura'}
+                      {loading ? (
+                        <span className="flex items-center justify-center">
+                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Processando...
+                        </span>
+                      ) : (
+                        'Enviar Candidatura - R$ 29,90'
+                      )}
                     </button>
                     
                     <button

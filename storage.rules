@@ -1,0 +1,42 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Regras padrão - negar tudo
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+    
+    // Regras para fotos de perfil dos usuários
+    match /users/{userId}/profile-photo {
+      // Permitir upload apenas para o próprio usuário
+      allow write: if request.auth != null 
+        && request.auth.uid == userId
+        && request.resource.size < 5 * 1024 * 1024 // Máximo 5MB
+        && request.resource.contentType.matches('image/.*'); // Apenas imagens
+      
+      // Permitir leitura para o próprio usuário e admins
+      allow read: if request.auth != null 
+        && (request.auth.uid == userId || request.auth.token.admin == true || request.auth.token.dev == true);
+    }
+    
+    // Regras para upload de CNH
+    match /cnh/{userId}/{fileName} {
+      // Permitir upload apenas para usuários autenticados
+      allow write: if request.auth != null 
+        && request.auth.uid == userId
+        && request.resource.size < 5 * 1024 * 1024 // Máximo 5MB
+        && request.resource.contentType.matches('image/.*'); // Apenas imagens
+      
+      // Permitir leitura apenas para admins
+      allow read: if request.auth != null 
+        && (request.auth.token.admin == true || request.auth.token.dev == true);
+    }
+    
+    // Regras para outros arquivos (se necessário)
+    match /public/{allPaths=**} {
+      allow read: if true; // Arquivos públicos
+      allow write: if request.auth != null 
+        && (request.auth.token.admin == true || request.auth.token.dev == true);
+    }
+  }
+} 

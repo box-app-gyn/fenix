@@ -39,7 +39,7 @@ export default function CadastroAtleta() {
       });
 
       alert('Cadastro realizado com sucesso!');
-      window.location.href = '/hub';
+      window.location.href = '/home';
     } catch (error) {
       console.error('Erro ao cadastrar:', error);
       alert('Erro ao realizar cadastro. Tente novamente.');

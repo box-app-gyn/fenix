@@ -136,7 +136,7 @@ export default function SelecaoTipoCadastro() {
 📈 Streak: 1 dia
 
 Bem-vindo ao Interbox 2025!`);
-        navigate('/hub');
+        navigate('/home');
       }, 1000);
 
     } catch (error) {

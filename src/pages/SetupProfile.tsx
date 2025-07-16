@@ -162,7 +162,7 @@ export default function SetupProfile() {
 
 🚀 Sua jornada no ecossistema Interbox começou!
 Acesse o Hub para explorar todas as funcionalidades.`);
-        window.location.href = '/hub';
+        window.location.href = '/home';
       }, 2000);
 
     } catch (error) {
