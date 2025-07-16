@@ -19,11 +19,33 @@
     "@typescript-eslint"
   ],
   "rules": {
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "quotes": "off",
+    "max-len": "off",
+    "comma-dangle": "off",
+    "object-curly-spacing": "off",
+    "indent": "off",
+    "no-trailing-spaces": "off",
+    "eol-last": "off",
+    "spaced-comment": "off",
+    "require-jsdoc": "off",
+    "arrow-parens": "off",
+    "padded-blocks": "off",
+    "operator-linebreak": "off",
+    "no-unused-vars": "warn",
+    "no-undef": "error"
   },
   "settings": {
     "react": {
       "version": "detect"
     }
-  }
+  },
+  "ignorePatterns": [
+    "functions/lib/**/*",
+    "functions/src/__tests__/**/*",
+    "dist/**/*",
+    "node_modules/**/*",
+    "functions/src/**/*"
+  ]
 } 

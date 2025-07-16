@@ -17,7 +17,7 @@ export default function CadastroEspectador() {
     cidade: '',
     mensagem: '',
     interesse: '',
-    experienciaCrossFit: ''
+    experienciaCrossFit: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +35,7 @@ export default function CadastroEspectador() {
         isActive: true,
         profileComplete: true,
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
 
       alert('Cadastro realizado com sucesso!');
@@ -51,7 +51,7 @@ export default function CadastroEspectador() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -227,4 +227,4 @@ export default function CadastroEspectador() {
       </div>
     </div>
   );
-} 
+}

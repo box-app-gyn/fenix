@@ -58,12 +58,12 @@ export function useUserProfile() {
       setProfile({
         ...profile,
         ...updates,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       });
     } else {
       setProfile({
         ...updates,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       } as typeof profile);
     }
   }, [profile, setProfile]);
@@ -83,13 +83,13 @@ export function usePreferences() {
     notifications: {
       email: true,
       push: true,
-      sms: false
+      sms: false,
     },
     privacy: {
       profileVisibility: 'public' as const,
       showEmail: false,
-      showPhone: false
-    }
+      showPhone: false,
+    },
   };
 
   const [preferences, setPreferences] = useStorage(STORAGE_KEYS.PREFERENCES, defaultPreferences);
@@ -98,12 +98,12 @@ export function usePreferences() {
     if (preferences) {
       setPreferences({
         ...preferences,
-        ...updates
+        ...updates,
       });
     } else {
       setPreferences({
         ...defaultPreferences,
-        ...updates
+        ...updates,
       });
     }
   }, [preferences, setPreferences]);
@@ -130,7 +130,7 @@ export function usePreferences() {
     updateTheme,
     updateLanguage,
     updateNotifications,
-    updatePrivacy
+    updatePrivacy,
   };
 }
 
@@ -143,12 +143,12 @@ export function useGamification() {
       setGamification({
         ...gamification,
         ...updates,
-        lastActionAt: new Date().toISOString()
+        lastActionAt: new Date().toISOString(),
       });
     } else {
       setGamification({
         ...updates,
-        lastActionAt: new Date().toISOString()
+        lastActionAt: new Date().toISOString(),
       } as typeof gamification);
     }
   }, [gamification, setGamification]);
@@ -157,7 +157,7 @@ export function useGamification() {
     if (gamification) {
       updateGamification({
         points: ((gamification as any).points || 0) + points,
-        totalActions: ((gamification as any).totalActions || 0) + 1
+        totalActions: ((gamification as any).totalActions || 0) + 1,
       });
     }
   }, [gamification, updateGamification]);
@@ -165,7 +165,7 @@ export function useGamification() {
   const addAchievement = useCallback((achievement: string) => {
     if (gamification && !(gamification as any).achievements?.includes(achievement)) {
       updateGamification({
-        achievements: [...((gamification as any).achievements || []), achievement]
+        achievements: [...((gamification as any).achievements || []), achievement],
       });
     }
   }, [gamification, updateGamification]);
@@ -173,7 +173,7 @@ export function useGamification() {
   const addReward = useCallback((reward: string) => {
     if (gamification && !(gamification as any).rewards?.includes(reward)) {
       updateGamification({
-        rewards: [...((gamification as any).rewards || []), reward]
+        rewards: [...((gamification as any).rewards || []), reward],
       });
     }
   }, [gamification, updateGamification]);
@@ -181,7 +181,7 @@ export function useGamification() {
   const updateStreak = useCallback((streakDays: number) => {
     updateGamification({
       streakDays,
-      lastLoginStreak: new Date().toISOString()
+      lastLoginStreak: new Date().toISOString(),
     });
   }, [updateGamification]);
 
@@ -191,7 +191,7 @@ export function useGamification() {
     addPoints,
     addAchievement,
     addReward,
-    updateStreak
+    updateStreak,
   };
 }
 
@@ -210,10 +210,10 @@ export function useCache<T>(key: string, defaultValue?: T) {
         [key]: {
           value: newValue,
           timestamp: Date.now(),
-          ttl
-        }
+          ttl,
+        },
       },
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     });
     setValue(newValue);
   }, [key]);
@@ -239,7 +239,7 @@ export function useSession() {
       setSession({
         ...session,
         ...updates,
-        lastLogin: new Date().toISOString()
+        lastLogin: new Date().toISOString(),
       });
     } else {
       setSession({
@@ -249,8 +249,8 @@ export function useSession() {
         deviceInfo: {
           userAgent: navigator.userAgent,
           platform: navigator.platform,
-          screenSize: `${window.screen.width}x${window.screen.height}`
-        }
+          screenSize: `${window.screen.width}x${window.screen.height}`,
+        },
       } as typeof session);
     }
   }, [session, setSession]);
@@ -290,7 +290,7 @@ export function useStorageInfo() {
 
     // Atualizar informações quando storage mudar
     const unsubscribe = storage.addListener('*', updateInfo);
-    
+
     return unsubscribe;
   }, []);
 
@@ -314,7 +314,7 @@ export function useStorageCleanup() {
         });
 
         if (expiredKeys.length > 0) {
-          expiredKeys.forEach(key => {
+          expiredKeys.forEach((key) => {
             delete (cache as any).data[key];
           });
           storage.set(STORAGE_KEYS.CACHE, cache);
@@ -341,7 +341,7 @@ export function useStorageSync() {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -363,7 +363,7 @@ export function useAppStorage() {
 
   // Limpeza automática
   useStorageCleanup();
-  
+
   // Sincronização entre abas
   useStorageSync();
 
@@ -383,18 +383,18 @@ export function useAppStorage() {
     profile,
     updateProfile,
     clearProfile,
-    
+
     // Preferences
     preferences,
-    
+
     // Gamification
     gamification,
-    
+
     // Session
     session,
     updateSession,
     clearSession,
-    
+
     // App data
     chatHistory,
     setChatHistory,
@@ -404,11 +404,11 @@ export function useAppStorage() {
     setTeamInvites,
     paymentHistory,
     setPaymentHistory,
-    
+
     // Storage info
     storageInfo,
-    
+
     // Utilities
-    clearAllUserData
+    clearAllUserData,
   };
-} 
+}

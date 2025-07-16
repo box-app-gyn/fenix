@@ -22,18 +22,18 @@ export default function CacheDebug() {
       // Inicializar monitor de carregamento
       const monitor = new LoadMonitor();
       setLoadMonitor(monitor);
-      
+
       collectCacheInfo();
       checkCacheIssues();
       checkLoadIssuesInfo();
       checkSpecificIssues();
-      
+
       // Atualizar informações periodicamente
       const interval = setInterval(() => {
         checkLoadIssuesInfo();
         checkSpecificIssues();
       }, 2000);
-      
+
       return () => clearInterval(interval);
     }
   }, []);
@@ -188,7 +188,7 @@ export default function CacheDebug() {
         >
           {loading ? '⏳' : '🧹'} Limpar Cache
         </button>
-        
+
         <button
           onClick={handleCheckUpdates}
           disabled={loading}
@@ -196,7 +196,7 @@ export default function CacheDebug() {
         >
           {loading ? '⏳' : '🔄'} Verificar Atualizações
         </button>
-        
+
         <button
           onClick={handleClearAndReload}
           disabled={loading}
@@ -204,7 +204,7 @@ export default function CacheDebug() {
         >
           {loading ? '⏳' : '💥'} Limpar + Recarregar
         </button>
-        
+
         <button
           onClick={handleForceReload}
           disabled={loading}
@@ -212,9 +212,9 @@ export default function CacheDebug() {
         >
           🔄 Forçar Reload
         </button>
-        
 
-        
+
+
         <button
           onClick={async () => {
             setLoading(true);
@@ -229,7 +229,7 @@ export default function CacheDebug() {
         >
           {loading ? '⏳' : '🔧'} Debug PWA
         </button>
-        
+
         <button
           onClick={async () => {
             setLoading(true);
@@ -245,7 +245,7 @@ export default function CacheDebug() {
         >
           {loading ? '⏳' : '🗑️'} Limpar SW Cache
         </button>
-        
+
         <button
           onClick={async () => {
             setLoading(true);
@@ -272,11 +272,11 @@ export default function CacheDebug() {
             {JSON.stringify({
               cache: cacheInfo,
               loadIssues: loadIssues,
-              specificIssues: specificIssues
+              specificIssues: specificIssues,
             }, null, 2)}
           </pre>
         </div>
       </details>
     </div>
   );
-} 
+}

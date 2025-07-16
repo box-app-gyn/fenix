@@ -12,14 +12,14 @@ interface ProtectedRouteProps {
   redirectTo?: string;
 }
 
-export default function ProtectedRoute({ 
-  children, 
-  requireAuth = true, 
+export default function ProtectedRoute({
+  children,
+  requireAuth = true,
   requireProfile = false,
   requireAdmin = false,
   requireDev = false,
   requireMarketing = false,
-  redirectTo = '/'
+  redirectTo = '/',
 }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
 
@@ -61,4 +61,4 @@ export default function ProtectedRoute({
   }
 
   return <>{children}</>;
-} 
+}

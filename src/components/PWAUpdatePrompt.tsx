@@ -40,7 +40,7 @@ export default function PWAUpdatePrompt() {
                   <p className="text-xs opacity-90">Nosso WebApp possui uma nova versão com melhorias.</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={handleUpdate}
@@ -63,7 +63,7 @@ export default function PWAUpdatePrompt() {
                     </>
                   )}
                 </button>
-                
+
                 <button
                   onClick={handleDismiss}
                   className="text-white hover:text-gray-200 transition-colors p-1"
@@ -79,4 +79,4 @@ export default function PWAUpdatePrompt() {
       )}
     </AnimatePresence>
   );
-} 
+}

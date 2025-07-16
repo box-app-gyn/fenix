@@ -57,7 +57,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(/images/bg_main.png)'
+          backgroundImage: 'url(/images/bg_main.png)',
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0a0a1a]/80" />
@@ -72,7 +72,7 @@ export default function Hero() {
             scale: [1, 1.02, 0.98, 1],
             filter: strobeActive
               ? ['brightness(1)', 'brightness(2)', 'brightness(1)']
-              : ['brightness(1)', 'brightness(1.1)', 'brightness(1)']
+              : ['brightness(1)', 'brightness(1.1)', 'brightness(1)'],
           }}
           transition={{
             rotate: { duration: 8, repeat: Infinity, ease: 'easeInOut' },
@@ -80,15 +80,15 @@ export default function Hero() {
             filter: {
               duration: strobeActive ? 0.2 : 4,
               repeat: strobeActive ? 0 : Infinity,
-              ease: 'easeInOut'
-            }
+              ease: 'easeInOut',
+            },
           }}
         >
           <motion.div
             transition={{
               duration: strobeActive ? 0.2 : 3,
               repeat: strobeActive ? 0 : Infinity,
-              ease: 'easeInOut'
+              ease: 'easeInOut',
             }}
             className="rounded-full"
           >
@@ -156,4 +156,4 @@ export default function Hero() {
       </div>
     </section>
   )
-} 
+}

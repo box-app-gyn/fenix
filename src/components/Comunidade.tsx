@@ -17,7 +17,7 @@ export default function Comunidade() {
     totalUsers: 0,
     totalTeams: 0,
     totalCategories: 12,
-    eventDays: 3
+    eventDays: 3,
   });
 
   // Buscar dados reais do Firestore
@@ -35,15 +35,15 @@ export default function Comunidade() {
         // Buscar configurações de categorias
         const configDoc = doc(db, 'config', 'evento');
         const configSnapshot = await getDoc(configDoc);
-        const totalCategories = configSnapshot.exists() 
-          ? configSnapshot.data()?.categorias?.length || 12 
+        const totalCategories = configSnapshot.exists()
+          ? configSnapshot.data()?.categorias?.length || 12
           : 12;
 
         setStats({
           totalUsers: Math.max(totalUsers, memberCount), // Usar o maior valor
           totalTeams,
           totalCategories,
-          eventDays: 3
+          eventDays: 3,
         });
 
         // Atualizar memberCount se os dados reais forem maiores
@@ -64,9 +64,9 @@ export default function Comunidade() {
       // 70% de chance de adicionar 1-3 membros a cada 30-60 segundos
       if (Math.random() > 0.3) {
         const newMembers = Math.floor(Math.random() * 3) + 1;
-        setMemberCount(prev => prev + newMembers);
+        setMemberCount((prev) => prev + newMembers);
         setIsAnimating(true);
-        
+
         // Reset animação após 2 segundos
         setTimeout(() => setIsAnimating(false), 2000);
       }
@@ -78,12 +78,12 @@ export default function Comunidade() {
   return (
     <section className="relative py-20 overflow-hidden">
       {/* Background com bg_rounded.png */}
-      <div 
+      <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: 'url(/images/bg_rounded.png)',
           backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
         }}
       >
         {/* Overlay para melhorar legibilidade */}
@@ -92,7 +92,7 @@ export default function Comunidade() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          
+
           {/* Conteúdo Texto */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -101,7 +101,7 @@ export default function Comunidade() {
             viewport={{ once: true }}
             className="text-center lg:text-left"
           >
-            <motion.h2 
+            <motion.h2
               className="text-4xl md:text-5xl font-bold text-white mb-6"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -111,7 +111,7 @@ export default function Comunidade() {
               Aqui, é onde a comunidade pulsa e o futuro respira.
             </motion.h2>
 
-            <motion.div 
+            <motion.div
               className="space-y-6"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -135,7 +135,7 @@ export default function Comunidade() {
                     <span className="text-gray-300 ml-1">membros ativos</span>
                   </span>
                 </div>
-                
+
                 {/* Indicador de crescimento */}
                 {isAnimating && (
                   <motion.div
@@ -183,7 +183,7 @@ export default function Comunidade() {
                 transition={{ duration: 1, delay: 0.5 }}
                 viewport={{ once: true }}
               />
-              
+
               {/* Efeito de brilho */}
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
@@ -350,4 +350,4 @@ export default function Comunidade() {
       </div>
     </section>
   );
-} 
+}

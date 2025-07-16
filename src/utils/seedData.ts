@@ -20,7 +20,7 @@ const mockLeaderboardData: SeedLeaderboardEntry[] = [
     userRole: 'atleta',
     level: 'platina',
     totalActions: 45,
-    streakDays: 12
+    streakDays: 12,
   },
   {
     userName: 'Maria Santos',
@@ -29,7 +29,7 @@ const mockLeaderboardData: SeedLeaderboardEntry[] = [
     userRole: 'atleta',
     level: 'platina',
     totalActions: 38,
-    streakDays: 8
+    streakDays: 8,
   },
   {
     userName: 'Pedro Costa',
@@ -38,7 +38,7 @@ const mockLeaderboardData: SeedLeaderboardEntry[] = [
     userRole: 'jurado',
     level: 'ouro',
     totalActions: 32,
-    streakDays: 15
+    streakDays: 15,
   },
   {
     userName: 'Ana Oliveira',
@@ -47,7 +47,7 @@ const mockLeaderboardData: SeedLeaderboardEntry[] = [
     userRole: 'midia',
     level: 'ouro',
     totalActions: 28,
-    streakDays: 6
+    streakDays: 6,
   },
   {
     userName: 'Carlos Lima',
@@ -56,7 +56,7 @@ const mockLeaderboardData: SeedLeaderboardEntry[] = [
     userRole: 'espectador',
     level: 'ouro',
     totalActions: 25,
-    streakDays: 10
+    streakDays: 10,
   },
   {
     userName: 'Fernanda Rocha',
@@ -65,7 +65,7 @@ const mockLeaderboardData: SeedLeaderboardEntry[] = [
     userRole: 'atleta',
     level: 'prata',
     totalActions: 22,
-    streakDays: 7
+    streakDays: 7,
   },
   {
     userName: 'Roberto Alves',
@@ -74,7 +74,7 @@ const mockLeaderboardData: SeedLeaderboardEntry[] = [
     userRole: 'jurado',
     level: 'prata',
     totalActions: 19,
-    streakDays: 9
+    streakDays: 9,
   },
   {
     userName: 'Juliana Costa',
@@ -83,20 +83,20 @@ const mockLeaderboardData: SeedLeaderboardEntry[] = [
     userRole: 'midia',
     level: 'prata',
     totalActions: 16,
-    streakDays: 5
-  }
+    streakDays: 5,
+  },
 ]
 
 export const seedLeaderboardData = async () => {
   try {
     console.log('🌱 Iniciando seed dos dados do leaderboard $BOX...')
-    
+
     const leaderboardRef = collection(db, 'gamification_leaderboard')
-    
+
     for (let i = 0; i < mockLeaderboardData.length; i++) {
       const entry = mockLeaderboardData[i]
       const now = serverTimestamp()
-      
+
       const leaderboardEntry: Omit<FirestoreGamificationLeaderboard, 'id'> = {
         userId: `user_${i + 1}`,
         userEmail: `${entry.userName.toLowerCase().replace(' ', '.')}@example.com`,
@@ -115,13 +115,13 @@ export const seedLeaderboardData = async () => {
         monthlyPoints: Math.floor(entry.points * 0.3),
         yearlyPoints: entry.points,
         badges: ['primeiro_cadastro', 'ativo'],
-        activeChallenges: []
+        activeChallenges: [],
       }
-      
+
       await addDoc(leaderboardRef, leaderboardEntry)
       console.log(`✅ Adicionado: ${entry.userName} - ${entry.points} $BOX (${entry.level})`)
     }
-    
+
     console.log('🎉 Seed do leaderboard $BOX concluído com sucesso!')
     return true
   } catch (error) {
@@ -141,4 +141,4 @@ export const clearLeaderboardData = async () => {
     console.error('❌ Erro ao limpar dados:', error)
     return false
   }
-} 
+}

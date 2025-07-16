@@ -10,15 +10,15 @@ interface LinkShortenerProps {
 
 export default function LinkShortener({ className = '' }: LinkShortenerProps) {
   const { user } = useAuth();
-  const { 
-    links, 
-    loading, 
-    error, 
-    stats, 
-    createLink, 
-    updateLink, 
+  const {
+    links,
+    loading,
+    error,
+    stats,
+    createLink,
+    updateLink,
     deleteLink,
-    registerClick 
+    registerClick,
   } = useLinkShortener();
 
   const [showForm, setShowForm] = useState(false);
@@ -35,7 +35,7 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const result = await createLink(formData);
     if (result) {
       setFormData({
@@ -151,7 +151,7 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
           className="bg-white/5 rounded-xl p-8 border border-white/10"
         >
           <h3 className="text-xl font-bold text-white mb-6">Criar Novo Link</h3>
-          
+
           {error && (
             <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 mb-6 text-red-300">
               {error}
@@ -246,7 +246,7 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
       {/* Lista de links */}
       <div className="space-y-4">
         <h3 className="text-xl font-bold text-white">Seus Links</h3>
-        
+
         {loading && (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mx-auto"></div>
@@ -285,11 +285,11 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
                     {link.isActive ? 'Ativo' : 'Inativo'}
                   </span>
                 </div>
-                
+
                 <p className="text-gray-400 text-sm mb-2 break-all">
                   {link.originalUrl}
                 </p>
-                
+
                 <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
                   <span>🔗 {link.shortUrl}</span>
                   <span>👆 {link.clickCount} cliques</span>
@@ -338,21 +338,21 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
                 >
                   Testar
                 </button>
-                
+
                 <button
                   onClick={() => copyToClipboard(link.shortUrl)}
                   className="bg-white/10 text-white font-bold py-2 px-4 rounded-lg hover:bg-white/20 transition-all duration-200"
                 >
                   Copiar
                 </button>
-                
+
                 <button
                   onClick={() => setEditingLink(editingLink === link.id ? null : link.id)}
                   className="bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-yellow-700 transition-all duration-200"
                 >
                   Editar
                 </button>
-                
+
                 <button
                   onClick={() => handleDelete(link.id)}
                   className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition-all duration-200"
@@ -379,7 +379,7 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
                       className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-pink-500"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-white font-medium mb-2">Categoria</label>
                     <select
@@ -396,7 +396,7 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
                     </select>
                   </div>
                 </div>
-                
+
                 <div className="mt-4">
                   <label className="block text-white font-medium mb-2">Descrição</label>
                   <textarea
@@ -406,7 +406,7 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
                     className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-pink-500"
                   />
                 </div>
-                
+
                 <div className="flex gap-4 mt-4">
                   <button
                     onClick={() => handleEdit(link.id)}
@@ -431,4 +431,4 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
       </div>
     </div>
   );
-} 
+}

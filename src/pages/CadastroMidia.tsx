@@ -18,7 +18,7 @@ export default function CadastroMidia() {
     mensagem: '',
     tipoMidia: '',
     portfolio: '',
-    equipamentos: ''
+    equipamentos: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,7 +36,7 @@ export default function CadastroMidia() {
         isActive: true,
         profileComplete: true,
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
 
       alert('Cadastro realizado com sucesso!');
@@ -52,7 +52,7 @@ export default function CadastroMidia() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -238,4 +238,4 @@ export default function CadastroMidia() {
       </div>
     </div>
   );
-} 
+}

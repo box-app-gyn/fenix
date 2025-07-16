@@ -1,9 +1,9 @@
-import { 
-  StorageManager, 
-  storage, 
-  VALID_USER_TYPES, 
+import {
+  StorageManager,
+  storage,
+  VALID_USER_TYPES,
   UserType,
-  getUserType, 
+  getUserType,
   setUserType,
   getUserProfile,
   setUserProfile,
@@ -17,7 +17,7 @@ import {
   clearUserData,
   exportUserData,
   importUserData,
-  STORAGE_KEYS
+  STORAGE_KEYS,
 } from '../storage';
 
 // Mock do localStorage
@@ -38,13 +38,13 @@ const mockLocalStorage = {
   length: 0,
   key: function(index: number): string | null {
     return Object.keys(this.data)[index] || null;
-  }
+  },
 };
 
 // Mock do window
 Object.defineProperty(window, 'localStorage', {
   value: mockLocalStorage,
-  writable: true
+  writable: true,
 });
 
 describe('StorageManager', () => {
@@ -69,10 +69,10 @@ describe('StorageManager', () => {
     it('deve definir e obter valor', () => {
       const key = 'testKey';
       const value = { test: 'data' };
-      
+
       const setResult = storageManager.set(key, value);
       expect(setResult).toBe(true);
-      
+
       const getResult = storageManager.get(key);
       expect(getResult).toEqual(value);
     });
@@ -91,10 +91,10 @@ describe('StorageManager', () => {
     it('deve remover item', () => {
       const key = 'testKey';
       const value = { test: 'data' };
-      
+
       storageManager.set(key, value);
       expect(storageManager.get(key)).toEqual(value);
-      
+
       const removeResult = storageManager.remove(key);
       expect(removeResult).toBe(true);
       expect(storageManager.get(key)).toBeNull();
@@ -103,9 +103,9 @@ describe('StorageManager', () => {
     it('deve verificar se chave existe', () => {
       const key = 'testKey';
       const value = { test: 'data' };
-      
+
       expect(storageManager.has(key)).toBe(false);
-      
+
       storageManager.set(key, value);
       expect(storageManager.has(key)).toBe(true);
     });
@@ -113,9 +113,9 @@ describe('StorageManager', () => {
     it('deve limpar todo o storage', () => {
       storageManager.set('key1', 'value1');
       storageManager.set('key2', 'value2');
-      
+
       expect(storageManager.size()).toBe(2);
-      
+
       const clearResult = storageManager.clear();
       expect(clearResult).toBe(true);
       expect(storageManager.size()).toBe(0);
@@ -126,13 +126,13 @@ describe('StorageManager', () => {
     it('deve usar cache para leituras subsequentes', () => {
       const key = 'testKey';
       const value = { test: 'data' };
-      
+
       storageManager.set(key, value);
-      
+
       // Primeira leitura
       const firstRead = storageManager.get(key);
       expect(firstRead).toEqual(value);
-      
+
       // Segunda leitura deve usar cache
       const secondRead = storageManager.get(key);
       expect(secondRead).toEqual(value);
@@ -141,12 +141,12 @@ describe('StorageManager', () => {
     it('deve limpar cache', () => {
       const key = 'testKey';
       const value = { test: 'data' };
-      
+
       storageManager.set(key, value);
       storageManager.get(key); // Carregar no cache
-      
+
       storageManager.clearCache();
-      
+
       // Cache deve estar vazio
       const info = storageManager.getInfo();
       expect(info.cacheSize).toBe(0);
@@ -157,25 +157,25 @@ describe('StorageManager', () => {
     it('deve notificar listeners quando valor muda', () => {
       const key = 'testKey';
       const callback = jest.fn();
-      
+
       const unsubscribe = storageManager.addListener(key, callback);
-      
+
       storageManager.set(key, 'newValue');
-      
+
       expect(callback).toHaveBeenCalledWith('newValue');
-      
+
       unsubscribe();
     });
 
     it('deve remover listener quando unsubscribe é chamado', () => {
       const key = 'testKey';
       const callback = jest.fn();
-      
+
       const unsubscribe = storageManager.addListener(key, callback);
       unsubscribe();
-      
+
       storageManager.set(key, 'newValue');
-      
+
       expect(callback).not.toHaveBeenCalled();
     });
   });
@@ -184,7 +184,7 @@ describe('StorageManager', () => {
     it('deve lidar com JSON inválido', () => {
       // Simular localStorage com JSON inválido
       mockLocalStorage.setItem('invalidKey', 'invalid json');
-      
+
       const result = storageManager.get('invalidKey');
       expect(result).toBeNull();
     });
@@ -193,10 +193,10 @@ describe('StorageManager', () => {
       // Simular localStorage indisponível
       const originalLocalStorage = window.localStorage;
       delete (window as any).localStorage;
-      
+
       const result = storageManager.get('testKey', 'default');
       expect(result).toBe('default');
-      
+
       // Restaurar localStorage
       (window as any).localStorage = originalLocalStorage;
     });
@@ -211,7 +211,7 @@ describe('User Type Functions', () => {
   it('deve obter tipo de usuário válido', () => {
     const userType: UserType = 'atleta';
     setUserType(userType);
-    
+
     const result = getUserType();
     expect(result).toBe(userType);
   });
@@ -219,7 +219,7 @@ describe('User Type Functions', () => {
   it('deve retornar default para tipo inválido', () => {
     // Simular tipo inválido no localStorage
     mockLocalStorage.setItem(STORAGE_KEYS.USER_TYPE, 'invalidType');
-    
+
     const result = getUserType();
     expect(result).toBe('publico');
   });
@@ -227,19 +227,19 @@ describe('User Type Functions', () => {
   it('deve definir tipo de usuário válido', () => {
     const userType: UserType = 'audiovisual';
     const result = setUserType(userType);
-    
+
     expect(result).toBe(true);
     expect(getUserType()).toBe(userType);
   });
 
   it('deve rejeitar tipo de usuário inválido', () => {
     const result = setUserType('invalidType' as UserType);
-    
+
     expect(result).toBe(false);
   });
 
   it('deve validar tipos de usuário', () => {
-    VALID_USER_TYPES.forEach(type => {
+    VALID_USER_TYPES.forEach((type) => {
       expect(setUserType(type)).toBe(true);
       expect(getUserType()).toBe(type);
     });
@@ -271,8 +271,8 @@ describe('Profile Functions', () => {
         lastLoginStreak: '2025-01-01T00:00:00Z',
         referralCode: 'REF123',
         referrals: [],
-        referralPoints: 0
-      }
+        referralPoints: 0,
+      },
     };
 
     const setResult = setUserProfile(profile);
@@ -291,20 +291,20 @@ describe('Preferences Functions', () => {
 
   it('deve retornar preferências padrão', () => {
     const preferences = getPreferences();
-    
+
     expect(preferences).toMatchObject({
       theme: 'auto',
       language: 'pt-BR',
       notifications: {
         email: true,
         push: true,
-        sms: false
+        sms: false,
       },
       privacy: {
         profileVisibility: 'public',
         showEmail: false,
-        showPhone: false
-      }
+        showPhone: false,
+      },
     });
   });
 
@@ -315,13 +315,13 @@ describe('Preferences Functions', () => {
       notifications: {
         email: false,
         push: true,
-        sms: true
+        sms: true,
       },
       privacy: {
         profileVisibility: 'private' as const,
         showEmail: true,
-        showPhone: false
-      }
+        showPhone: false,
+      },
     };
 
     const setResult = setPreferences(customPreferences);
@@ -347,7 +347,7 @@ describe('Gamification Functions', () => {
       streakDays: 7,
       referralCode: 'REF456',
       referrals: ['user1', 'user2'],
-      referralPoints: 50
+      referralPoints: 50,
     };
 
     const setResult = setGamification(gamification);
@@ -376,7 +376,7 @@ describe('Cache Functions', () => {
     expect(getResult).toMatchObject({
       value,
       timestamp: expect.any(Number),
-      ttl
+      ttl,
     });
   });
 
@@ -390,7 +390,7 @@ describe('Cache Functions', () => {
     // Aguardar expiração
     setTimeout(() => {
       clearExpiredCache();
-      
+
       const result = getCache(key);
       expect(result).toBeUndefined();
     }, 1100);
@@ -432,7 +432,7 @@ describe('Utility Functions', () => {
     const testData = {
       userType: 'atleta' as UserType,
       userProfile: { uid: 'test' },
-      preferences: { theme: 'dark' }
+      preferences: { theme: 'dark' },
     };
 
     Object.entries(testData).forEach(([key, value]) => {
@@ -440,11 +440,11 @@ describe('Utility Functions', () => {
     });
 
     const exportResult = exportUserData();
-    
+
     expect(exportResult).toMatchObject({
       exportDate: expect.any(String),
       version: '1.0.0',
-      data: expect.objectContaining(testData)
+      data: expect.objectContaining(testData),
     });
   });
 
@@ -455,8 +455,8 @@ describe('Utility Functions', () => {
       data: {
         userType: 'audiovisual',
         userProfile: { uid: 'imported' },
-        preferences: { theme: 'light' }
-      }
+        preferences: { theme: 'light' },
+      },
     };
 
     const importResult = importUserData(importData);
@@ -469,7 +469,7 @@ describe('Utility Functions', () => {
 
   it('deve rejeitar dados de importação inválidos', () => {
     const invalidData = { invalid: 'format' };
-    
+
     const importResult = importUserData(invalidData);
     expect(importResult).toBe(false);
   });
@@ -485,12 +485,12 @@ describe('Storage Info', () => {
     storage.set('key2', 'value2');
 
     const info = storage.getInfo();
-    
+
     expect(info).toMatchObject({
       available: true,
       size: 2,
       keys: expect.arrayContaining(['key1', 'key2']),
-      cacheSize: expect.any(Number)
+      cacheSize: expect.any(Number),
     });
   });
 });
@@ -504,7 +504,7 @@ describe('Integration Tests', () => {
   it('deve manter consistência entre operações', () => {
     // Definir tipo de usuário
     setUserType('atleta');
-    
+
     // Definir perfil
     const profile = {
       uid: 'test123',
@@ -525,28 +525,28 @@ describe('Integration Tests', () => {
         lastLoginStreak: '2025-01-01T00:00:00Z',
         referralCode: 'REF123',
         referrals: [],
-        referralPoints: 0
-      }
+        referralPoints: 0,
+      },
     };
     setUserProfile(profile);
-    
+
     // Definir preferências
     const preferences = {
       theme: 'dark' as const,
       language: 'pt-BR' as const,
       notifications: { email: true, push: true, sms: false },
-      privacy: { profileVisibility: 'public' as const, showEmail: false, showPhone: false }
+      privacy: { profileVisibility: 'public' as const, showEmail: false, showPhone: false },
     };
     setPreferences(preferences);
-    
+
     // Verificar consistência
     expect(getUserType()).toBe('atleta');
     expect(getUserProfile()).toMatchObject(profile);
     expect(getPreferences()).toEqual(preferences);
-    
+
     // Verificar se dados persistem no localStorage
     expect(mockLocalStorage.getItem(STORAGE_KEYS.USER_TYPE)).toBe('"atleta"');
     expect(mockLocalStorage.getItem(STORAGE_KEYS.USER_PROFILE)).toBeDefined();
     expect(mockLocalStorage.getItem(STORAGE_KEYS.PREFERENCES)).toBeDefined();
   });
-}); 
+});

@@ -1,11 +1,10 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", {value: true});
-exports.createRequestContext = exports.logger = void 0;
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
+import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+
 const db = admin.firestore();
+
 // Função para criar contexto de requisição
-function createRequestContext(req = null) {
+export function createRequestContext(req: any = null) {
   return {
     functionName: "unknown",
     userId: "unknown",
@@ -15,33 +14,50 @@ function createRequestContext(req = null) {
     timestamp: new Date().toISOString(),
   };
 }
-exports.createRequestContext = createRequestContext;
+
+export interface LogContext {
+  functionName?: string;
+  userId?: string;
+  requestId?: string;
+  ip?: string;
+  userAgent?: string;
+  timestamp?: string;
+}
+
 class Logger {
+  private logLevel: string;
+
   constructor() {
     this.logLevel = process.env.LOG_LEVEL || "info";
   }
+
   // Log de informações gerais
-  info(message, data = {}, context = {}) {
+  info(message: string, data: any = {}, context: LogContext = {}) {
     this.log("info", message, data, context);
   }
+
   // Log de sucesso/negócio
-  business(message, data = {}, context = {}) {
+  business(message: string, data: any = {}, context: LogContext = {}) {
     this.log("business", message, data, context);
   }
+
   // Log de segurança
-  security(message, data = {}, context = {}) {
+  security(message: string, data: any = {}, context: LogContext = {}) {
     this.log("security", message, data, context);
   }
+
   // Log de erro
-  error(message, data = {}, context = {}) {
+  error(message: string, data: any = {}, context: LogContext = {}) {
     this.log("error", message, data, context);
   }
+
   // Log de warning
-  warn(message, data = {}, context = {}) {
+  warn(message: string, data: any = {}, context: LogContext = {}) {
     this.log("warn", message, data, context);
   }
+
   // Método principal de logging
-  async log(level, message, data = {}, context = {}) {
+  async log(level: string, message: string, data: any = {}, context: LogContext = {}) {
     const timestamp = new Date();
     const logEntry = {
       level,
@@ -53,8 +69,10 @@ class Logger {
       userId: context.userId || "unknown",
       requestId: context.requestId || "unknown",
     };
+
     // Log no console do Firebase Functions
     console.log(JSON.stringify(logEntry));
+
     // Salvar no Firestore para auditoria (apenas logs importantes)
     if (["security", "error", "business"].includes(level)) {
       try {
@@ -66,6 +84,7 @@ class Logger {
         console.error("Erro ao salvar log no Firestore:", error);
       }
     }
+
     // Log específico para segurança
     if (level === "security") {
       try {
@@ -78,12 +97,14 @@ class Logger {
       }
     }
   }
+
   // Log de performance
-  performance(operation, duration, data = {}, context = {}) {
-    this.log("performance", `${operation} completed in ${duration}ms`, {duration, ...data}, context);
+  performance(operation: string, duration: number, data: any = {}, context: LogContext = {}) {
+    this.log("performance", `${operation} completed in ${duration}ms`, { duration, ...data }, context);
   }
+
   // Log de acesso
-  access(method, path, userId, ip, userAgent, statusCode, duration) {
+  access(method: string, path: string, userId: string, ip: string, userAgent: string, statusCode: number, duration: number) {
     this.log("access", `${method} ${path}`, {
       method,
       path,
@@ -92,7 +113,8 @@ class Logger {
       userAgent,
       statusCode,
       duration,
-    }, {functionName: "http"});
+    }, { functionName: "http" });
   }
 }
-exports.logger = new Logger();
+
+export const logger = new Logger(); 

@@ -39,7 +39,7 @@ export default function DevDashboard() {
     totalUsers: 0,
     totalTeams: 0,
     totalPedidos: 0,
-    totalAudiovisual: 0
+    totalAudiovisual: 0,
   })
   const [users, setUsers] = useState<any[]>([])
   const [teams, setTeams] = useState<any[]>([])
@@ -48,9 +48,9 @@ export default function DevDashboard() {
     total: 0,
     media: 0,
     holders: 0,
-    marketCap: 0
+    marketCap: 0,
   })
-  
+
   const { trackPage, trackAdmin } = useAnalytics()
 
   const loadStats = useCallback(async () => {
@@ -63,7 +63,7 @@ export default function DevDashboard() {
         totalUsers: usersSnapshot.size,
         totalTeams: teamsSnapshot.size,
         totalPedidos: 0,
-        totalAudiovisual: audiovisualSnapshot.size
+        totalAudiovisual: audiovisualSnapshot.size,
       })
     } catch (error) {
       console.error('Erro ao carregar estatísticas:', error)
@@ -73,9 +73,9 @@ export default function DevDashboard() {
   const loadUsers = useCallback(async () => {
     try {
       const snapshot = await getDocs(collection(db, 'users'))
-      const usersData = snapshot.docs.map(doc => ({
+      const usersData = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }))
       setUsers(usersData)
     } catch (error) {
@@ -86,9 +86,9 @@ export default function DevDashboard() {
   const loadTeams = useCallback(async () => {
     try {
       const snapshot = await getDocs(collection(db, 'teams'))
-      const teamsData = snapshot.docs.map(doc => ({
+      const teamsData = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }))
       setTeams(teamsData)
     } catch (error) {
@@ -99,9 +99,9 @@ export default function DevDashboard() {
   const loadAudiovisual = useCallback(async () => {
     try {
       const snapshot = await getDocs(collection(db, 'audiovisual'))
-      const audiovisualData = snapshot.docs.map(doc => ({
+      const audiovisualData = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }))
       setAudiovisual(audiovisualData)
     } catch (error) {
@@ -120,10 +120,10 @@ export default function DevDashboard() {
               total: data.token?.box?.total || 0,
               media: data.token?.box?.media || 0,
               holders: data.token?.box?.holders || 0,
-              marketCap: data.token?.box?.marketCap || 0
+              marketCap: data.token?.box?.marketCap || 0,
             })
           }
-        }
+        },
       )
       return unsubscribe
     } catch (error) {
@@ -159,7 +159,7 @@ export default function DevDashboard() {
   }, [])
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async user => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await loadUserData(user.uid)
       } else {
@@ -231,7 +231,7 @@ export default function DevDashboard() {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
           <p className="text-gray-400 mb-4">Apenas desenvolvedores podem acessar este painel</p>
-          <button 
+          <button
             onClick={() => window.location.href = '/dev'}
             className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-4 py-2 rounded transition-all duration-300"
           >
@@ -245,20 +245,20 @@ export default function DevDashboard() {
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Header />
-      
+
       {/* Background com imagem principal */}
-      <div 
+      <div
         className="flex-1 relative"
         style={{
           backgroundImage: 'url(/images/bg_main.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         {/* Overlay gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80"></div>
-        
+
         {/* Conteúdo principal */}
         <div className="relative z-10 container mx-auto px-4 py-8">
           {/* Header do Dev */}
@@ -511,14 +511,14 @@ export default function DevDashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            item.aprovado 
-                              ? 'bg-green-100 text-green-800' 
-                              : item.aprovado === false 
+                            item.aprovado
+                              ? 'bg-green-100 text-green-800'
+                              : item.aprovado === false
                                 ? 'bg-red-100 text-red-800'
                                 : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {item.aprovado === true ? 'Aprovado' : 
-                             item.aprovado === false ? 'Rejeitado' : 'Pendente'}
+                            {item.aprovado === true ? 'Aprovado'
+                              : item.aprovado === false ? 'Rejeitado' : 'Pendente'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -571,15 +571,15 @@ export default function DevDashboard() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">📊 Dados em Tempo Real</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-gray-600">Preço por $BOX:</p>
                       <p className="text-xl font-bold text-green-600">
-                        ${tokenData.marketCap && tokenData.total > 0 
-                          ? (tokenData.marketCap / tokenData.total).toFixed(4) 
+                        ${tokenData.marketCap && tokenData.total > 0
+                          ? (tokenData.marketCap / tokenData.total).toFixed(4)
                           : '0.0000'}
                       </p>
                     </div>
@@ -608,7 +608,7 @@ export default function DevDashboard() {
                       {seeding ? 'Adicionando...' : 'Adicionar Dados'}
                     </button>
                   </div>
-                  
+
                   <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
                     <h3 className="text-lg font-semibold mb-4">⚙️ Configuração</h3>
                     <p className="text-sm opacity-90 mb-4">
@@ -649,8 +649,8 @@ export default function DevDashboard() {
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   )
-} 
+}

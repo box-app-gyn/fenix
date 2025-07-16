@@ -10,12 +10,12 @@ import {
   UpsellTipo,
   CategoriaPatrocinador,
   StatusPatrocinador,
-  
+
   // Gamificação
   GamificationAction,
   GamificationLevel,
   RewardStatus,
-  
+
   // Interfaces
   FirestoreUser,
   FirestoreTeam,
@@ -25,7 +25,7 @@ import {
   FirestoreGamificationAction,
   FirestoreGamificationLeaderboard,
   FirestoreGamificationReward,
-  
+
   // Utilitários
   isValidUserRole,
   isValidPaymentStatus,
@@ -41,9 +41,9 @@ import {
   generateReferralCode,
   sanitizeUserData,
   sanitizeTeamData,
-  
+
   // Constantes
-  GAMIFICATION_POINTS
+  GAMIFICATION_POINTS,
 } from '../firestore';
 
 describe('Firestore Types - Validação de Tipos', () => {
@@ -129,23 +129,23 @@ describe('Firestore Types - Gamificação', () => {
       expect(calculateGamificationLevel(0)).toBe('iniciante');
       expect(calculateGamificationLevel(50)).toBe('iniciante');
       expect(calculateGamificationLevel(99)).toBe('iniciante');
-      
+
       expect(calculateGamificationLevel(100)).toBe('bronze');
       expect(calculateGamificationLevel(200)).toBe('bronze');
       expect(calculateGamificationLevel(299)).toBe('bronze');
-      
+
       expect(calculateGamificationLevel(300)).toBe('prata');
       expect(calculateGamificationLevel(400)).toBe('prata');
       expect(calculateGamificationLevel(599)).toBe('prata');
-      
+
       expect(calculateGamificationLevel(600)).toBe('ouro');
       expect(calculateGamificationLevel(800)).toBe('ouro');
       expect(calculateGamificationLevel(999)).toBe('ouro');
-      
+
       expect(calculateGamificationLevel(1000)).toBe('platina');
       expect(calculateGamificationLevel(1500)).toBe('platina');
       expect(calculateGamificationLevel(1999)).toBe('platina');
-      
+
       expect(calculateGamificationLevel(2000)).toBe('diamante');
       expect(calculateGamificationLevel(5000)).toBe('diamante');
       expect(calculateGamificationLevel(10000)).toBe('diamante');
@@ -192,7 +192,7 @@ describe('Firestore Types - Gamificação', () => {
     it('deve gerar código de referência válido', () => {
       const userId = 'user123456789';
       const code = generateReferralCode(userId);
-      
+
       expect(code).toMatch(/^REF[A-Z0-9]{8}$/);
       expect(code).toContain('REF');
       expect(code.length).toBe(11); // REF + 8 caracteres
@@ -201,7 +201,7 @@ describe('Firestore Types - Gamificação', () => {
     it('deve gerar códigos únicos para usuários diferentes', () => {
       const code1 = generateReferralCode('user123456789');
       const code2 = generateReferralCode('user987654321');
-      
+
       expect(code1).not.toBe(code2);
     });
   });
@@ -214,10 +214,10 @@ describe('Firestore Types - Validação de Dados', () => {
         email: 'test@example.com',
         role: 'atleta' as UserRole,
         gamification: {
-          points: 100
-        }
+          points: 100,
+        },
       };
-      
+
       const errors = validateUserData(validData);
       expect(errors).toHaveLength(0);
     });
@@ -225,9 +225,9 @@ describe('Firestore Types - Validação de Dados', () => {
     it('deve detectar email inválido', () => {
       const invalidData = {
         email: 'invalid-email',
-        role: 'atleta' as UserRole
+        role: 'atleta' as UserRole,
       };
-      
+
       const errors = validateUserData(invalidData);
       expect(errors).toContain('Email inválido');
     });
@@ -235,9 +235,9 @@ describe('Firestore Types - Validação de Dados', () => {
     it('deve detectar role inválido', () => {
       const invalidData = {
         email: 'test@example.com',
-        role: 'invalid' as any
+        role: 'invalid' as any,
       };
-      
+
       const errors = validateUserData(invalidData);
       expect(errors).toContain('Tipo de usuário inválido');
     });
@@ -247,10 +247,10 @@ describe('Firestore Types - Validação de Dados', () => {
         email: 'test@example.com',
         role: 'atleta' as UserRole,
         gamification: {
-          points: -10
-        }
+          points: -10,
+        },
       };
-      
+
       const errors = validateUserData(invalidData);
       expect(errors).toContain('Pontos não podem ser negativos');
     });
@@ -261,9 +261,9 @@ describe('Firestore Types - Validação de Dados', () => {
       const validData = {
         nome: 'Time Teste',
         atletas: ['user1', 'user2'],
-        valorInscricao: 100
+        valorInscricao: 100,
       };
-      
+
       const errors = validateTeamData(validData);
       expect(errors).toHaveLength(0);
     });
@@ -271,9 +271,9 @@ describe('Firestore Types - Validação de Dados', () => {
     it('deve detectar nome muito curto', () => {
       const invalidData = {
         nome: 'A',
-        atletas: ['user1', 'user2']
+        atletas: ['user1', 'user2'],
       };
-      
+
       const errors = validateTeamData(invalidData);
       expect(errors).toContain('Nome do time deve ter pelo menos 2 caracteres');
     });
@@ -281,9 +281,9 @@ describe('Firestore Types - Validação de Dados', () => {
     it('deve detectar muitos atletas', () => {
       const invalidData = {
         nome: 'Time Teste',
-        atletas: Array.from({ length: 11 }, (_, i) => `user${i}`)
+        atletas: Array.from({ length: 11 }, (_, i) => `user${i}`),
       };
-      
+
       const errors = validateTeamData(invalidData);
       expect(errors).toContain('Time não pode ter mais de 10 atletas');
     });
@@ -292,9 +292,9 @@ describe('Firestore Types - Validação de Dados', () => {
       const invalidData = {
         nome: 'Time Teste',
         atletas: ['user1', 'user2'],
-        valorInscricao: -50
+        valorInscricao: -50,
       };
-      
+
       const errors = validateTeamData(invalidData);
       expect(errors).toContain('Valor de inscrição não pode ser negativo');
     });
@@ -305,7 +305,7 @@ describe('Firestore Types - Utilitários', () => {
   describe('createTimestamp', () => {
     it('deve criar timestamp válido', () => {
       const timestamp = createTimestamp();
-      
+
       expect(timestamp).toHaveProperty('seconds');
       expect(timestamp).toHaveProperty('nanoseconds');
       expect(typeof timestamp.seconds).toBe('number');
@@ -321,14 +321,14 @@ describe('Firestore Types - Utilitários', () => {
       const originalDate = new Date('2024-01-15T10:30:00.123Z');
       const timestamp = dateToTimestamp(originalDate);
       const convertedDate = timestampToDate(timestamp);
-      
+
       expect(convertedDate.getTime()).toBe(originalDate.getTime());
     });
 
     it('deve converter timestamp criado por createTimestamp', () => {
       const timestamp = createTimestamp();
       const date = timestampToDate(timestamp);
-      
+
       expect(date).toBeInstanceOf(Date);
       expect(date.getTime()).toBeGreaterThan(0);
     });
@@ -340,11 +340,11 @@ describe('Firestore Types - Utilitários', () => {
         email: '  TEST@EXAMPLE.COM  ',
         displayName: '  João Silva  ',
         phone: '(11) 99999-9999',
-        isActive: false
+        isActive: false,
       };
-      
+
       const sanitized = sanitizeUserData(rawData);
-      
+
       expect(sanitized.email).toBe('test@example.com');
       expect(sanitized.displayName).toBe('João Silva');
       expect(sanitized.phone).toBe('11999999999');
@@ -353,9 +353,9 @@ describe('Firestore Types - Utilitários', () => {
 
     it('deve definir isActive como true por padrão', () => {
       const rawData = {
-        email: 'test@example.com'
+        email: 'test@example.com',
       };
-      
+
       const sanitized = sanitizeUserData(rawData);
       expect(sanitized.isActive).toBe(true);
     });
@@ -368,12 +368,12 @@ describe('Firestore Types - Utilitários', () => {
         box: {
           nome: '  Box Teste  ',
           cidade: '  São Paulo  ',
-          estado: '  SP  '
-        }
+          estado: '  SP  ',
+        },
       };
-      
+
       const sanitized = sanitizeTeamData(rawData);
-      
+
       expect(sanitized.nome).toBe('Time Teste');
       expect(sanitized.box?.nome).toBe('Box Teste');
       expect(sanitized.box?.cidade).toBe('São Paulo');
@@ -382,9 +382,9 @@ describe('Firestore Types - Utilitários', () => {
 
     it('deve lidar com dados sem box', () => {
       const rawData = {
-        nome: 'Time Teste'
+        nome: 'Time Teste',
       };
-      
+
       const sanitized = sanitizeTeamData(rawData);
       expect(sanitized.box).toBeUndefined();
     });
@@ -416,10 +416,10 @@ describe('Firestore Types - Interfaces', () => {
           yearlyPoints: 500,
           bestStreak: 5,
           badges: [],
-          challenges: []
-        }
+          challenges: [],
+        },
       };
-      
+
       expect(user.uid).toBe('user123');
       expect(user.email).toBe('test@example.com');
       expect(user.role).toBe('atleta');
@@ -441,13 +441,13 @@ describe('Firestore Types - Interfaces', () => {
         box: {
           nome: 'Box Teste',
           cidade: 'São Paulo',
-          estado: 'SP'
+          estado: 'SP',
         },
         valorInscricao: 150,
         createdAt: createTimestamp(),
-        updatedAt: createTimestamp()
+        updatedAt: createTimestamp(),
       };
-      
+
       expect(team.id).toBe('team123');
       expect(team.nome).toBe('Time Teste');
       expect(team.categoria).toBe('RX');
@@ -470,9 +470,9 @@ describe('Firestore Types - Interfaces', () => {
         lote: 'primeiro',
         gateway: 'pix',
         createdAt: createTimestamp(),
-        updatedAt: createTimestamp()
+        updatedAt: createTimestamp(),
       };
-      
+
       expect(pedido.id).toBe('pedido123');
       expect(pedido.tipo).toBe('ingresso');
       expect(pedido.status).toBe('pending');
@@ -494,15 +494,15 @@ describe('Firestore Types - Interfaces', () => {
           descricao: 'Fotógrafo profissional',
           experiencia: '5 anos',
           equipamentos: ['Canon EOS R5'],
-          especialidades: ['Esportes', 'Eventos']
+          especialidades: ['Esportes', 'Eventos'],
         },
         termosAceitos: true,
         termosAceitosEm: createTimestamp(),
         status: 'pending',
         createdAt: createTimestamp(),
-        updatedAt: createTimestamp()
+        updatedAt: createTimestamp(),
       };
-      
+
       expect(audiovisual.id).toBe('audio123');
       expect(audiovisual.tipo).toBe('fotografo');
       expect(audiovisual.status).toBe('pending');
@@ -524,26 +524,26 @@ describe('Firestore Types - Interfaces', () => {
           nome: 'Maria Silva',
           cargo: 'Marketing',
           email: 'maria@empresa.com',
-          telefone: '11999999999'
+          telefone: '11999999999',
         },
         beneficios: {
           descricao: 'Benefícios do patrocínio',
           itens: ['Logo no material', 'Stand no evento'],
-          valorEstimado: 15000
+          valorEstimado: 15000,
         },
         contrato: {
           dataInicio: createTimestamp(),
           dataFim: createTimestamp(),
           valorTotal: 10000,
           parcelas: 3,
-          valorParcela: 3333.33
+          valorParcela: 3333.33,
         },
         pagamentos: [],
         criadoPor: 'admin123',
         criadoEm: createTimestamp(),
-        atualizadoEm: createTimestamp()
+        atualizadoEm: createTimestamp(),
       };
-      
+
       expect(patrocinador.id).toBe('pat123');
       expect(patrocinador.categoria).toBe('Ouro');
       expect(patrocinador.status).toBe('ativo');
@@ -564,9 +564,9 @@ describe('Firestore Types - Interfaces', () => {
         createdAt: createTimestamp(),
         processed: true,
         processedAt: createTimestamp(),
-        retryCount: 0
+        retryCount: 0,
       };
-      
+
       expect(action.id).toBe('action123');
       expect(action.action).toBe('cadastro');
       expect(action.points).toBe(10);
@@ -594,9 +594,9 @@ describe('Firestore Types - Interfaces', () => {
         monthlyPoints: 300,
         yearlyPoints: 500,
         badges: [],
-        activeChallenges: []
+        activeChallenges: [],
       };
-      
+
       expect(leaderboard.id).toBe('lb123');
       expect(leaderboard.points).toBe(500);
       expect(leaderboard.level).toBe('prata');
@@ -616,9 +616,9 @@ describe('Firestore Types - Interfaces', () => {
         currentRedemptions: 0,
         isActive: true,
         createdAt: createTimestamp(),
-        updatedAt: createTimestamp()
+        updatedAt: createTimestamp(),
       };
-      
+
       expect(reward.id).toBe('reward123');
       expect(reward.type).toBe('acesso_vip');
       expect(reward.requiredPoints).toBe(1000);
@@ -631,7 +631,7 @@ describe('Firestore Types - Integração', () => {
   it('deve integrar todos os tipos corretamente', () => {
     // Criar timestamp
     const now = createTimestamp();
-    
+
     // Criar usuário
     const user: FirestoreUser = {
       uid: 'user123',
@@ -656,14 +656,14 @@ describe('Firestore Types - Integração', () => {
         yearlyPoints: 100,
         bestStreak: 0,
         badges: [],
-        challenges: []
-      }
+        challenges: [],
+      },
     };
-    
+
     // Validar usuário
     const userErrors = validateUserData(user);
     expect(userErrors).toHaveLength(0);
-    
+
     // Criar ação de gamificação
     const action: FirestoreGamificationAction = {
       id: 'action123',
@@ -676,13 +676,13 @@ describe('Firestore Types - Integração', () => {
       createdAt: now,
       processed: true,
       processedAt: now,
-      retryCount: 0
+      retryCount: 0,
     };
-    
+
     // Validar ação
     expect(isValidGamificationAction(action.action)).toBe(true);
     expect(action.points).toBe(GAMIFICATION_POINTS.cadastro);
-    
+
     // Criar time
     const team: FirestoreTeam = {
       id: 'team123',
@@ -695,17 +695,17 @@ describe('Firestore Types - Integração', () => {
       box: {
         nome: 'Box Teste',
         cidade: 'São Paulo',
-        estado: 'SP'
+        estado: 'SP',
       },
       valorInscricao: 150,
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
-    
+
     // Validar time
     const teamErrors = validateTeamData(team);
     expect(teamErrors).toHaveLength(0);
-    
+
     // Criar pedido
     const pedido: FirestorePedido = {
       id: 'pedido123',
@@ -722,17 +722,17 @@ describe('Firestore Types - Integração', () => {
       categoria: 'RX',
       gateway: 'pix',
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
-    
+
     // Validar pedido
     expect(isValidPaymentStatus(pedido.status)).toBe(true);
     expect(pedido.valorTotal).toBe(pedido.valorUnitario * pedido.quantidade);
-    
+
     // Simular processamento de gamificação
     const newPoints = user.gamification!.points + action.points;
     const newLevel = calculateGamificationLevel(newPoints);
-    
+
     expect(newPoints).toBe(110); // 100 + 10
     expect(newLevel).toBe('bronze'); // 110 pontos = bronze
   });
@@ -742,7 +742,7 @@ describe('Firestore Types - Edge Cases', () => {
   it('deve lidar com dados vazios', () => {
     const emptyUser = sanitizeUserData({});
     expect(emptyUser.isActive).toBe(true);
-    
+
     const emptyTeam = sanitizeTeamData({});
     expect(emptyTeam).toEqual({});
   });
@@ -751,9 +751,9 @@ describe('Firestore Types - Edge Cases', () => {
     const nullUser = sanitizeUserData({
       email: null,
       displayName: undefined,
-      phone: null
+      phone: null,
     });
-    
+
     expect(nullUser.email).toBe('');
     expect(nullUser.displayName).toBe('');
     expect(nullUser.phone).toBe('');
@@ -762,10 +762,10 @@ describe('Firestore Types - Edge Cases', () => {
   it('deve lidar com timestamps extremos', () => {
     const pastDate = new Date('1970-01-01');
     const futureDate = new Date('2100-01-01');
-    
+
     const pastTimestamp = dateToTimestamp(pastDate);
     const futureTimestamp = dateToTimestamp(futureDate);
-    
+
     expect(timestampToDate(pastTimestamp).getTime()).toBe(pastDate.getTime());
     expect(timestampToDate(futureTimestamp).getTime()).toBe(futureDate.getTime());
   });
@@ -780,11 +780,11 @@ describe('Firestore Types - Edge Cases', () => {
 describe('Firestore Types - Performance', () => {
   it('deve criar timestamps rapidamente', () => {
     const start = performance.now();
-    
+
     for (let i = 0; i < 1000; i++) {
       createTimestamp();
     }
-    
+
     const end = performance.now();
     expect(end - start).toBeLessThan(100); // Deve ser rápido
   });
@@ -793,16 +793,16 @@ describe('Firestore Types - Performance', () => {
     const testData = {
       email: 'test@example.com',
       role: 'atleta' as UserRole,
-      gamification: { points: 100 }
+      gamification: { points: 100 },
     };
-    
+
     const start = performance.now();
-    
+
     for (let i = 0; i < 1000; i++) {
       validateUserData(testData);
     }
-    
+
     const end = performance.now();
     expect(end - start).toBeLessThan(100); // Deve ser rápido
   });
-}); 
+});

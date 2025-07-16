@@ -14,9 +14,9 @@ export const useRitualAnimation = (delay: number = 0.33) => {
       transition: {
         duration: 0.66,
         delay,
-        ease: [0.25, 0.46, 0.45, 0.94]
-      }
-    }
+        ease: [0.25, 0.46, 0.45, 0.94],
+      },
+    },
   };
 
   const pulseVariants = {
@@ -26,10 +26,10 @@ export const useRitualAnimation = (delay: number = 0.33) => {
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: 'easeInOut'
-      }
-    }
+        ease: 'easeInOut',
+      },
+    },
   };
 
   return { ref, isInView, ritualVariants, pulseVariants };
-}; 
+};

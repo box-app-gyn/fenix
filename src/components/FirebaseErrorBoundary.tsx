@@ -11,7 +11,7 @@ interface State {
 
 export class FirebaseErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false
+    hasError: false,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -24,10 +24,10 @@ export class FirebaseErrorBoundary extends Component<Props, State> {
     console.error('📋 Stack trace:', errorInfo);
 
     // Filtrar erros de carteira (MetaMask, TronLink, etc.)
-    if (error.message.includes('ethereum') || 
-        error.message.includes('MetaMask') || 
-        error.message.includes('TronLink') ||
-        error.message.includes('TronWeb')) {
+    if (error.message.includes('ethereum')
+        || error.message.includes('MetaMask')
+        || error.message.includes('TronLink')
+        || error.message.includes('TronWeb')) {
       console.log('🔗 Erro de carteira detectado - ignorando...');
       return;
     }
@@ -87,4 +87,4 @@ export class FirebaseErrorBoundary extends Component<Props, State> {
 
     return this.props.children;
   }
-} 
+}

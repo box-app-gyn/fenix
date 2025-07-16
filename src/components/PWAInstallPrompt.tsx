@@ -40,7 +40,7 @@ export default function PWAInstallPrompt() {
                   className="w-12 h-12 rounded-lg"
                 />
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-semibold text-gray-900">
                   {hasUpdate ? 'Atualização Disponível' : 'Instalar App'}
@@ -48,7 +48,7 @@ export default function PWAInstallPrompt() {
                 <p className="text-sm text-gray-600 mt-1">
                   Instale o CERRADØ INTERBOX para uma experiência melhor.
                 </p>
-                
+
                 <div className="flex space-x-2 mt-3">
                   <button
                     onClick={handleInstall}
@@ -56,7 +56,7 @@ export default function PWAInstallPrompt() {
                   >
                     Instalar
                   </button>
-                  
+
                   <button
                     onClick={handleDismiss}
                     className="flex-1 bg-gray-100 text-gray-700 text-sm font-medium px-3 py-2 rounded-md hover:bg-gray-200 transition-colors"
@@ -65,7 +65,7 @@ export default function PWAInstallPrompt() {
                   </button>
                 </div>
               </div>
-              
+
               <button
                 onClick={handleDismiss}
                 className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
@@ -80,4 +80,4 @@ export default function PWAInstallPrompt() {
       )}
     </AnimatePresence>
   );
-} 
+}

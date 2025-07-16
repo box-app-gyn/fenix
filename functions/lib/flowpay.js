@@ -218,12 +218,15 @@ exports.webhookFlowPay = functions.https.onRequest(
       // Processar diferentes tipos de evento
       switch (webhookData.event) {
         case "order.paid":
+        case "CHARGE_COMPLETED":
           await processPaymentSuccess(webhookData);
           break;
         case "order.cancelled":
+        case "CHARGE_CANCELLED":
           await processPaymentCancelled(webhookData);
           break;
         case "order.expired":
+        case "CHARGE_EXPIRED":
           await processPaymentExpired(webhookData);
           break;
         default:

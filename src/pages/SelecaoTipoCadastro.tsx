@@ -15,7 +15,7 @@ const TIPOS_CADASTRO = [
     descricao: 'Quero competir no Interbox 2025',
     cor: 'from-green-500 to-green-600',
     hover: 'hover:from-green-600 hover:to-green-700',
-    emoji: '🏃‍♂️'
+    emoji: '🏃‍♂️',
   },
   {
     id: 'jurado',
@@ -23,7 +23,7 @@ const TIPOS_CADASTRO = [
     descricao: 'Quero ser jurado do evento',
     cor: 'from-yellow-500 to-yellow-600',
     hover: 'hover:from-yellow-600 hover:to-yellow-700',
-    emoji: '⚖️'
+    emoji: '⚖️',
   },
   {
     id: 'midia',
@@ -31,7 +31,7 @@ const TIPOS_CADASTRO = [
     descricao: 'Quero cobrir o evento',
     cor: 'from-purple-500 to-purple-600',
     hover: 'hover:from-purple-600 hover:to-purple-700',
-    emoji: '📸'
+    emoji: '📸',
   },
   {
     id: 'espectador',
@@ -39,7 +39,7 @@ const TIPOS_CADASTRO = [
     descricao: 'Quero apenas assistir',
     cor: 'from-gray-500 to-gray-600',
     hover: 'hover:from-gray-600 hover:to-gray-700',
-    emoji: '👥'
+    emoji: '👥',
   },
   {
     id: 'publico',
@@ -47,8 +47,8 @@ const TIPOS_CADASTRO = [
     descricao: 'Outro tipo de participação',
     cor: 'from-blue-500 to-blue-600',
     hover: 'hover:from-blue-600 hover:to-blue-700',
-    emoji: '👤'
-  }
+    emoji: '👤',
+  },
 ];
 
 export default function SelecaoTipoCadastro() {
@@ -65,7 +65,7 @@ export default function SelecaoTipoCadastro() {
     whatsapp: '',
     box: '',
     cidade: '',
-    mensagem: ''
+    mensagem: '',
   });
 
   const handleTypeSelect = (tipoId: string) => {
@@ -97,8 +97,8 @@ export default function SelecaoTipoCadastro() {
               balance: 50, // +50 ₿ por cadastro
               totalEarned: 50,
               totalSpent: 0,
-              lastTransaction: serverTimestamp()
-            }
+              lastTransaction: serverTimestamp(),
+            },
           },
           level: 'iniciante',
           totalActions: 1,
@@ -115,8 +115,8 @@ export default function SelecaoTipoCadastro() {
           yearlyTokens: 50,
           bestStreak: 1,
           badges: ['primeiro_cadastro'],
-          challenges: []
-        }
+          challenges: [],
+        },
       });
 
       // Trigger confetti
@@ -124,7 +124,7 @@ export default function SelecaoTipoCadastro() {
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#fb05e4', '#00259f', '#10B981', '#F59E0B']
+        colors: ['#fb05e4', '#00259f', '#10B981', '#F59E0B'],
       });
 
       // Show success message with gamification
@@ -138,7 +138,6 @@ export default function SelecaoTipoCadastro() {
 Bem-vindo ao Interbox 2025!`);
         navigate('/home');
       }, 1000);
-
     } catch (error) {
       console.error('Erro ao cadastrar:', error);
       alert('Erro ao realizar cadastro. Tente novamente.');
@@ -150,29 +149,29 @@ Bem-vindo ao Interbox 2025!`);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const selectedTipo = TIPOS_CADASTRO.find(t => t.id === selectedType);
+  const selectedTipo = TIPOS_CADASTRO.find((t) => t.id === selectedType);
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Header />
-      
+
       {/* Background com imagem principal */}
-      <div 
+      <div
         className="flex-1 relative"
         style={{
           backgroundImage: 'url(/images/bg_main.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         {/* Overlay gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80"></div>
-        
+
         {/* Conteúdo principal */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-20">
           <AnimatePresence mode="wait">
@@ -246,7 +245,7 @@ Bem-vindo ao Interbox 2025!`);
                           {tipo.descricao}
                         </p>
                       </div>
-                      
+
                       <div className="mt-6 text-center">
                         <div className="inline-flex items-center text-white/80 group-hover:text-white transition-colors">
                           <span className="text-sm">Selecionar</span>
@@ -390,8 +389,8 @@ Bem-vindo ao Interbox 2025!`);
           </AnimatePresence>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );
-} 
+}

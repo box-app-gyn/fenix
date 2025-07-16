@@ -35,11 +35,11 @@ export function useAuth() {
     try {
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Data atual sem hora
-      
+
       // Verificar se já recebeu login diário hoje
       const lastLoginStreak = userData?.gamification?.lastLoginStreak;
       let lastLoginDate: Date | null = null;
-      
+
       if (lastLoginStreak) {
         // Converter Timestamp do Firestore para Date
         if (lastLoginStreak.toDate) {
@@ -48,17 +48,17 @@ export function useAuth() {
           lastLoginDate = new Date(lastLoginStreak.seconds * 1000);
         }
       }
-      
+
       // Se não tem data de último login ou se é um novo dia
       if (!lastLoginDate || lastLoginDate < today) {
         const tokensToAward = GAMIFICATION_TOKENS.login_diario; // 5 $BOX
         const currentStreak = userData?.gamification?.streakDays || 0;
-        const newStreak = lastLoginDate && 
-          lastLoginDate.getTime() >= today.getTime() - 24 * 60 * 60 * 1000 ? 
-          currentStreak + 1 : 1; // Se foi ontem, incrementa streak, senão reseta para 1
-        
+        const newStreak = lastLoginDate
+          && lastLoginDate.getTime() >= today.getTime() - 24 * 60 * 60 * 1000
+          ? currentStreak + 1 : 1; // Se foi ontem, incrementa streak, senão reseta para 1
+
         console.log(`🎯 Login diário detectado! +${tokensToAward} $BOX (Streak: ${newStreak} dias)`);
-        
+
         // Atualizar gamificação do usuário
         await updateDoc(doc(db, 'users', userId), {
           'gamification.tokens.box.balance': increment(tokensToAward),
@@ -72,7 +72,7 @@ export function useAuth() {
           'gamification.monthlyTokens': increment(tokensToAward),
           'gamification.yearlyTokens': increment(tokensToAward),
           'gamification.bestStreak': Math.max(newStreak, userData?.gamification?.bestStreak || 0),
-          updatedAt: serverTimestamp()
+          updatedAt: serverTimestamp(),
         });
 
         // Registrar a ação de gamificação
@@ -86,16 +86,16 @@ export function useAuth() {
           metadata: {
             streakDays: newStreak,
             previousStreak: currentStreak,
-            loginDate: today.toISOString()
+            loginDate: today.toISOString(),
           },
           createdAt: serverTimestamp(),
           processed: true,
-          processedAt: serverTimestamp()
+          processedAt: serverTimestamp(),
         });
 
         return { awarded: true, tokens: tokensToAward, streak: newStreak };
       }
-      
+
       return { awarded: false, reason: 'Já recebeu login diário hoje' };
     } catch (error) {
       console.error('❌ Erro ao processar login diário:', error);
@@ -105,12 +105,12 @@ export function useAuth() {
 
   useEffect(() => {
     let isSubscribed = true; // Flag para evitar race conditions
-    
+
     try {
       console.log('🔄 Inicializando listener de autenticação...');
       const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         if (!isSubscribed) return; // Evitar atualizações se componente foi desmontado
-        
+
         console.log('👤 Estado de autenticação alterado:', firebaseUser ? 'Usuário logado' : 'Usuário deslogado');
         if (firebaseUser) {
           try {
@@ -135,13 +135,13 @@ export function useAuth() {
                 isActive: true,
                 profileComplete: false,
                 createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp()
+                updatedAt: serverTimestamp(),
               });
-              
+
               // Buscar dados novamente após criar
               const newSnapshot = await getDoc(ref);
               const userData = newSnapshot.data();
-              
+
               const extendedUser: User = {
                 ...firebaseUser,
                 role: userData?.role || 'publico',
@@ -152,7 +152,7 @@ export function useAuth() {
                 cidade: userData?.cidade || '',
                 mensagem: userData?.mensagem || '',
                 isActive: userData?.isActive || true,
-                profileComplete: userData?.profileComplete || false
+                profileComplete: userData?.profileComplete || false,
               };
 
               if (isSubscribed) {
@@ -162,7 +162,7 @@ export function useAuth() {
             } else {
               // Buscar dados completos do usuário existente
               const userData = snapshot.data();
-              
+
               // Processar login diário para usuários existentes
               if (userData?.gamification) {
                 const dailyLoginResult = await processDailyLogin(firebaseUser.uid, userData);
@@ -172,12 +172,12 @@ export function useAuth() {
                   console.log(`ℹ️ Login diário: ${dailyLoginResult.reason}`);
                 }
               }
-              
+
               // Verificar se é admin que precisa de verificação de CNH
               const adminEmails = ['avanticrossfit@gmail.com', 'gopersonal82@gmail.com'];
-              const needsCNHVerification = adminEmails.includes(firebaseUser.email || '') && 
-                (userData?.role === 'admin' || userData?.role === 'dev') &&
-                !userData?.adminVerification?.completedAt;
+              const needsCNHVerification = adminEmails.includes(firebaseUser.email || '')
+                && (userData?.role === 'admin' || userData?.role === 'dev')
+                && !userData?.adminVerification?.completedAt;
 
               const extendedUser: User = {
                 ...firebaseUser,
@@ -193,8 +193,8 @@ export function useAuth() {
                 adminVerification: {
                   required: needsCNHVerification,
                   cnh: userData?.adminVerification?.cnh,
-                  completedAt: userData?.adminVerification?.completedAt
-                }
+                  completedAt: userData?.adminVerification?.completedAt,
+                },
               };
 
               if (isSubscribed) {
@@ -209,7 +209,7 @@ export function useAuth() {
               setUser({
                 ...firebaseUser,
                 role: 'publico',
-                profileComplete: false
+                profileComplete: false,
               });
             }
           }
@@ -248,15 +248,15 @@ export function useAuth() {
     const checkRedirectResult = async () => {
       try {
         console.log('🔍 Verificando resultado do redirecionamento...');
-        
+
         // Reduzir timeout para 5 segundos e melhorar performance
         const timeoutPromise = new Promise((_, reject) => {
           setTimeout(() => reject(new Error('Timeout ao verificar redirecionamento')), 5000);
         });
-        
+
         const resultPromise = getRedirectResult(auth);
         const result = await Promise.race([resultPromise, timeoutPromise]) as any;
-        
+
         if (result && result.user) {
           console.log('✅ Login com redirecionamento bem-sucedido:', result.user.displayName);
           // O onAuthStateChanged já vai lidar com o usuário
@@ -269,7 +269,7 @@ export function useAuth() {
           console.log('⏰ Timeout ao verificar redirecionamento - continuando normalmente');
           return;
         }
-        
+
         // Para outros erros, apenas logar (não são críticos para o funcionamento)
         if (error.code === 'auth/account-exists-with-different-credential') {
           console.warn('⚠️ Conta já existe com credencial diferente');
@@ -297,13 +297,13 @@ export function useAuth() {
   const login = async () => {
     try {
       console.log('🔄 Iniciando login com redirecionamento...');
-      
+
       // Usar apenas redirect (mais confiável)
       await signInWithRedirect(auth, provider);
       console.log('✅ Redirecionamento iniciado com sucesso');
     } catch (error: any) {
       console.error('❌ Erro ao iniciar login:', error);
-      
+
       // Tratamento específico para diferentes tipos de erro
       if (error.code === 'auth/operation-not-allowed') {
         console.warn('⚠️ Login com Google não está habilitado');
@@ -312,7 +312,7 @@ export function useAuth() {
       } else {
         console.error('Erro desconhecido no login:', error);
       }
-      
+
       throw error;
     }
   };
@@ -329,4 +329,4 @@ export function useAuth() {
   };
 
   return { user, loading, login, logout };
-} 
+}

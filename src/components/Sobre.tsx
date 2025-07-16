@@ -7,7 +7,7 @@ const Sobre: React.FC = () => {
     <>
       <section id="sobre" className="bg-white text-gray-900 py-20 px-6 md:px-16">
         <div className="max-w-6xl mx-auto text-center">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -17,8 +17,8 @@ const Sobre: React.FC = () => {
             Você não escolheu competir. Você foi convocado.
           </motion.h2>
           <div className="w-16 h-1 bg-gradient-to-r from-pink-500 to-cyan-400 mx-auto mb-8 rounded-full" />
-          
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -27,8 +27,8 @@ const Sobre: React.FC = () => {
           >
             CERRADØ 𝗜𝗡𝗧𝗘𝗥𝗕𝗢𝗫 é um ecossistema vivo.
           </motion.p>
-          
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -38,7 +38,7 @@ const Sobre: React.FC = () => {
             Mais que competição, ecosistema de pessoas em comunidade, propósito e pertencimento.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -46,15 +46,15 @@ const Sobre: React.FC = () => {
             className="mt-16"
           >
             <p className="text-lg md:text-xl text-gray-800 font-medium mb-6">
-              Pré-temporada iniciada digitalmente. 
+              Pré-temporada iniciada digitalmente.
             </p>
           </motion.div>
         </div>
       </section>
-      
+
       <AudiovisualInvite />
     </>
   )
 }
 
-export default Sobre 
+export default Sobre

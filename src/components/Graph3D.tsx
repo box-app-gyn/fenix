@@ -68,4 +68,4 @@ const Graph3D: React.FC = () => {
   );
 };
 
-export default Graph3D; 
+export default Graph3D;

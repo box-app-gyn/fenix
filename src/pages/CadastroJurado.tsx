@@ -17,7 +17,7 @@ export default function CadastroJurado() {
     cidade: '',
     mensagem: '',
     experiencia: '',
-    certificacoes: ''
+    certificacoes: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +35,7 @@ export default function CadastroJurado() {
         isActive: true,
         profileComplete: true,
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
 
       alert('Cadastro realizado com sucesso!');
@@ -51,7 +51,7 @@ export default function CadastroJurado() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -220,4 +220,4 @@ export default function CadastroJurado() {
       </div>
     </div>
   );
-} 
+}

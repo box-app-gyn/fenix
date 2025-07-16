@@ -1,11 +1,11 @@
 import { useAuth } from '../hooks/useAuth';
 import { useState } from 'react';
-import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 
 // Componente de Loading Screen otimizado
-const LoadingScreen = ({ message = "Conectando com NEØ..." }: { message?: string }) => (
+const LoadingScreen = ({ message = 'Conectando com NEØ...' }: { message?: string }) => (
   <div className="h-screen flex items-center justify-center bg-black text-white">
     <div className="text-center">
       <div className="relative">
@@ -25,7 +25,7 @@ const ErrorAlert = ({ error, onDismiss }: { error: string; onDismiss: () => void
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
       <span className="flex-1">{error}</span>
-      <button 
+      <button
         onClick={onDismiss}
         className="text-white/80 hover:text-white transition-colors"
       >
@@ -69,14 +69,14 @@ export default function LoginPage() {
     setLoginState('redirect');
     setShowError(false);
     setErrorMessage('');
-    
+
     try {
       await login();
       setShowSuccess(true);
       // O redirecionamento será feito automaticamente pelo useAuth
     } catch (error: any) {
       console.error('Erro no login:', error);
-      
+
       // Definir mensagem de erro específica
       let message = 'Erro ao fazer login. Tente novamente.';
       if (error.code === 'auth/operation-not-allowed') {
@@ -84,7 +84,7 @@ export default function LoginPage() {
       } else if (error.code === 'auth/invalid-api-key') {
         message = 'Erro de configuração. Entre em contato com o suporte.';
       }
-      
+
       setErrorMessage(message);
       setShowError(true);
       setLoginState('idle');
@@ -117,9 +117,9 @@ export default function LoginPage() {
     }
     try {
       const userCredential = await createUserWithEmailAndPassword(
-        require('../lib/firebase').auth,
+        auth,
         registerEmail,
-        registerPassword
+        registerPassword,
       );
       await updateProfile(userCredential.user, { displayName: registerName });
       setShowSuccess(true);
@@ -159,7 +159,7 @@ export default function LoginPage() {
       return;
     }
     try {
-      await signInWithEmailAndPassword(require('../lib/firebase').auth, accessEmail, accessPassword);
+      await signInWithEmailAndPassword(auth, accessEmail, accessPassword);
       setShowSuccess(true);
       setLoginState('idle');
       // O fluxo de login automático será feito pelo onAuthStateChanged
@@ -181,10 +181,10 @@ export default function LoginPage() {
 
   const getButtonText = () => {
     switch (loginState) {
-      case 'redirect':
-        return 'Redirecionando...';
-      default:
-        return 'Entrar com Google';
+    case 'redirect':
+      return 'Redirecionando...';
+    default:
+      return 'Entrar com Google';
     }
   };
 
@@ -196,7 +196,7 @@ export default function LoginPage() {
         </svg>
       );
     }
-    
+
     return (
       <svg className="w-5 h-5" viewBox="0 0 24 24">
         <path
@@ -225,46 +225,44 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      <Header />
-      
       {/* Background com imagem principal */}
-      <div 
+      <div
         className="flex-1 relative flex items-center justify-center"
         style={{
           backgroundImage: 'url(/images/bg_main.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         {/* Overlay gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80"></div>
-        
+
         {/* Conteúdo principal */}
         <div className="relative z-10 text-center space-y-8 max-w-md mx-auto px-4">
           {/* Alertas */}
           {showError && errorMessage && (
-            <ErrorAlert 
-              error={errorMessage} 
-              onDismiss={() => setShowError(false)} 
+            <ErrorAlert
+              error={errorMessage}
+              onDismiss={() => setShowError(false)}
             />
           )}
-          
+
           {showSuccess && (
             <SuccessAlert message="Acesso/Cadastro/Login realizado com sucesso!" />
           )}
 
           <div className="space-y-4">
-            <img 
-              src="/logos/oficial_logo.png" 
-              alt="INTERBOX Logo" 
+            <img
+              src="/logos/oficial_logo.png"
+              alt="INTERBOX Logo"
               className="mx-auto max-w-xs"
             />
             <p className="text-gray-300 text-lg">
               ᴄᴏᴍᴘᴇᴛɪçãᴏ. ᴄᴏᴍᴜɴɪᴅᴀᴅᴇ. ᴘʀᴏᴘóꜱɪᴛᴏ.
             </p>
           </div>
-          
+
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-white/20 space-y-4">
             {/* Botão Google */}
             <button
@@ -300,7 +298,7 @@ export default function LoginPage() {
                   type="email"
                   placeholder="E-mail"
                   value={accessEmail}
-                  onChange={e => setAccessEmail(e.target.value)}
+                  onChange={(e) => setAccessEmail(e.target.value)}
                   className="input bg-white/80 text-gray-900 placeholder-gray-500"
                   required
                 />
@@ -308,7 +306,7 @@ export default function LoginPage() {
                   type="password"
                   placeholder="Senha"
                   value={accessPassword}
-                  onChange={e => setAccessPassword(e.target.value)}
+                  onChange={(e) => setAccessPassword(e.target.value)}
                   className="input bg-white/80 text-gray-900 placeholder-gray-500"
                   required
                   minLength={6}
@@ -329,7 +327,7 @@ export default function LoginPage() {
                   type="text"
                   placeholder="Nome completo"
                   value={registerName}
-                  onChange={e => setRegisterName(e.target.value)}
+                  onChange={(e) => setRegisterName(e.target.value)}
                   className="input bg-white/80 text-gray-900 placeholder-gray-500"
                   autoFocus
                   required
@@ -338,7 +336,7 @@ export default function LoginPage() {
                   type="email"
                   placeholder="E-mail"
                   value={registerEmail}
-                  onChange={e => setRegisterEmail(e.target.value)}
+                  onChange={(e) => setRegisterEmail(e.target.value)}
                   className="input bg-white/80 text-gray-900 placeholder-gray-500"
                   required
                 />
@@ -346,7 +344,7 @@ export default function LoginPage() {
                   type="password"
                   placeholder="Senha (mín. 6 caracteres)"
                   value={registerPassword}
-                  onChange={e => setRegisterPassword(e.target.value)}
+                  onChange={(e) => setRegisterPassword(e.target.value)}
                   className="input bg-white/80 text-gray-900 placeholder-gray-500"
                   required
                   minLength={6}
@@ -383,12 +381,12 @@ export default function LoginPage() {
             )}
             <p className="text-xs">Você será redirecionado para o Google e retornará automaticamente</p>
           </div>
-          
+
           {/* Botão de debug removido para produção */}
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );
-} 
+}

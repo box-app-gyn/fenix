@@ -5,16 +5,16 @@ import { Timestamp as FirebaseTimestamp } from 'firebase/firestore';
 // ============================================================================
 
 // Tipos de usuário
-export type UserRole = 
-  | 'publico' 
-  | 'atleta' 
-  | 'jurado' 
-  | 'midia' 
-  | 'fotografo' 
-  | 'admin' 
-  | 'patrocinador' 
-  | 'apoio' 
-  | 'espectador' 
+export type UserRole =
+  | 'publico'
+  | 'atleta'
+  | 'jurado'
+  | 'midia'
+  | 'fotografo'
+  | 'admin'
+  | 'patrocinador'
+  | 'apoio'
+  | 'espectador'
   | 'judge';
 
 // Status de pagamento
@@ -49,7 +49,7 @@ export type StatusPatrocinador = 'ativo' | 'pendente' | 'inativo' | 'cancelado';
 // ============================================================================
 
 // 🎯 GAMIFICAÇÃO CAMADA 1 - Tipos de ação que geram tokens $BOX
-export type GamificationAction = 
+export type GamificationAction =
   | 'cadastro'           // +10 $BOX
   | 'indicacao_confirmada' // +50 $BOX
   | 'compra_ingresso'    // +100 $BOX
@@ -64,7 +64,7 @@ export type GamificationAction =
   | 'completar_perfil'   // +25 $BOX;
 
 // Níveis de gamificação baseados em $BOX
-export type GamificationLevel = 
+export type GamificationLevel =
   | 'iniciante'    // 0-99 $BOX
   | 'bronze'       // 100-299 $BOX
   | 'prata'        // 300-599 $BOX
@@ -746,7 +746,7 @@ export interface DashboardMetrics {
     atletas: number;
     faturamento: number;
   }>;
-  
+
   // Financeiro e Vendas
   faturamentoTotal: number;
   receitaPorLote: Record<LoteInscricao, number>;
@@ -754,7 +754,7 @@ export interface DashboardMetrics {
   upsellsVendidos: Record<UpsellTipo, number>;
   ticketMedioPorTime: number;
   receitaPorGateway: Record<'pix' | 'cartao' | 'cripto', number>;
-  
+
   // Gamificação
   gamification?: {
     totalUsers: number;
@@ -771,7 +771,7 @@ export interface DashboardMetrics {
     rewardsRedeemed: number;
     engagementRate: number;
   };
-  
+
   // Audiovisual
   audiovisual?: {
     totalSubmissions: number;
@@ -780,7 +780,7 @@ export interface DashboardMetrics {
     rejected: number;
     byType: Record<AudiovisualTipo, number>;
   };
-  
+
   // Patrocinadores
   patrocinadores?: {
     total: number;
@@ -873,7 +873,7 @@ export const isValidGamificationAction = (action: string): action is Gamificatio
   return [
     'cadastro', 'indicacao_confirmada', 'compra_ingresso', 'envio_conteudo',
     'qr_scan_evento', 'prova_extra', 'participacao_enquete', 'acesso_spoiler',
-    'checkin_evento', 'compartilhamento', 'login_diario', 'completar_perfil'
+    'checkin_evento', 'compartilhamento', 'login_diario', 'completar_perfil',
   ].includes(action);
 };
 
@@ -894,7 +894,7 @@ export const GAMIFICATION_TOKENS: Record<GamificationAction, number> = {
   checkin_evento: 30,
   compartilhamento: 10,
   login_diario: 5,
-  completar_perfil: 25
+  completar_perfil: 25,
 };
 
 // Alias para compatibilidade (deprecated)
@@ -913,37 +913,37 @@ export const calculateGamificationLevel = (tokens: number): GamificationLevel =>
 // Validação de dados
 export const validateUserData = (data: Partial<FirestoreUser>): string[] => {
   const errors: string[] = [];
-  
+
   if (data.email && !data.email.includes('@')) {
     errors.push('Email inválido');
   }
-  
+
   if (data.role && !isValidUserRole(data.role)) {
     errors.push('Tipo de usuário inválido');
   }
-  
+
   if (data.gamification?.tokens?.box?.balance && data.gamification.tokens.box.balance < 0) {
     errors.push('Tokens não podem ser negativos');
   }
-  
+
   return errors;
 };
 
 export const validateTeamData = (data: Partial<FirestoreTeam>): string[] => {
   const errors: string[] = [];
-  
+
   if (data.nome && data.nome.length < 2) {
     errors.push('Nome do time deve ter pelo menos 2 caracteres');
   }
-  
+
   if (data.atletas && data.atletas.length > 10) {
     errors.push('Time não pode ter mais de 10 atletas');
   }
-  
+
   if (data.valorInscricao && data.valorInscricao < 0) {
     errors.push('Valor de inscrição não pode ser negativo');
   }
-  
+
   return errors;
 };
 
@@ -963,12 +963,12 @@ export const dateToTimestamp = (date: Date): Timestamp => {
 // 🎯 Funções para gamificação com tokens $BOX
 export const calculateTokensForAction = (action: GamificationAction, metadata?: Record<string, any>): number => {
   const baseTokens = GAMIFICATION_TOKENS[action];
-  
+
   // Multiplicadores baseados em metadata
   if (metadata?.multiplier) {
     return Math.floor(baseTokens * metadata.multiplier);
   }
-  
+
   return baseTokens;
 };
 
@@ -988,7 +988,7 @@ export const sanitizeUserData = (data: any): Partial<FirestoreUser> => {
     email: data.email?.toLowerCase().trim(),
     displayName: data.displayName?.trim(),
     phone: data.phone?.replace(/\D/g, ''),
-    isActive: data.isActive ?? true
+    isActive: data.isActive ?? true,
   };
 };
 
@@ -1000,50 +1000,50 @@ export const sanitizeTeamData = (data: any): Partial<FirestoreTeam> => {
       ...data.box,
       nome: data.box.nome?.trim(),
       cidade: data.box.cidade?.trim(),
-      estado: data.box.estado?.trim()
-    } : undefined
+      estado: data.box.estado?.trim(),
+    } : undefined,
   };
 };
 
 export const validateAudiovisualData = (data: Partial<FirestoreAudiovisual>): string[] => {
   const errors: string[] = [];
-  
+
   if (!data.nome?.trim()) {
     errors.push('Nome é obrigatório');
   }
-  
+
   if (!data.userEmail?.trim()) {
     errors.push('Email é obrigatório');
   } else if (!data.userEmail.includes('@')) {
     errors.push('Email inválido');
   }
-  
+
   if (!data.telefone?.trim()) {
     errors.push('Telefone é obrigatório');
   }
-  
+
   if (!data.tipo) {
     errors.push('Tipo de audiovisual é obrigatório');
   } else if (!['fotografo', 'videomaker', 'editor', 'drone', 'audio', 'iluminacao'].includes(data.tipo)) {
     errors.push('Tipo de audiovisual inválido');
   }
-  
+
   if (!data.portfolio?.urls?.length) {
     errors.push('Pelo menos um link do portfólio é obrigatório');
   }
-  
+
   if (!data.portfolio?.experiencia?.trim()) {
     errors.push('Experiência é obrigatória');
   }
-  
+
   if (!data.portfolio?.equipamentos?.length) {
     errors.push('Pelo menos um equipamento é obrigatório');
   }
-  
+
   if (!data.portfolio?.especialidades?.length) {
     errors.push('Pelo menos uma especialidade é obrigatória');
   }
-  
+
   return errors;
 };
 
@@ -1060,7 +1060,7 @@ export const sanitizeAudiovisualData = (data: any): any => {
     equipamentos: data.equipamentos?.trim(),
     especialidades: data.especialidades?.trim(),
     disponibilidade: data.disponibilidade?.trim(),
-    motivacao: data.motivacao?.trim()
+    motivacao: data.motivacao?.trim(),
   };
 };
 
@@ -1074,31 +1074,31 @@ export interface QueryFilters {
   offset?: number;
   orderBy?: string;
   orderDirection?: 'asc' | 'desc';
-  
+
   // Filtros de usuário
   userRole?: UserRole;
   isActive?: boolean;
   createdAfter?: Timestamp;
   createdBefore?: Timestamp;
-  
+
   // Filtros de time
   teamStatus?: 'incomplete' | 'complete' | 'confirmado' | 'cancelado';
   teamCategoria?: CategoriaCompeticao;
   teamLote?: LoteInscricao;
-  
+
   // Filtros de pagamento
   paymentStatus?: PaymentStatus;
   paymentGateway?: 'pix' | 'cartao' | 'cripto';
-  
+
   // Filtros de audiovisual
   audiovisualStatus?: ApprovalStatus;
   audiovisualTipo?: AudiovisualTipo;
-  
+
   // Filtros de gamificação
   gamificationLevel?: GamificationLevel;
   minPoints?: number;
   maxPoints?: number;
-  
+
   // Filtros de data
   dateRange?: {
     start: Timestamp;
@@ -1144,7 +1144,7 @@ export default {
   sanitizeUserData,
   sanitizeTeamData,
   sanitizeAudiovisualData,
-  
+
   // Constantes
-  GAMIFICATION_POINTS
-}; 
+  GAMIFICATION_POINTS,
+};

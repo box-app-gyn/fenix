@@ -45,7 +45,7 @@ export default function InitialLinkCreator({ className = '' }: InitialLinkCreato
 
   const handleCreateCustomLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
       setMessage('Usuário não autenticado');
       return;
@@ -66,7 +66,7 @@ export default function InitialLinkCreator({ className = '' }: InitialLinkCreato
         customLink.shortCode,
         customLink.title,
         customLink.description,
-        customLink.category
+        customLink.category,
       );
 
       if (success) {
@@ -104,7 +104,7 @@ export default function InitialLinkCreator({ className = '' }: InitialLinkCreato
 
       {message && (
         <div className={`mb-6 p-4 rounded-lg ${
-          message.includes('✅') 
+          message.includes('✅')
             ? 'bg-green-500/20 border border-green-500/30 text-green-300'
             : 'bg-red-500/20 border border-red-500/30 text-red-300'
         }`}>
@@ -224,4 +224,4 @@ export default function InitialLinkCreator({ className = '' }: InitialLinkCreato
       </div>
     </div>
   );
-} 
+}

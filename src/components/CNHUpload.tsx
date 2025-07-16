@@ -65,12 +65,12 @@ export default function CNHUpload({ userId, onComplete }: CNHUploadProps) {
 
       const [frenteSnapshot, versoSnapshot] = await Promise.all([
         uploadBytes(frenteRef, frenteFile),
-        uploadBytes(versoRef, versoFile)
+        uploadBytes(versoRef, versoFile),
       ]);
 
       const [frenteUrl, versoUrl] = await Promise.all([
         getDownloadURL(frenteSnapshot.ref),
-        getDownloadURL(versoSnapshot.ref)
+        getDownloadURL(versoSnapshot.ref),
       ]);
 
       // Salvar URLs no Firestore
@@ -79,16 +79,15 @@ export default function CNHUpload({ userId, onComplete }: CNHUploadProps) {
           frente: frenteUrl,
           verso: versoUrl,
           uploadedAt: serverTimestamp(),
-          status: 'pending'
+          status: 'pending',
         },
         'adminVerification.required': false,
         'adminVerification.completedAt': serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
 
       console.log('✅ CNH enviada com sucesso');
       onComplete();
-
     } catch (error) {
       console.error('❌ Erro ao enviar CNH:', error);
       setError('Erro ao enviar arquivos. Tente novamente.');
@@ -124,12 +123,12 @@ export default function CNHUpload({ userId, onComplete }: CNHUploadProps) {
           {/* Frente da CNH */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Frente da CNH</h3>
-            
+
             {frentePreview ? (
               <div className="relative">
-                <img 
-                  src={frentePreview} 
-                  alt="Frente da CNH" 
+                <img
+                  src={frentePreview}
+                  alt="Frente da CNH"
                   className="w-full h-48 object-cover rounded-lg border-2 border-green-300"
                 />
                 <button
@@ -165,12 +164,12 @@ export default function CNHUpload({ userId, onComplete }: CNHUploadProps) {
           {/* Verso da CNH */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Verso da CNH</h3>
-            
+
             {versoPreview ? (
               <div className="relative">
-                <img 
-                  src={versoPreview} 
-                  alt="Verso da CNH" 
+                <img
+                  src={versoPreview}
+                  alt="Verso da CNH"
                   className="w-full h-48 object-cover rounded-lg border-2 border-green-300"
                 />
                 <button
@@ -241,4 +240,4 @@ export default function CNHUpload({ userId, onComplete }: CNHUploadProps) {
       </div>
     </div>
   );
-} 
+}

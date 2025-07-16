@@ -55,4 +55,4 @@ export const INVESTOR_STATUS = {
   CONTACTED: 'contacted',
   INTERESTED: 'interested',
   NOT_INTERESTED: 'not_interested',
-} as const; 
+} as const;

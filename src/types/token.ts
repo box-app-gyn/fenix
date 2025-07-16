@@ -13,18 +13,18 @@ export interface BoxToken {
   totalSupply: number;
   circulatingSupply: number;
   burnedTokens: number;
-  
+
   // Informações da blockchain
   network: 'BSC';
   chainId: 56;
   contractAddress: '0xBc972E10Df612C7d65054BC67aBCA96B3C22a017';
-  
+
   // Métricas de mercado (simuladas)
   marketCap: number;
   price: number;
   volume24h: number;
   priceChange24h: number;
-  
+
   // Timestamps
   lastUpdated: Timestamp;
   createdAt: Timestamp;
@@ -35,21 +35,21 @@ export interface UserBoxBalance {
   userId: string;
   userEmail: string;
   userName: string;
-  
+
   // Saldo atual
   balance: number;
   totalEarned: number;
   totalSpent: number;
-  
+
   // Métricas de tempo
   weeklyEarned: number;
   monthlyEarned: number;
   yearlyEarned: number;
-  
+
   // Histórico
   lastTransaction: Timestamp;
   lastActionAt: Timestamp;
-  
+
   // Status
   isActive: boolean;
   isLocked: boolean;
@@ -62,25 +62,25 @@ export interface BoxTransaction {
   userId: string;
   userEmail: string;
   userName: string;
-  
+
   // Detalhes da transação
   type: 'earn' | 'spend' | 'transfer' | 'burn' | 'mint';
   amount: number;
   balance: number; // Saldo após transação
-  
+
   // Metadados
   action: string;
   description: string;
   metadata?: Record<string, any>;
-  
+
   // Timestamps
   createdAt: Timestamp;
   processedAt: Timestamp;
-  
+
   // Status
   status: 'pending' | 'completed' | 'failed' | 'cancelled';
   error?: string;
-  
+
   // Para transações on-chain (futuro)
   txHash?: string;
   blockNumber?: number;
@@ -94,17 +94,17 @@ export interface TokenDistribution {
   amount: number;
   recipients: number;
   totalDistributed: number;
-  
+
   // Configuração
   maxRecipients?: number;
   minAmount: number;
   maxAmount: number;
-  
+
   // Status
   isActive: boolean;
   startDate: Timestamp;
   endDate?: Timestamp;
-  
+
   // Métricas
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -127,7 +127,7 @@ export interface TokenConfig {
     login_diario: number;       // 5 $BOX
     completar_perfil: number;   // 25 $BOX
   };
-  
+
   // Limites e restrições
   limits: {
     maxDailyEarnings: number;
@@ -136,7 +136,7 @@ export interface TokenConfig {
     minTransactionAmount: number;
     maxTransactionAmount: number;
   };
-  
+
   // Configurações de nível
   levels: {
     iniciante: { min: 0, max: 99 };
@@ -146,7 +146,7 @@ export interface TokenConfig {
     platina: { min: 1000, max: 1999 };
     diamante: { min: 2000, max: 999999 };
   };
-  
+
   // Timestamps
   updatedAt: Timestamp;
   updatedBy: string;
@@ -160,11 +160,11 @@ export const BOX_TOKEN_CONSTANTS = {
   NETWORK: 'BSC',
   CHAIN_ID: 56,
   CONTRACT_ADDRESS: '0xBc972E10Df612C7d65054BC67aBCA96B3C22a017',
-  
+
   // URLs
   EXPLORER_URL: 'https://bscscan.com/token/0xBc972E10Df612C7d65054BC67aBCA96B3C22a017',
   CHART_URL: 'https://dexscreener.com/bsc/0xBc972E10Df612C7d65054BC67aBCA96B3C22a017',
-  
+
   // Configurações padrão
   DEFAULT_DISTRIBUTION: {
     cadastro: 10,
@@ -178,8 +178,8 @@ export const BOX_TOKEN_CONSTANTS = {
     checkin_evento: 30,
     compartilhamento: 10,
     login_diario: 5,
-    completar_perfil: 25
-  }
+    completar_perfil: 25,
+  },
 } as const;
 
 // Tipos de ação que geram tokens
@@ -188,12 +188,12 @@ export type TokenAction = keyof typeof BOX_TOKEN_CONSTANTS.DEFAULT_DISTRIBUTION;
 // Função para calcular tokens por ação
 export const calculateTokensForAction = (action: TokenAction, metadata?: Record<string, any>): number => {
   const baseAmount = BOX_TOKEN_CONSTANTS.DEFAULT_DISTRIBUTION[action];
-  
+
   // Multiplicadores baseados em metadata
   if (metadata?.multiplier) {
     return Math.floor(baseAmount * metadata.multiplier);
   }
-  
+
   return baseAmount;
 };
 
@@ -204,13 +204,13 @@ export const isValidContractAddress = (address: string): boolean => {
 
 // Função para formatar saldo
 export const formatBoxBalance = (balance: number, decimals: number = 2): string => {
-  return `${balance.toLocaleString('pt-BR', { 
-    minimumFractionDigits: 0, 
-    maximumFractionDigits: decimals 
+  return `${balance.toLocaleString('pt-BR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: decimals,
   })} $BOX`;
 };
 
 // Função para calcular market cap
 export const calculateMarketCap = (circulatingSupply: number, price: number): number => {
   return circulatingSupply * price;
-}; 
+};

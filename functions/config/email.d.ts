@@ -36,4 +36,4 @@ export declare const emailValidations: {
     maxBodyLength: number;
     maxRecipients: number;
 };
-//# sourceMappingURL=email.d.ts.map
+// # sourceMappingURL=email.d.ts.map

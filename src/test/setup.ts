@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 vi.mock('firebase/app', () => ({
   initializeApp: vi.fn(),
   getApps: vi.fn(() => []),
-  getApp: vi.fn()
+  getApp: vi.fn(),
 }));
 
 vi.mock('firebase/auth', () => ({
@@ -14,7 +14,7 @@ vi.mock('firebase/auth', () => ({
   getRedirectResult: vi.fn(),
   signOut: vi.fn(),
   onAuthStateChanged: vi.fn(),
-  GoogleAuthProvider: vi.fn()
+  GoogleAuthProvider: vi.fn(),
 }));
 
 vi.mock('firebase/firestore', () => ({
@@ -22,16 +22,16 @@ vi.mock('firebase/firestore', () => ({
   doc: vi.fn(),
   getDoc: vi.fn(),
   setDoc: vi.fn(),
-  serverTimestamp: vi.fn()
+  serverTimestamp: vi.fn(),
 }));
 
 vi.mock('firebase/storage', () => ({
-  getStorage: vi.fn()
+  getStorage: vi.fn(),
 }));
 
 vi.mock('firebase/analytics', () => ({
   getAnalytics: vi.fn(),
-  isSupported: vi.fn(() => Promise.resolve(false))
+  isSupported: vi.fn(() => Promise.resolve(false)),
 }));
 
 // Mock do localStorage
@@ -40,9 +40,9 @@ Object.defineProperty(window, 'localStorage', {
     getItem: vi.fn(),
     setItem: vi.fn(),
     removeItem: vi.fn(),
-    clear: vi.fn()
+    clear: vi.fn(),
   },
-  writable: true
+  writable: true,
 });
 
 // Mock do sessionStorage
@@ -51,17 +51,17 @@ Object.defineProperty(window, 'sessionStorage', {
     getItem: vi.fn(),
     setItem: vi.fn(),
     removeItem: vi.fn(),
-    clear: vi.fn()
+    clear: vi.fn(),
   },
-  writable: true
+  writable: true,
 });
 
 // Mock do performance
 Object.defineProperty(window, 'performance', {
   value: {
-    now: vi.fn(() => Date.now())
+    now: vi.fn(() => Date.now()),
   },
-  writable: true
+  writable: true,
 });
 
 // Configurações globais
@@ -72,5 +72,5 @@ global.console = {
   debug: vi.fn(),
   info: vi.fn(),
   warn: vi.fn(),
-  error: vi.fn()
-}; 
+  error: vi.fn(),
+};

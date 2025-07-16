@@ -12,7 +12,7 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // Initialize Firebase
@@ -37,7 +37,7 @@ provider.setCustomParameters({
   // Configurações otimizadas para redirect
   ux_mode: 'redirect',
   // Adicionar escopo para melhor experiência
-  scope: 'email profile'
+  scope: 'email profile',
 });
 
 // Configurar domínios autorizados para Firebase Auth
@@ -57,14 +57,14 @@ export const initializeAnalyticsManually = async (): Promise<Analytics | null> =
     const isAnalyticsSupported = await isSupported();
     if (isAnalyticsSupported) {
       analytics = getAnalytics(app);
-      
+
       // Verificar se pode inicializar analytics
       const canInitialize = configurePrivacySettings();
-      
+
       if (canInitialize) {
         // Inicializar analytics com configurações corretas
         const success = initializeAnalytics(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID);
-        
+
         if (success) {
           console.log('✅ Google Analytics inicializado manualmente com sucesso');
         } else {
@@ -73,7 +73,7 @@ export const initializeAnalyticsManually = async (): Promise<Analytics | null> =
       } else {
         console.log('ℹ️ Analytics aguardando consentimento de cookies');
       }
-      
+
       return analytics;
     } else {
       console.log('ℹ️ Google Analytics não suportado neste ambiente');
@@ -85,4 +85,50 @@ export const initializeAnalyticsManually = async (): Promise<Analytics | null> =
   }
 };
 
-export default app; 
+// Expor Firebase globalmente para debug e testes via console
+if (typeof window !== 'undefined') {
+  // @ts-ignore - Exposição global para debug
+  window.firebase = {
+    auth: () => auth,
+    app: () => app,
+    db: () => db,
+    storage: () => storage,
+    provider: () => provider,
+  };
+  
+  // Expor funções de login para console
+  // @ts-ignore - Exposição global para debug
+  window.loginWithGoogle = () => {
+    import('firebase/auth').then(({ signInWithPopup }) => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          console.log('✅ Login manual via console realizado:', result.user.email);
+        })
+        .catch((error) => {
+          console.error('❌ Erro no login manual:', error);
+        });
+    });
+  };
+  
+  // @ts-ignore - Exposição global para debug
+  window.logout = () => {
+    import('firebase/auth').then(({ signOut }) => {
+      signOut(auth)
+        .then(() => {
+          console.log('✅ Logout manual via console realizado');
+        })
+        .catch((error) => {
+          console.error('❌ Erro no logout manual:', error);
+        });
+    });
+  };
+  
+  console.log('🔧 Firebase exposto globalmente para debug');
+  console.log('📝 Comandos disponíveis:');
+  console.log('  - window.loginWithGoogle() - Login com Google');
+  console.log('  - window.logout() - Logout');
+  console.log('  - window.firebase.auth() - Instância do auth');
+  console.log('  - window.firebase.db() - Instância do Firestore');
+}
+
+export default app;

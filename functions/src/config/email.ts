@@ -1,29 +1,35 @@
-import * as functions from 'firebase-functions';
+import * as functions from "firebase-functions";
 
 // Configurações de email
 export const emailConfig = {
   // Configurações do Gmail
   gmail: {
-    service: 'gmail',
+    service: "gmail",
     auth: {
       user: functions.config().email?.user || process.env.EMAIL_USER,
       pass: functions.config().email?.password || process.env.EMAIL_PASSWORD,
     },
   },
-  
+
   // Configurações do SendGrid (alternativa)
   sendgrid: {
     apiKey: functions.config().sendgrid?.api_key || process.env.SENDGRID_API_KEY,
-    from: functions.config().sendgrid?.from || 'noreply@interbox2025.com',
+    from: functions.config().sendgrid?.from || "noreply@interbox2025.com",
   },
-  
+
+  // Configurações do Resend (alternativa moderna)
+  resend: {
+    apiKey: functions.config().resend?.api_key || process.env.RESEND_API_KEY,
+    from: functions.config().resend?.from || "noreply@interbox2025.com",
+  },
+
   // Configurações gerais
   general: {
-    from: 'Interbox 2025 <noreply@interbox2025.com>',
-    replyTo: 'contato@interbox2025.com',
+    from: "Interbox 2025 <noreply@interbox2025.com>",
+    replyTo: "contato@interbox2025.com",
     maxRetries: 3,
     retryDelay: 5000, // 5 segundos
-  }
+  },
 };
 
 // Templates de email em HTML
@@ -158,34 +164,34 @@ export const emailTemplates = {
       
       <div class="success-box">
         <h3>📋 Detalhes do Pedido:</h3>
-        <p><strong>Tipo:</strong> ${data.dadosAdicionais?.tipo || 'Ingresso'}</p>
+        <p><strong>Tipo:</strong> ${data.dadosAdicionais?.tipo || "Ingresso"}</p>
         <p><strong>Quantidade:</strong> ${data.dadosAdicionais?.quantidade || 1}</p>
-        <p><strong>Valor Total:</strong> R$ ${data.dadosAdicionais?.valorTotal || '0,00'}</p>
+        <p><strong>Valor Total:</strong> R$ ${data.dadosAdicionais?.valorTotal || "0,00"}</p>
       </div>
       
       <p>Em breve você receberá instruções para pagamento via PIX.</p>
       <p>Obrigado por fazer parte do maior evento de times da América Latina!</p>
     `;
-    
-    return emailTemplates.base(content, 'Pedido Confirmado - Interbox 2025');
+
+    return emailTemplates.base(content, "Pedido Confirmado - Interbox 2025");
   },
 
   // Template para status de inscrição audiovisual
   audiovisual: (data: any) => {
     const aprovado = data.dadosAdicionais?.aprovado;
-    const tipo = data.dadosAdicionais?.tipo || 'Profissional Audiovisual';
-    
-    const statusBox = aprovado 
-      ? `<div class="success-box">
+    const tipo = data.dadosAdicionais?.tipo || "Profissional Audiovisual";
+
+    const statusBox = aprovado ?
+      `<div class="success-box">
            <h3>✅ Inscrição Aprovada!</h3>
            <p>Parabéns! Sua inscrição como <strong>${tipo}</strong> foi aprovada.</p>
            <p>Você está oficialmente credenciado para o Interbox 2025!</p>
-         </div>`
-      : `<div class="error-box">
+         </div>` :
+      `<div class="error-box">
            <h3>❌ Inscrição Não Aprovada</h3>
            <p>Infelizmente sua inscrição não foi aprovada no momento.</p>
-           ${data.dadosAdicionais?.motivoRejeicao ? 
-             `<p><strong>Motivo:</strong> ${data.dadosAdicionais.motivoRejeicao}</p>` : ''}
+           ${data.dadosAdicionais?.motivoRejeicao ?
+             `<p><strong>Motivo:</strong> ${data.dadosAdicionais.motivoRejeicao}</p>` : ""}
          </div>`;
 
     const content = `
@@ -197,8 +203,8 @@ export const emailTemplates = {
       
       <p>Em caso de dúvidas, entre em contato conosco.</p>
     `;
-    
-    return emailTemplates.base(content, 'Status da Inscrição - Interbox 2025');
+
+    return emailTemplates.base(content, "Status da Inscrição - Interbox 2025");
   },
 
   // Template para notificações administrativas
@@ -210,13 +216,13 @@ export const emailTemplates = {
       
       <div class="warning-box">
         <h3>🎯 Interbox 2025</h3>
-        <p>${data.dadosAdicionais?.message || 'Você tem uma notificação do Interbox 2025.'}</p>
+        <p>${data.dadosAdicionais?.message || "Você tem uma notificação do Interbox 2025."}</p>
       </div>
       
       <p>Fique atento às próximas atualizações!</p>
     `;
-    
-    return emailTemplates.base(content, 'Interbox 2025 - Notificação');
+
+    return emailTemplates.base(content, "Interbox 2025 - Notificação");
   },
 
   // Template para boas-vindas
@@ -242,9 +248,9 @@ export const emailTemplates = {
       
       <a href="https://interbox2025.com" class="button">Acessar o App</a>
     `;
-    
-    return emailTemplates.base(content, 'Bem-vindo ao Interbox 2025');
-  }
+
+    return emailTemplates.base(content, "Bem-vindo ao Interbox 2025");
+  },
 };
 
 // Configurações de rate limiting para emails
@@ -258,18 +264,18 @@ export const emailRateLimit = {
 export const emailValidations = {
   // Regex para validar formato de email
   emailRegex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  
+
   // Domínios permitidos (opcional)
   allowedDomains: [
-    'gmail.com',
-    'hotmail.com',
-    'outlook.com',
-    'yahoo.com',
-    'icloud.com'
+    "gmail.com",
+    "hotmail.com",
+    "outlook.com",
+    "yahoo.com",
+    "icloud.com",
   ],
-  
+
   // Tamanhos máximos
   maxSubjectLength: 100,
   maxBodyLength: 10000,
-  maxRecipients: 10
-}; 
+  maxRecipients: 10,
+};

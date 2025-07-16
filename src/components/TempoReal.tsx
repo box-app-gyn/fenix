@@ -50,15 +50,15 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
         total: 0,
         media: 0,
         holders: 0,
-        marketCap: 0
-      }
+        marketCap: 0,
+      },
     },
     mostrarNaHome: {
       ingressos: true,
       token: true,      // Alterado de 'xp' para 'token'
       indicacoes: false, // ❌ REMOVIDO da home
       fotografos: false, // ❌ REMOVIDO da home
-    }
+    },
   });
 
   const [countdown, setCountdown] = useState<{
@@ -89,31 +89,31 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
               status: 'em_breve',
               dataAbertura: firestoreData.ingressos?.dataAbertura,
               loteAtual: firestoreData.ingressos?.loteAtual,
-              vagasRestantes: firestoreData.ingressos?.vagasRestantes
+              vagasRestantes: firestoreData.ingressos?.vagasRestantes,
             },
             indicacoes: {
               total: firestoreData.indicacoes?.total || 0,
-              hoje: firestoreData.indicacoes?.hoje || 0
+              hoje: firestoreData.indicacoes?.hoje || 0,
             },
             fotografos: {
               total: firestoreData.fotografos?.total || 0,
-              aprovados: firestoreData.fotografos?.aprovados || 0
+              aprovados: firestoreData.fotografos?.aprovados || 0,
             },
             token: {
               box: {
                 total: firestoreData.token?.box?.total || 0,
                 media: firestoreData.token?.box?.media || 0,
                 holders: firestoreData.token?.box?.holders || 0,
-                marketCap: firestoreData.token?.box?.marketCap || 0
-              }
+                marketCap: firestoreData.token?.box?.marketCap || 0,
+              },
             },
             mostrarNaHome: {
               ingressos: true,
               token: true,      // Alterado de 'xp' para 'token'
               indicacoes: false, // Sempre false na home
               fotografos: false, // Sempre false na home
-              ...firestoreData.mostrarNaHome
-            }
+              ...firestoreData.mostrarNaHome,
+            },
           });
         } else {
           // 🎯 Dados padrão se documento não existir
@@ -127,15 +127,15 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
                 total: 0,
                 media: 0,
                 holders: 0,
-                marketCap: 0
-              }
+                marketCap: 0,
+              },
             },
             mostrarNaHome: {
               ingressos: true,
               token: true,
               indicacoes: false,
               fotografos: false,
-            }
+            },
           });
         }
       },
@@ -151,17 +151,17 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
               total: 0,
               media: 0,
               holders: 0,
-              marketCap: 0
-            }
+              marketCap: 0,
+            },
           },
           mostrarNaHome: {
             ingressos: true,
             token: true,
             indicacoes: false,
             fotografos: false,
-          }
+          },
         });
-      }
+      },
     );
 
     return () => unsubscribe();
@@ -202,32 +202,32 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
 
   const getIngressosText = () => {
     const status = getIngressosStatus();
-    
+
     switch (status) {
-      case 'em_breve':
-        return {
-          title: '🎟️ Ingressos Lote 1',
-          subtitle: `Disponível em ${countdown.days} dias`,
-          description: '⏳ Em breve – Lote 1 abre em X dias'
-        };
-      case 'disponivel':
-        return {
-          title: '🎟️ Ingressos Disponíveis',
-          subtitle: `Lote ${data.ingressos.loteAtual || 1}`,
-          description: `✅ ${data.ingressos.vagasRestantes || 0} vagas restantes`
-        };
-      case 'esgotado':
-        return {
-          title: '🎟️ Ingressos Esgotados',
-          subtitle: 'Lote 1',
-          description: '❌ Vagas esgotadas'
-        };
-      default:
-        return {
-          title: '🎟️ Ingressos',
-          subtitle: 'Em breve',
-          description: '⏳ Aguarde...'
-        };
+    case 'em_breve':
+      return {
+        title: '🎟️ Ingressos Lote 1',
+        subtitle: `Disponível em ${countdown.days} dias`,
+        description: '⏳ Em breve – Lote 1 abre em X dias',
+      };
+    case 'disponivel':
+      return {
+        title: '🎟️ Ingressos Disponíveis',
+        subtitle: `Lote ${data.ingressos.loteAtual || 1}`,
+        description: `✅ ${data.ingressos.vagasRestantes || 0} vagas restantes`,
+      };
+    case 'esgotado':
+      return {
+        title: '🎟️ Ingressos Esgotados',
+        subtitle: 'Lote 1',
+        description: '❌ Vagas esgotadas',
+      };
+    default:
+      return {
+        title: '🎟️ Ingressos',
+        subtitle: 'Em breve',
+        description: '⏳ Aguarde...',
+      };
     }
   };
 
@@ -246,26 +246,26 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
           transition={{ duration: 0.8, delay: 0.1 }}
           viewport={{ once: true }}
           className={`rounded-xl p-6 border transition-all duration-300 ${
-            getIngressosStatus() === 'em_breve' 
-              ? 'opacity-60 border-gray-700 bg-black/40' 
+            getIngressosStatus() === 'em_breve'
+              ? 'opacity-60 border-gray-700 bg-black/40'
               : getIngressosStatus() === 'disponivel'
-              ? 'border-green-500/50 bg-green-500/10'
-              : 'border-red-500/50 bg-red-500/10'
+                ? 'border-green-500/50 bg-green-500/10'
+                : 'border-red-500/50 bg-red-500/10'
           }`}
         >
           <div className="text-center">
             <p className="text-sm text-gray-400 mb-2">{ingressosInfo.title}</p>
             <p className={`text-xl font-bold mb-1 ${
-              getIngressosStatus() === 'em_breve' 
-                ? 'text-pink-500' 
+              getIngressosStatus() === 'em_breve'
+                ? 'text-pink-500'
                 : getIngressosStatus() === 'disponivel'
-                ? 'text-green-400'
-                : 'text-red-400'
+                  ? 'text-green-400'
+                  : 'text-red-400'
             }`}>
               {ingressosInfo.subtitle}
             </p>
             <p className="text-xs text-gray-500">{ingressosInfo.description}</p>
-            
+
             {/* Contagem regressiva detalhada */}
             {getIngressosStatus() === 'em_breve' && countdown.days > 0 && (
               <div className="mt-3 text-xs text-gray-400">
@@ -278,7 +278,7 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
             )}
           </div>
         </motion.div>
-      )
+      ),
     }] : []),
 
     // ✅ TOKENS $BOX - MOSTRAR SE GAMIFICAÇÃO ATIVA (engajamento) - APENAS SE NÃO FOR PÚBLICO
@@ -303,7 +303,7 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
             </p>
           </div>
         </motion.div>
-      )
+      ),
     }] : []),
 
     // ❌ INDICAÇÕES - REMOVIDO da home (vai para dashboard)
@@ -313,7 +313,7 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
   return (
     <section className="py-16 bg-gradient-to-br from-black via-gray-900 to-black">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Título */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -333,13 +333,13 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
 
         {/* Cards em tempo real - APENAS ESSENCIAIS */}
         <div className={`grid gap-6 ${
-          cardsParaMostrar.length === 1 
-            ? 'grid-cols-1 max-w-md mx-auto' 
-            : cardsParaMostrar.length === 2 
-            ? 'grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto'
-            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+          cardsParaMostrar.length === 1
+            ? 'grid-cols-1 max-w-md mx-auto'
+            : cardsParaMostrar.length === 2
+              ? 'grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
         }`}>
-          {cardsParaMostrar.map(card => card.component)}
+          {cardsParaMostrar.map((card) => card.component)}
         </div>
 
         {/* Call to Action - FOCO TOTAL NA CONVERSÃO */}
@@ -352,8 +352,8 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
         >
           <div className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-8 border border-pink-500/30">
             <h3 className="text-xl font-bold text-white mb-4">
-              {isIngressosDisponiveis() 
-                ? '🎯 Ingressos já estão disponíveis!' 
+              {isIngressosDisponiveis()
+                ? '🎯 Ingressos já estão disponíveis!'
                 : '⏰ Prepare-se para a abertura'
               }
             </h3>
@@ -389,4 +389,4 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
   );
 };
 
-export default TempoReal; 
+export default TempoReal;

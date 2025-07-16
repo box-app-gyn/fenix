@@ -1,10 +1,10 @@
-import Hero from "@/components/Hero";
+import Hero from '@/components/Hero';
 
 export default function Home() {
   return (
     <div className="animate-fade-in">
       <Hero />
-      
+
       {/* Content Section */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,7 +13,7 @@ export default function Home() {
               Por que escolher o CERRADØ INTERBØX 2025?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Uma base sólida e moderna para suas aplicações web, com todas as ferramentas 
+              Uma base sólida e moderna para suas aplicações web, com todas as ferramentas
               necessárias para criar experiências incríveis.
             </p>
           </div>

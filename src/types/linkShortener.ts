@@ -98,7 +98,7 @@ export const LINK_CONSTRAINTS = {
     'admin', 'api', 'auth', 'login', 'logout', 'register', 'profile',
     'dashboard', 'settings', 'help', 'about', 'contact', 'privacy',
     'terms', 'faq', 'support', 'docs', 'blog', 'news', 'events',
-    'hub', 'tempo-real', 'leaderboard', 'audiovisual', 'sobre'
+    'hub', 'tempo-real', 'leaderboard', 'audiovisual', 'sobre',
   ] as const,
   FORBIDDEN_CHARS: /[^a-zA-Z0-9-_]/g,
   VALID_CHARS: /^[a-zA-Z0-9-_]+$/,
@@ -132,7 +132,7 @@ export const validateShortLink = (data: ShortLinkCreate): { isValid: boolean; er
     if (data.tags.length > LINK_CONSTRAINTS.MAX_TAGS_COUNT) {
       errors.push(`Muitas tags (máximo ${LINK_CONSTRAINTS.MAX_TAGS_COUNT})`);
     }
-    
+
     for (const tag of data.tags) {
       if (tag.length > LINK_CONSTRAINTS.MAX_TAG_LENGTH) {
         errors.push(`Tag muito longa: ${tag} (máximo ${LINK_CONSTRAINTS.MAX_TAG_LENGTH} caracteres)`);
@@ -150,15 +150,15 @@ export const validateShortLink = (data: ShortLinkCreate): { isValid: boolean; er
     if (data.customCode.length < LINK_CONSTRAINTS.MIN_SHORT_CODE_LENGTH) {
       errors.push(`Código muito curto (mínimo ${LINK_CONSTRAINTS.MIN_SHORT_CODE_LENGTH} caracteres)`);
     }
-    
+
     if (data.customCode.length > LINK_CONSTRAINTS.MAX_CUSTOM_CODE_LENGTH) {
       errors.push(`Código muito longo (máximo ${LINK_CONSTRAINTS.MAX_CUSTOM_CODE_LENGTH} caracteres)`);
     }
-    
+
     if (!LINK_CONSTRAINTS.VALID_CHARS.test(data.customCode)) {
       errors.push('Código contém caracteres inválidos (use apenas letras, números, hífen e underscore)');
     }
-    
+
     if (LINK_CONSTRAINTS.RESERVED_CODES.includes(data.customCode.toLowerCase() as any)) {
       errors.push(`Código reservado: ${data.customCode}`);
     }
@@ -166,7 +166,7 @@ export const validateShortLink = (data: ShortLinkCreate): { isValid: boolean; er
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 };
 
@@ -186,7 +186,7 @@ export const sanitizeShortLinkData = (data: ShortLinkCreate): ShortLinkCreate =>
     ...data,
     title: data.title?.trim().slice(0, LINK_CONSTRAINTS.MAX_TITLE_LENGTH),
     description: data.description?.trim().slice(0, LINK_CONSTRAINTS.MAX_DESCRIPTION_LENGTH),
-    tags: data.tags?.map(tag => tag.trim().slice(0, LINK_CONSTRAINTS.MAX_TAG_LENGTH)).filter(Boolean),
+    tags: data.tags?.map((tag) => tag.trim().slice(0, LINK_CONSTRAINTS.MAX_TAG_LENGTH)).filter(Boolean),
     customCode: data.customCode?.toLowerCase().replace(LINK_CONSTRAINTS.FORBIDDEN_CHARS, ''),
   };
 };
@@ -195,11 +195,11 @@ export const sanitizeShortLinkData = (data: ShortLinkCreate): ShortLinkCreate =>
 export const generateShortCode = (length: number = 6): string => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
-  
+
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
-  
+
   return result;
 };
 
@@ -218,7 +218,7 @@ export const extractShortCode = (url: string): string | null => {
 export const detectDevice = (userAgent: string): 'mobile' | 'desktop' | 'tablet' => {
   const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
   const tabletRegex = /iPad|Android(?=.*\bMobile\b)(?=.*\bSafari\b)/i;
-  
+
   if (tabletRegex.test(userAgent)) return 'tablet';
   if (mobileRegex.test(userAgent)) return 'mobile';
   return 'desktop';
@@ -246,7 +246,7 @@ export const calculateLinkStats = (clicks: ShortLinkClick[]): ShortLink['analyti
     lastClickedAt: clicks.length > 0 ? clicks[clicks.length - 1].clickedAt : undefined,
   };
 
-  clicks.forEach(click => {
+  clicks.forEach((click) => {
     const date = click.clickedAt.toISOString().split('T')[0];
     const hour = click.clickedAt.getHours().toString().padStart(2, '0');
     const device = click.device || 'unknown';
@@ -290,10 +290,10 @@ export const formatLinkStats = (stats: ShortLink['analytics'] | undefined): {
 
   const today = new Date().toISOString().split('T')[0];
   const todayClicks = stats.clicksByDate[today] || 0;
-  
+
   const topDevice = Object.entries(stats.clicksByDevice)
     .sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A';
-    
+
   const topCountry = Object.entries(stats.clicksByCountry)
     .sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A';
 
@@ -303,4 +303,4 @@ export const formatLinkStats = (stats: ShortLink['analytics'] | undefined): {
     topDevice,
     topCountry,
   };
-}; 
+};

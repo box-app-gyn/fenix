@@ -9,26 +9,26 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
   // Se for formulário audiovisual, mostrar versão específica
   if (isAudiovisualForm) {
     return (
-      <div 
+      <div
         className="fixed inset-0 w-full h-full flex items-center justify-center p-4 z-50"
         style={{
           backgroundImage: 'url(/images/bg_1.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         {/* Background com imagem */}
-        <div 
+        <div
           className="absolute inset-0"
           style={{
             backgroundImage: 'url(/images/bg_1.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
+            backgroundRepeat: 'no-repeat',
           }}
         ></div>
-        
+
         {/* Conteúdo centralizado */}
         <div className="relative z-10 w-full max-w-lg mx-auto">
           <motion.div
@@ -52,20 +52,20 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
             </div>
 
             <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg p-4 text-white">
-                <h3 className="font-semibold mb-2">🎯 CERRADØ INTERBOX 2025</h3>
-                <p className="text-sm opacity-90">
+              <h3 className="font-semibold mb-2">🎯 CERRADØ INTERBOX 2025</h3>
+              <p className="text-sm opacity-90">
                 ᴄᴏᴍᴘᴇᴛɪçãᴏ. ᴄᴏᴍᴜɴɪᴅᴀᴅᴇ. ᴘʀᴏᴘóꜱɪᴛᴏ.
-                </p>
-              </div>
+              </p>
+            </div>
 
             <div className="mt-6 pt-4 border-t border-gray-200">
-              <button 
+              <button
                 onClick={() => window.history.back()}
                 className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors mr-3"
               >
                 Voltar
               </button>
-              <button 
+              <button
                 onClick={() => window.location.reload()}
                 className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-6 py-2 rounded-lg transition-colors"
               >
@@ -81,26 +81,26 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
   // Se permitir acesso administrativo, mostrar uma versão diferente
   if (allowAdminAccess) {
     return (
-      <div 
+      <div
         className="fixed inset-0 w-full h-full flex items-center justify-center p-4 z-50"
         style={{
           backgroundImage: 'url(/images/bg_1.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         {/* Background com imagem */}
-        <div 
+        <div
           className="absolute inset-0"
           style={{
             backgroundImage: 'url(/images/bg_1.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
+            backgroundRepeat: 'no-repeat',
           }}
         ></div>
-        
+
         {/* Conteúdo centralizado */}
         <div className="relative z-10 w-full max-w-lg mx-auto">
           <motion.div
@@ -119,7 +119,7 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
                 Acesso Administrativo Permitido
               </h1>
               <p className="text-gray-600">
-                Você está acessando um painel administrativo. 
+                Você está acessando um painel administrativo.
                 A experiência pode ser otimizada para dispositivos móveis, mas o acesso é permitido.
               </p>
             </div>
@@ -151,13 +151,13 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
             </div>
 
             <div className="mt-6 pt-4 border-t border-gray-200">
-              <button 
+              <button
                 onClick={() => window.history.back()}
                 className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors mr-3"
               >
                 Voltar
               </button>
-              <button 
+              <button
                 onClick={() => window.location.reload()}
                 className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
               >
@@ -172,26 +172,26 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
 
   // Versão original para usuários normais
   return (
-    <div 
+    <div
       className="fixed inset-0 w-full h-full flex items-center justify-center p-4 z-50"
       style={{
         backgroundImage: 'url(/images/bg_1.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
       }}
     >
       {/* Background com imagem */}
-      <div 
+      <div
         className="absolute inset-0"
         style={{
           backgroundImage: 'url(/images/bg_1.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       ></div>
-      
+
       {/* Conteúdo centralizado */}
       <div className="relative z-10 w-full max-w-md mx-auto">
         <motion.div
@@ -210,7 +210,7 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
               Acesso Mobile Exclusivo
             </h1>
             <p className="text-gray-600">
-              O CERRADØ INTERBOX 2025 é otimizado para dispositivos móveis. 
+              O CERRADØ INTERBOX 2025 é otimizado para dispositivos móveis.
               Acesse pelo seu smartphone para uma experiência completa.
             </p>
           </div>
@@ -250,4 +250,4 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
       </div>
     </div>
   );
-} 
+}

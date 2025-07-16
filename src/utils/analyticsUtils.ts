@@ -48,7 +48,7 @@ export const initializeAnalytics = (measurementId: string) => {
       // Configurações adicionais para evitar problemas
       send_page_view: true,
       page_title: document.title,
-      page_location: window.location.href
+      page_location: window.location.href,
     });
 
     console.log('✅ Analytics inicializado com sucesso');
@@ -64,7 +64,7 @@ export const trackPageView = (page: string) => {
     if (typeof window !== 'undefined' && (window as any).gtag) {
       (window as any).gtag('config', import.meta.env.VITE_FIREBASE_MEASUREMENT_ID, {
         page_title: page,
-        page_location: window.location.href
+        page_location: window.location.href,
       });
       console.log('📊 Page view tracked:', page);
     }
@@ -79,7 +79,7 @@ export const trackEvent = (action: string, category: string, label?: string, val
       (window as any).gtag('event', action, {
         event_category: category,
         event_label: label,
-        value: value
+        value: value,
       });
       console.log('📊 Event tracked:', action, category, label);
     }
@@ -106,10 +106,10 @@ export const setCookie = (name: string, value: string, days: number = 30) => {
   try {
     const expires = new Date();
     expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-    
+
     const cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=None;Secure`;
     document.cookie = cookie;
-    
+
     console.log('🍪 Cookie definido:', name);
   } catch (error) {
     console.warn('⚠️ Erro ao definir cookie:', error);
@@ -158,7 +158,7 @@ export const configurePrivacySettings = (): boolean => {
   try {
     // Verificar se o usuário aceitou cookies
     const cookiesAccepted = getCookie('cookies_accepted');
-    
+
     if (!cookiesAccepted) {
       console.log('ℹ️ Aguardando aceitação de cookies para Analytics');
       return false;
@@ -176,4 +176,4 @@ export const configurePrivacySettings = (): boolean => {
     console.warn('⚠️ Erro ao configurar privacidade:', error);
     return false;
   }
-}; 
+};

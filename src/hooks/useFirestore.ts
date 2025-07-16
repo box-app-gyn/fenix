@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  getDocs, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  orderBy, 
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
   limit,
   onSnapshot,
   serverTimestamp,
-  QueryConstraint
+  QueryConstraint,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
@@ -32,7 +32,7 @@ interface UseFirestoreOptions {
 // Hook para operações CRUD básicas
 export function useFirestore<T extends FirestoreDocument>(
   collectionName: string,
-  options: UseFirestoreOptions = {}
+  options: UseFirestoreOptions = {},
 ) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +45,7 @@ export function useFirestore<T extends FirestoreDocument>(
       setError(null);
 
       let q = query(collection(db, collectionName));
-      
+
       // Aplicar constraints
       if (constraints.length > 0) {
         q = query(q, ...constraints);
@@ -63,11 +63,11 @@ export function useFirestore<T extends FirestoreDocument>(
 
       const querySnapshot = await getDocs(q);
       const documents: T[] = [];
-      
+
       querySnapshot.forEach((doc) => {
         documents.push({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         } as T);
       });
 
@@ -85,14 +85,14 @@ export function useFirestore<T extends FirestoreDocument>(
     try {
       const docRef = doc(db, collectionName, id);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         return {
           id: docSnap.id,
-          ...docSnap.data()
+          ...docSnap.data(),
         } as T;
       }
-      
+
       return null;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido');
@@ -108,7 +108,7 @@ export function useFirestore<T extends FirestoreDocument>(
       const docRef = await addDoc(collection(db, collectionName), {
         ...documentData,
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
       return docRef.id;
     } catch (err) {
@@ -125,7 +125,7 @@ export function useFirestore<T extends FirestoreDocument>(
       const docRef = doc(db, collectionName, id);
       await updateDoc(docRef, {
         ...updates,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
       return true;
     } catch (err) {
@@ -154,7 +154,7 @@ export function useFirestore<T extends FirestoreDocument>(
     if (!options.realtime) return;
 
     let q = query(collection(db, collectionName));
-    
+
     if (options.orderBy) {
       q = query(q, orderBy(options.orderBy, options.orderDirection || 'desc'));
     }
@@ -170,7 +170,7 @@ export function useFirestore<T extends FirestoreDocument>(
         querySnapshot.forEach((doc) => {
           documents.push({
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
           } as T);
         });
         setData(documents);
@@ -180,7 +180,7 @@ export function useFirestore<T extends FirestoreDocument>(
         setError(err.message);
         setLoading(false);
         console.error('Erro no listener em tempo real:', err);
-      }
+      },
     );
 
     return () => unsubscribe();
@@ -194,7 +194,7 @@ export function useFirestore<T extends FirestoreDocument>(
     fetchDocument,
     addDocument,
     updateDocument,
-    deleteDocument
+    deleteDocument,
   };
 }
 
@@ -211,4 +211,4 @@ export function useTeams() {
 // Hook específico para configurações
 export function useConfig() {
   return useFirestore('config', { realtime: true });
-} 
+}

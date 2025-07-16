@@ -16,7 +16,7 @@ export default function CookieBanner() {
   const handleAccept = async () => {
     setCookie('cookies_accepted', 'true', 365); // 1 ano
     setIsVisible(false);
-    
+
     // Inicializar analytics manualmente
     try {
       await initializeAnalyticsManually();
@@ -40,11 +40,11 @@ export default function CookieBanner() {
         <div className="flex-1">
           <h3 className="font-semibold text-lg mb-2">🍪 Política de Cookies</h3>
           <p className="text-sm text-gray-300">
-            Utilizamos cookies para melhorar sua experiência, analisar o tráfego do site e personalizar conteúdo. 
+            Utilizamos cookies para melhorar sua experiência, analisar o tráfego do site e personalizar conteúdo.
             Ao continuar navegando, você concorda com nossa política de cookies.
           </p>
         </div>
-        
+
         <div className="flex gap-3 flex-shrink-0">
           <button
             onClick={handleDecline}
@@ -62,4 +62,4 @@ export default function CookieBanner() {
       </div>
     </div>
   );
-} 
+}

@@ -15,34 +15,34 @@ const sanitizeText = (text: string): string => {
   return text || 'Usuário Anônimo'
 }
 
-export default function GamifiedLeaderboard({ 
-  showAnimations = true 
+export default function GamifiedLeaderboard({
+  showAnimations = true,
 }: GamifiedLeaderboardProps) {
   const { leaderboard: entries, loading, error } = useLeaderboard();
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
-      case 1:
-        return '🥇'
-      case 2:
-        return '🥈'
-      case 3:
-        return '🥉'
-      default:
-        return `#${rank}`
+    case 1:
+      return '🥇'
+    case 2:
+      return '🥈'
+    case 3:
+      return '🥉'
+    default:
+      return `#${rank}`
     }
   }
 
   const getRankColor = (rank: number) => {
     switch (rank) {
-      case 1:
-        return 'bg-gradient-to-r from-yellow-400 to-yellow-600'
-      case 2:
-        return 'bg-gradient-to-r from-gray-300 to-gray-500'
-      case 3:
-        return 'bg-gradient-to-r from-amber-600 to-amber-800'
-      default:
-        return 'bg-gray-800'
+    case 1:
+      return 'bg-gradient-to-r from-yellow-400 to-yellow-600'
+    case 2:
+      return 'bg-gradient-to-r from-gray-300 to-gray-500'
+    case 3:
+      return 'bg-gradient-to-r from-amber-600 to-amber-800'
+    default:
+      return 'bg-gray-800'
     }
   }
 
@@ -76,7 +76,7 @@ export default function GamifiedLeaderboard({
 
   return (
     <div className="bg-black/50 backdrop-blur-sm rounded-xl p-6 border border-pink-500/20">
-      <motion.h2 
+      <motion.h2
         className="text-2xl font-bold text-white mb-6 text-center"
         initial={showAnimations ? { opacity: 0, y: -20 } : false}
         animate={showAnimations ? { opacity: 1, y: 0 } : false}
@@ -93,9 +93,9 @@ export default function GamifiedLeaderboard({
               initial={showAnimations ? { opacity: 0, x: -50 } : false}
               animate={showAnimations ? { opacity: 1, x: 0 } : false}
               exit={showAnimations ? { opacity: 0, x: 50 } : undefined}
-              transition={{ 
-                duration: 0.3, 
-                delay: showAnimations ? index * 0.1 : 0 
+              transition={{
+                duration: 0.3,
+                delay: showAnimations ? index * 0.1 : 0,
               }}
               className={`flex items-center space-x-4 p-4 rounded-lg border border-pink-500/10 hover:border-pink-500/30 transition-all duration-300 ${getRankColor(entry.position)}`}
             >
@@ -153,4 +153,4 @@ export default function GamifiedLeaderboard({
       )}
     </div>
   )
-} 
+}

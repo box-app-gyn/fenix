@@ -25,34 +25,34 @@ export interface GraphData {
 export async function fetchGraphData(): Promise<GraphData> {
   // Buscar usuários
   const usersSnap = await getDocs(collection(db, 'users'));
-  const users: FirestoreUser[] = usersSnap.docs.map(doc => ({ ...doc.data(), uid: doc.id }) as FirestoreUser);
+  const users: FirestoreUser[] = usersSnap.docs.map((doc) => ({ ...doc.data(), uid: doc.id }) as FirestoreUser);
 
   // Buscar times
   const teamsSnap = await getDocs(collection(db, 'teams'));
-  const teams: FirestoreTeam[] = teamsSnap.docs.map(doc => ({ ...doc.data(), id: doc.id }) as FirestoreTeam);
+  const teams: FirestoreTeam[] = teamsSnap.docs.map((doc) => ({ ...doc.data(), id: doc.id }) as FirestoreTeam);
 
   // Montar nós
-  const userNodes: GraphNode[] = users.map(u => ({
+  const userNodes: GraphNode[] = users.map((u) => ({
     id: u.uid,
     label: u.displayName || u.email || u.uid,
     type: 'user',
-    group: u.role
+    group: u.role,
   }));
-  const teamNodes: GraphNode[] = teams.map(t => ({
+  const teamNodes: GraphNode[] = teams.map((t) => ({
     id: t.id,
     label: t.nome,
     type: 'team',
-    group: t.categoria
+    group: t.categoria,
   }));
 
   // Montar arestas: usuário -> time
   const links: GraphLink[] = [];
-  teams.forEach(team => {
-    team.atletas.forEach(userId => {
+  teams.forEach((team) => {
+    team.atletas.forEach((userId) => {
       links.push({
         source: userId,
         target: team.id,
-        label: 'participa'
+        label: 'participa',
       });
     });
     // Capitão
@@ -60,13 +60,13 @@ export async function fetchGraphData(): Promise<GraphData> {
       links.push({
         source: team.captainId,
         target: team.id,
-        label: 'capitao'
+        label: 'capitao',
       });
     }
   });
 
   return {
     nodes: [...userNodes, ...teamNodes],
-    links
+    links,
   };
-} 
+}

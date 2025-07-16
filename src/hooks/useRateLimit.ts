@@ -14,4 +14,4 @@ export const useRateLimit = (maxAttempts: number = 5, windowMs: number = 60000) 
   };
 
   return { checkRateLimit, attempts, maxAttempts };
-}; 
+};

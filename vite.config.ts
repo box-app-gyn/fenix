@@ -10,13 +10,13 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       injectManifest: {
         swSrc: 'public/sw.js',
-        swDest: 'sw.js'
+        swDest: 'sw.js',
       },
       includeAssets: [
         'favicon.ico',
         'logos/logo_circulo.png',
         'images/bg_rounded.png',
-        'images/twolines.png'
+        'images/twolines.png',
       ],
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
@@ -31,11 +31,11 @@ export default defineConfig(({ mode }) => ({
               cacheName: 'firebase-auth',
               expiration: {
                 maxEntries: 0,
-                maxAgeSeconds: 0
-              }
-            }
-          }
-        ]
+                maxAgeSeconds: 0,
+              },
+            },
+          },
+        ],
       },
       manifest: {
         name: 'CERRADØ INTERBOX 2025',
@@ -53,35 +53,35 @@ export default defineConfig(({ mode }) => ({
           {
             src: 'favicon.ico',
             sizes: 'any',
-            type: 'image/x-icon'
+            type: 'image/x-icon',
           },
           {
             src: 'favicon-16x16.png',
             sizes: '16x16',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'favicon-32x32.png',
             sizes: '32x32',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'apple-touch-icon.png',
             sizes: '180x180',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'logos/logo_circulo.png',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any maskable',
           },
           {
             src: 'logos/logo_circulo.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
-          }
+            purpose: 'any maskable',
+          },
         ],
         shortcuts: [
           {
@@ -92,9 +92,9 @@ export default defineConfig(({ mode }) => ({
             icons: [
               {
                 src: 'logos/logo_circulo.png',
-                sizes: '96x96'
-              }
-            ]
+                sizes: '96x96',
+              },
+            ],
           },
           {
             name: 'Tempo Real',
@@ -104,9 +104,9 @@ export default defineConfig(({ mode }) => ({
             icons: [
               {
                 src: 'logos/logo_circulo.png',
-                sizes: '96x96'
-              }
-            ]
+                sizes: '96x96',
+              },
+            ],
           },
           {
             name: 'Leaderboard',
@@ -116,13 +116,13 @@ export default defineConfig(({ mode }) => ({
             icons: [
               {
                 src: 'logos/logo_circulo.png',
-                sizes: '96x96'
-              }
-            ]
-          }
-        ]
-      }
-    })
+                sizes: '96x96',
+              },
+            ],
+          },
+        ],
+      },
+    }),
   ],
   server: {
     host: '0.0.0.0',
@@ -130,8 +130,8 @@ export default defineConfig(({ mode }) => ({
     open: true,
     hmr: {
       overlay: true,
-      port: 3002
-    }
+      port: 3002,
+    },
   },
   build: {
     // Source maps apenas em desenvolvimento
@@ -141,17 +141,17 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-          ui: ['framer-motion', 'react-router-dom']
-        }
-      }
+          ui: ['framer-motion', 'react-router-dom'],
+        },
+      },
     },
-    chunkSizeWarningLimit: 1000 // Aumentar limite de warning
+    chunkSizeWarningLimit: 1000, // Aumentar limite de warning
   },
   css: {
     // Source maps CSS apenas em desenvolvimento
-    devSourcemap: mode === 'development'
+    devSourcemap: mode === 'development',
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore']
-  }
-})) 
+    include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
+  },
+}))

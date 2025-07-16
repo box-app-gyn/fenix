@@ -33,9 +33,9 @@ const DashboardEvento: React.FC = () => {
         total: 0,
         media: 0,
         holders: 0,
-        marketCap: 0
-      }
-    }
+        marketCap: 0,
+      },
+    },
   });
   const [fotografos, setFotografos] = useState<FotografoData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,9 +53,9 @@ const DashboardEvento: React.FC = () => {
                 total: firestoreData.token?.box?.total || 0,
                 media: firestoreData.token?.box?.media || 0,
                 holders: firestoreData.token?.box?.holders || 0,
-                marketCap: firestoreData.token?.box?.marketCap || 0
-              }
-            }
+                marketCap: firestoreData.token?.box?.marketCap || 0,
+              },
+            },
           });
         } else {
           // Dados padrão se documento não existir
@@ -66,9 +66,9 @@ const DashboardEvento: React.FC = () => {
                 total: 0,
                 media: 0,
                 holders: 0,
-                marketCap: 0
-              }
-            }
+                marketCap: 0,
+              },
+            },
           });
         }
       },
@@ -81,22 +81,22 @@ const DashboardEvento: React.FC = () => {
               total: 0,
               media: 0,
               holders: 0,
-              marketCap: 0
-            }
-          }
+              marketCap: 0,
+            },
+          },
         });
-      }
+      },
     );
 
     // Carregar dados de fotógrafos
     const loadFotografos = async () => {
       try {
         const audiovisualSnapshot = await getDocs(collection(db, 'audiovisual'));
-        const fotografosData = audiovisualSnapshot.docs.map(doc => ({
+        const fotografosData = audiovisualSnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         })) as FotografoData[];
-        
+
         setFotografos(fotografosData);
         setLoading(false);
       } catch (error) {
@@ -111,10 +111,10 @@ const DashboardEvento: React.FC = () => {
 
   // Verificar se usuário tem acesso (admin ou roles específicos)
   const hasAccess = user && (
-        (user as any).role === 'admin' ||
-    (user as any).role === 'jurado' ||
-    (user as any).role === 'midia' ||
-    (user as any).role === 'fotografo'
+    (user as any).role === 'admin'
+    || (user as any).role === 'jurado'
+    || (user as any).role === 'midia'
+    || (user as any).role === 'fotografo'
   );
 
   if (!hasAccess) {
@@ -141,14 +141,14 @@ const DashboardEvento: React.FC = () => {
 
   // Calcular estatísticas de fotógrafos
   const totalFotografos = fotografos.length;
-  const aprovados = fotografos.filter(f => f.aprovado === true).length;
-  const rejeitados = fotografos.filter(f => f.aprovado === false).length;
-  const pendentes = fotografos.filter(f => f.aprovado === null).length;
+  const aprovados = fotografos.filter((f) => f.aprovado === true).length;
+  const rejeitados = fotografos.filter((f) => f.aprovado === false).length;
+  const pendentes = fotografos.filter((f) => f.aprovado === null).length;
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -166,7 +166,7 @@ const DashboardEvento: React.FC = () => {
 
         {/* Cards de Métricas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          
+
           {/* Fotógrafos */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -230,7 +230,7 @@ const DashboardEvento: React.FC = () => {
           className="bg-white rounded-xl p-6 shadow-lg mb-8"
         >
           <h2 className="text-xl font-bold text-gray-900 mb-4">📸 Status dos Fotógrafos</h2>
-          
+
           {/* Estatísticas */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="bg-green-50 p-4 rounded-lg">
@@ -242,7 +242,7 @@ const DashboardEvento: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-yellow-50 p-4 rounded-lg">
               <div className="flex items-center">
                 <span className="text-yellow-600 text-2xl mr-3">⏳</span>
@@ -252,7 +252,7 @@ const DashboardEvento: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-red-50 p-4 rounded-lg">
               <div className="flex items-center">
                 <span className="text-red-600 text-2xl mr-3">❌</span>
@@ -301,14 +301,14 @@ const DashboardEvento: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        fotografo.aprovado === true 
-                          ? 'bg-green-100 text-green-800' 
-                          : fotografo.aprovado === false 
+                        fotografo.aprovado === true
+                          ? 'bg-green-100 text-green-800'
+                          : fotografo.aprovado === false
                             ? 'bg-red-100 text-red-800'
                             : 'bg-yellow-100 text-yellow-800'
                       }`}>
-                        {fotografo.aprovado === true ? '✅ Aprovado' : 
-                         fotografo.aprovado === false ? '❌ Rejeitado' : '⏳ Em Aprovação'}
+                        {fotografo.aprovado === true ? '✅ Aprovado'
+                          : fotografo.aprovado === false ? '❌ Rejeitado' : '⏳ Em Aprovação'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -347,7 +347,7 @@ const DashboardEvento: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div>
               <h3 className="text-lg font-semibold text-gray-800 mb-3">Valor de Mercado</h3>
               <div className="space-y-3">
@@ -360,8 +360,8 @@ const DashboardEvento: React.FC = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Preço por $BOX:</span>
                   <span className="font-semibold">
-                    ${data.token.box.marketCap && data.token.box.total > 0 
-                      ? (data.token.box.marketCap / data.token.box.total).toFixed(4) 
+                    ${data.token.box.marketCap && data.token.box.total > 0
+                      ? (data.token.box.marketCap / data.token.box.total).toFixed(4)
                       : '0.0000'}
                   </span>
                 </div>
@@ -374,4 +374,4 @@ const DashboardEvento: React.FC = () => {
   );
 };
 
-export default DashboardEvento; 
+export default DashboardEvento;

@@ -203,4 +203,4 @@ export interface AppConfig {
     maxUploads: number;
     maxTeamMembers: number;
   };
-} 
+}

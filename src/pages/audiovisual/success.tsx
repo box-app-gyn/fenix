@@ -24,7 +24,7 @@ export default function AudiovisualSuccessPage() {
         orderId,
         status,
         amount: '29,90',
-        paidAt: new Date().toLocaleString('pt-BR')
+        paidAt: new Date().toLocaleString('pt-BR'),
       });
     }
 
@@ -44,7 +44,7 @@ export default function AudiovisualSuccessPage() {
 
   return (
     <>
-      <SEOHead 
+      <SEOHead
         title="Pagamento Confirmado - CERRADØ INTERBOX 2025"
         description="Sua inscrição audiovisual foi confirmada com sucesso! Bem-vindo ao time da CERRADØ INTERBOX 2025."
         image="/images/og-interbox.png"
@@ -52,12 +52,12 @@ export default function AudiovisualSuccessPage() {
       />
       <div className="min-h-screen bg-white relative overflow-hidden">
         <Header />
-        
+
         {/* Background com textura */}
         <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
           <div className="w-full h-full bg-[url('/images/bg_grunge.png')] bg-repeat opacity-20 mix-blend-multiply"></div>
         </div>
-        
+
         <main className="pt-24 pb-16 px-4">
           <div className="max-w-2xl mx-auto relative z-10">
             {/* Header da página */}
@@ -68,11 +68,11 @@ export default function AudiovisualSuccessPage() {
                 width={320}
                 height={90}
                 className="mx-auto mb-6 logo-grunge"
-                style={{ 
-                  filter: 'brightness(0) invert(0)', 
-                  maxWidth: '90vw', 
-                  height: 'auto', 
-                  width: 'auto' 
+                style={{
+                  filter: 'brightness(0) invert(0)',
+                  maxWidth: '90vw',
+                  height: 'auto',
+                  width: 'auto',
                 }}
               />
             </div>
@@ -80,13 +80,13 @@ export default function AudiovisualSuccessPage() {
             {/* Card de sucesso */}
             <div className="bg-gray-50 border border-green-300 rounded-2xl shadow-[0_8px_32px_0_rgba(34,197,94,0.25)] p-8 text-center relative grunge-card">
               <div className="text-green-600 text-8xl mb-6">🎉</div>
-              
+
               <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
                 Pagamento Confirmado!
               </h1>
-              
+
               <p className="text-gray-600 mb-8 text-lg">
-                Sua inscrição audiovisual foi processada com sucesso. 
+                Sua inscrição audiovisual foi processada com sucesso.
                 Bem-vindo ao time da <span className="font-bold text-pink-600">CERRADØ INTERBOX 2025</span>!
               </p>
 
@@ -164,7 +164,7 @@ export default function AudiovisualSuccessPage() {
                 >
                   Voltar ao Hub
                 </a>
-                
+
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
                     href="/perfil"
@@ -185,15 +185,15 @@ export default function AudiovisualSuccessPage() {
             {/* Mensagem de agradecimento */}
             <div className="text-center mt-8">
               <p className="text-gray-500 text-sm">
-                Obrigado por fazer parte da <span className="font-semibold">CERRADØ INTERBOX 2025</span>! 
+                Obrigado por fazer parte da <span className="font-semibold">CERRADØ INTERBOX 2025</span>!
                 Juntos vamos criar algo incrível! 🏆
               </p>
             </div>
           </div>
         </main>
-        
+
         <Footer />
       </div>
     </>
   );
-} 
+}

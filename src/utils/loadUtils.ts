@@ -29,7 +29,7 @@ export class LoadMonitor {
                 type: 'layout',
                 message: `Layout shift detectado: ${(entry as any).value.toFixed(3)}`,
                 severity: 'warning',
-                timestamp: Date.now()
+                timestamp: Date.now(),
               });
             }
           }
@@ -48,7 +48,7 @@ export class LoadMonitor {
         type: 'csp',
         message: `Violação de CSP: ${event.violatedDirective} - ${event.blockedURI}`,
         severity: 'error',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     });
   }
@@ -63,7 +63,7 @@ export class LoadMonitor {
           type: 'sourcemap',
           message: `Erro de source map: ${message}`,
           severity: 'warning',
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
       originalError.apply(console, args);
@@ -88,7 +88,7 @@ export class LoadMonitor {
   }
 
   public getIssuesByType(type: LoadIssue['type']): LoadIssue[] {
-    return this.issues.filter(issue => issue.type === type);
+    return this.issues.filter((issue) => issue.type === type);
   }
 
   public clearIssues(): void {
@@ -113,17 +113,17 @@ export const checkLoadIssues = (): {
     recommendations.push('Tempo de carregamento alto - considere otimizar recursos');
   }
 
-  const layoutIssues = issues.filter(i => i.type === 'layout');
+  const layoutIssues = issues.filter((i) => i.type === 'layout');
   if (layoutIssues.length > 0) {
     recommendations.push('Layout shifts detectados - verifique CSS crítico');
   }
 
-  const cspIssues = issues.filter(i => i.type === 'csp');
+  const cspIssues = issues.filter((i) => i.type === 'csp');
   if (cspIssues.length > 0) {
     recommendations.push('Violações de CSP - verifique política de segurança');
   }
 
-  const sourcemapIssues = issues.filter(i => i.type === 'sourcemap');
+  const sourcemapIssues = issues.filter((i) => i.type === 'sourcemap');
   if (sourcemapIssues.length > 0) {
     recommendations.push('Erros de source map - verifique configuração do Vite');
   }
@@ -132,7 +132,7 @@ export const checkLoadIssues = (): {
     hasIssues: issues.length > 0,
     issues,
     loadTime,
-    recommendations
+    recommendations,
   };
 };
 
@@ -152,6 +152,6 @@ export const detectSpecificIssues = (): {
     quirksMode,
     hasCSP,
     hasSourceMaps,
-    layoutForced
+    layoutForced,
   };
-}; 
+};

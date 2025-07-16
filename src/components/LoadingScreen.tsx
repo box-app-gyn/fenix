@@ -7,7 +7,7 @@ interface LoadingScreenProps {
 const phrases = [
   'Sincronizando no multiverso...',
   'Conectando com o laboratório ...',
-  'Executando o Protocolo NEØ...'
+  'Executando o Protocolo NEØ...',
 ];
 
 export default function LoadingScreen({ message }: LoadingScreenProps) {

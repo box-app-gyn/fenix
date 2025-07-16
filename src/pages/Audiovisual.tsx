@@ -35,16 +35,16 @@ export default function Audiovisual() {
         <main className="pt-24 pb-16 px-4 relative overflow-hidden">
           {/* BG + textual hero sem next/image */}
           {/* ...mesma estrutura, trocando <Image> por <img> ou div bg */}
-          
+
           {/* Resto do conteúdo… */}
           <AudiovisualAnalysis />
 
           <a href="/audiovisual/form" target="_blank"
-             onClick={handleParticipateClick}
-             className="...">Quero participar</a>
+            onClick={handleParticipateClick}
+            className="...">Quero participar</a>
         </main>
         <Footer />
       </div>
     </>
   )
-} 
+}

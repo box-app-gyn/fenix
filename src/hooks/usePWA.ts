@@ -65,7 +65,7 @@ export function usePWA(): UsePWAReturn {
           const registration = await navigator.serviceWorker.getRegistration();
           if (registration) {
             setSwRegistration(registration);
-            
+
             // Check for updates
             registration.addEventListener('updatefound', () => {
               const newWorker = registration.installing;
@@ -75,7 +75,7 @@ export function usePWA(): UsePWAReturn {
                     console.log('🔄 Nova versão disponível!');
                     setHasUpdate(true);
                   }
-      });
+                });
               }
             });
 
@@ -104,7 +104,7 @@ export function usePWA(): UsePWAReturn {
       window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      
+
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.removeEventListener('controllerchange', handleSWUpdate);
       }
@@ -120,13 +120,13 @@ export function usePWA(): UsePWAReturn {
     try {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      
+
       if (outcome === 'accepted') {
         console.log('✅ Usuário aceitou instalar o PWA');
       } else {
         console.log('❌ Usuário recusou instalar o PWA');
       }
-      
+
       setDeferredPrompt(null);
       setCanInstall(false);
     } catch (error) {
@@ -151,7 +151,7 @@ export function usePWA(): UsePWAReturn {
       if (swRegistration.waiting) {
         swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
-      
+
       // Reload the page after a short delay
       setTimeout(() => {
         window.location.reload();
@@ -170,6 +170,6 @@ export function usePWA(): UsePWAReturn {
     isUpdating,
     installApp,
     checkForUpdates,
-    updateApp
+    updateApp,
   };
-} 
+}

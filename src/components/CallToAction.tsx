@@ -31,16 +31,16 @@ export default function CallToAction() {
     telefone: '',
     categoria: 'patrocinador',
     valor: '',
-    mensagem: ''
+    mensagem: '',
   })
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }))
   }
 
@@ -54,7 +54,7 @@ export default function CallToAction() {
       telefone: '',
       categoria: 'patrocinador',
       valor: '',
-      mensagem: ''
+      mensagem: '',
     })
   }
 
@@ -196,4 +196,4 @@ export default function CallToAction() {
       </div>
     </section>
   )
-} 
+}

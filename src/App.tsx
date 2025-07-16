@@ -55,7 +55,7 @@ function AppContent() {
               <Navigate to="/home" replace />
             </ProtectedRoute>
           } />
-          
+
           {/* Rota home - página principal protegida */}
           <Route path="/home" element={
             <ProtectedRoute>
@@ -69,123 +69,123 @@ function AppContent() {
               <Hub />
             </ProtectedRoute>
           } />
-          
 
-          
+
+
           <Route path="/leaderboard" element={
             <ProtectedRoute>
               <GamifiedLeaderboard />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/sobre" element={
             <ProtectedRoute>
               <Sobre />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/admin" element={
             <ProtectedRoute requireProfile={true} requireAdmin={true}>
               <AdminDashboard />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/admin-painel" element={
             <ProtectedRoute requireProfile={true} requireAdmin={true}>
               <AdminPainel />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/dashboard-evento" element={
             <ProtectedRoute requireProfile={true}>
               <DashboardEvento />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/dev" element={
             <ProtectedRoute requireProfile={true} requireDev={true}>
               <DevDashboard />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/marketing" element={
             <ProtectedRoute requireProfile={true} requireMarketing={true}>
               <MarketingDashboard />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/audiovisual" element={
             <ProtectedRoute>
               <Audiovisual />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/audiovisual/form" element={
             <ProtectedRoute>
               <AudiovisualForm />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/interbox/audiovisual/confirmacao" element={
             <ProtectedRoute>
               <AudiovisualSuccess />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/links" element={
             <ProtectedRoute>
               <LinkShortenerPage />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/l/:shortCode" element={
             <ProtectedRoute>
               <LinkRedirectWrapper />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/selecao-cadastro" element={
             <ProtectedRoute>
               <SelecaoTipoCadastro />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/cadastro-atleta" element={
             <ProtectedRoute>
               <CadastroAtleta />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/cadastro-jurado" element={
             <ProtectedRoute>
               <CadastroJurado />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/cadastro-midialouca" element={
             <ProtectedRoute>
               <CadastroMidia />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/cadastro-curioso" element={
             <ProtectedRoute>
               <CadastroEspectador />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/setup-profile" element={
             <ProtectedRoute>
               <SetupProfile />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/perfil" element={
             <ProtectedRoute>
               <Perfil />
             </ProtectedRoute>
           } />
-          
+
           <Route path="/cluster" element={
             <ProtectedRoute>
               <ClusterPage />
@@ -211,12 +211,12 @@ function App() {
   const [showVideoIntro, setShowVideoIntro] = useState(true);
   const [showCNHUpload, setShowCNHUpload] = useState(false);
 
-  console.log('🔍 App.tsx - Estado atual:', { 
-    user: !!user, 
-    loading, 
+  console.log('🔍 App.tsx - Estado atual:', {
+    user: !!user,
+    loading,
     userId: user?.uid,
     isMobile,
-    isTablet 
+    isTablet,
   });
 
   // Mostrar vinheta de abertura apenas no primeiro acesso do dia após login confirmado
@@ -237,7 +237,7 @@ function App() {
       today,
       lastVideoDate,
       hasSeenVideoToday,
-      willShow: !hasSeenVideoToday
+      willShow: !hasSeenVideoToday,
     });
 
     if (!hasSeenVideoToday) {
@@ -258,12 +258,12 @@ function App() {
   };
 
   // Verificar se está tentando acessar um dashboard administrativo ou formulário audiovisual
-  const isAdminRoute = window.location.pathname === '/admin' || 
-                      window.location.pathname === '/dev' || 
-                      window.location.pathname === '/marketing' ||
-                      window.location.pathname === '/admin-painel' ||
-                      window.location.pathname === '/dashboard-evento' ||
-                      window.location.pathname === '/audiovisual/form';
+  const isAdminRoute = window.location.pathname === '/admin'
+                      || window.location.pathname === '/dev'
+                      || window.location.pathname === '/marketing'
+                      || window.location.pathname === '/admin-painel'
+                      || window.location.pathname === '/dashboard-evento'
+                      || window.location.pathname === '/audiovisual/form';
 
   // Se não é mobile nem tablet, mostrar aviso de desktop
   if (!isMobile && !isTablet) {
@@ -292,7 +292,7 @@ function App() {
   // Mostrar upload de CNH se necessário
   if (user && showCNHUpload && user.adminVerification?.required) {
     return (
-      <CNHUpload 
+      <CNHUpload
         userId={user.uid}
         onComplete={() => {
           setShowCNHUpload(false);
@@ -337,7 +337,7 @@ function App() {
             <Route path="/setup-profile" element={<Navigate to="/login" replace />} />
             <Route path="/perfil" element={<Navigate to="/login" replace />} />
             <Route path="/cluster" element={<Navigate to="/login" replace />} />
-            
+
             {/* Fallback para login */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
@@ -366,4 +366,4 @@ function LinkRedirectWrapper() {
   return shortCode ? <LinkRedirect shortCode={shortCode} /> : null;
 }
 
-export default App; 
+export default App;

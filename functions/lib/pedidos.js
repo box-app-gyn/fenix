@@ -36,41 +36,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.criarInscricaoTime = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
-const logger_1 = require("../utils/logger");
 const db = admin.firestore();
 exports.criarInscricaoTime = functions.https.onCall(async (data, context) => {
     var _a;
     const contextData = {
-        functionName: 'criarInscricaoTime',
-        userId: (_a = context.auth) === null || _a === void 0 ? void 0 : _a.uid
+        functionName: "criarInscricaoTime",
+        userId: (_a = context.auth) === null || _a === void 0 ? void 0 : _a.uid,
     };
     try {
         // Verificar autenticação
         if (!context.auth) {
-            logger_1.logger.security('Tentativa de inscrição não autenticada', {}, contextData);
-            throw new functions.https.HttpsError('unauthenticated', 'Usuário não autenticado');
+            console.log("Tentativa de inscrição não autenticada", {}, contextData);
+            throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
         }
         const { userId, timeData } = data;
         // Verificar se o usuário é o dono da inscrição
         if (context.auth.uid !== userId) {
-            logger_1.logger.security('Tentativa de inscrição por usuário não autorizado', { userId }, contextData);
-            throw new functions.https.HttpsError('permission-denied', 'Usuário não autorizado');
+            console.log("Tentativa de inscrição por usuário não autorizado", { userId }, contextData);
+            throw new functions.https.HttpsError("permission-denied", "Usuário não autorizado");
         }
         // Criar inscrição do time
-        const inscricaoRef = await db.collection('inscricoes_times').add(Object.assign(Object.assign({ userId }, timeData), { status: 'pending', createdAt: admin.firestore.FieldValue.serverTimestamp(), updatedAt: admin.firestore.FieldValue.serverTimestamp() }));
-        logger_1.logger.business('Inscrição de time criada', {
+        const inscricaoRef = await db.collection("inscricoes_times").add(Object.assign(Object.assign({ userId }, timeData), { status: "pending", createdAt: admin.firestore.FieldValue.serverTimestamp(), updatedAt: admin.firestore.FieldValue.serverTimestamp() }));
+        console.log("Inscrição de time criada", {
             inscricaoId: inscricaoRef.id,
-            categoria: timeData.categoria
+            categoria: timeData.categoria,
         }, contextData);
         return {
             success: true,
-            inscricaoId: inscricaoRef.id
+            inscricaoId: inscricaoRef.id,
         };
     }
     catch (error) {
-        logger_1.logger.error('Erro ao criar inscrição de time', {
+        console.error("Erro ao criar inscrição de time", {
             error: error.message,
-            userId: data.userId
+            userId: data.userId,
         }, contextData);
         throw error;
     }

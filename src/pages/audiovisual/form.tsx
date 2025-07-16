@@ -5,9 +5,9 @@ import Footer from '../../components/Footer';
 // import Image from 'next/image';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import SEOHead from '../../components/SEOHead';
-import { 
+import {
   AudiovisualTipo,
-  sanitizeAudiovisualData
+  sanitizeAudiovisualData,
 } from '../../types/firestore';
 
 // Tipos para o formulário
@@ -30,7 +30,7 @@ interface AudiovisualFormData {
 // Validação do formulário
 const validateForm = (data: AudiovisualFormData): string[] => {
   const errors: string[] = [];
-  
+
   if (!data.nome.trim()) errors.push('Nome é obrigatório');
   if (!data.email.trim()) errors.push('Email é obrigatório');
   if (!data.email.includes('@')) errors.push('Email inválido');
@@ -45,7 +45,7 @@ const validateForm = (data: AudiovisualFormData): string[] => {
   if (!data.disponibilidade.trim()) errors.push('Disponibilidade é obrigatória');
   if (!data.motivacao.trim()) errors.push('Motivação é obrigatória');
   if (!data.termosAceitos) errors.push('Você deve aceitar os termos');
-  
+
   return errors;
 };
 
@@ -63,7 +63,7 @@ const initialFormData: AudiovisualFormData = {
   especialidades: '',
   disponibilidade: '',
   motivacao: '',
-  termosAceitos: false
+  termosAceitos: false,
 };
 
 // Opções de área de atuação
@@ -73,14 +73,14 @@ const AREA_ATUACAO_OPTIONS: { value: AudiovisualTipo; label: string; description
   { value: 'editor', label: 'Editor', description: 'Edição de vídeos e fotos' },
   { value: 'drone', label: 'Piloto de Drone', description: 'Filmagens aéreas com drone' },
   { value: 'audio', label: 'Técnico de Áudio', description: 'Captação e edição de áudio' },
-  { value: 'iluminacao', label: 'Técnico de Iluminação', description: 'Iluminação para filmagens' }
+  { value: 'iluminacao', label: 'Técnico de Iluminação', description: 'Iluminação para filmagens' },
 ];
 
 // Estados brasileiros
 const ESTADOS_BRASIL = [
-  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 
-  'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 
-  'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+  'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+  'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
 ];
 
 export default function AudiovisualFormPage() {
@@ -100,20 +100,20 @@ export default function AudiovisualFormPage() {
   }, [trackPage, trackAudiovisual]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
-    
+
     // Limpar erro do campo quando usuário começa a digitar
     if (formErrors.length > 0) {
-      setFormErrors(prev => prev.filter(error => 
-        !error.toLowerCase().includes(name.toLowerCase())
+      setFormErrors((prev) => prev.filter((error) =>
+        !error.toLowerCase().includes(name.toLowerCase()),
       ));
     }
   };
@@ -135,7 +135,7 @@ export default function AudiovisualFormPage() {
     try {
       // Sanitizar dados
       const sanitizedData = sanitizeAudiovisualData(formData);
-      
+
       // Preparar dados para o checkout FlowPay
       const checkoutPayload = {
         userEmail: sanitizedData.email,
@@ -149,7 +149,7 @@ export default function AudiovisualFormPage() {
         disponibilidade: sanitizedData.disponibilidade,
         motivacao: sanitizedData.motivacao,
         cidade: sanitizedData.cidade,
-        estado: sanitizedData.estado
+        estado: sanitizedData.estado,
       };
 
       // Criar checkout na FlowPay
@@ -160,14 +160,13 @@ export default function AudiovisualFormPage() {
       if (checkoutResult.success) {
         setCheckoutData(checkoutResult);
         setShowPaymentModal(true);
-        
+
         // Analytics
         trackFormSubmit('formulario_audiovisual_checkout');
         trackAudiovisual('checkout_created', `${sanitizedData.tipo}_${sanitizedData.cidade}`);
       } else {
         throw new Error('Erro ao criar checkout');
       }
-      
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       setError(`Erro ao processar formulário: ${errorMessage}`);
@@ -182,11 +181,11 @@ export default function AudiovisualFormPage() {
     if (checkoutData?.checkoutUrl) {
       // Abrir checkout em nova aba
       window.open(checkoutData.checkoutUrl, '_blank');
-      
+
       // Mostrar mensagem de sucesso
       setSuccess(true);
       setShowPaymentModal(false);
-      
+
       // Analytics
       trackAudiovisual('checkout_redirected', 'flowpay');
     }
@@ -206,7 +205,7 @@ export default function AudiovisualFormPage() {
 
   return (
     <>
-      <SEOHead 
+      <SEOHead
         title="Candidatura Audiovisual - CERRADØ INTERBOX 2025"
         description="Candidate-se para fazer parte da equipe audiovisual do CERRADØ INTERBOX 2025. Eternize a intensidade do maior evento de times da América Latina."
         image="/images/og-interbox.png"
@@ -214,12 +213,12 @@ export default function AudiovisualFormPage() {
       />
       <div className="min-h-screen bg-white relative overflow-hidden">
         <Header />
-        
+
         {/* Background com textura */}
         <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
           <div className="w-full h-full bg-[url('/images/bg_grunge.png')] bg-repeat opacity-20 mix-blend-multiply"></div>
         </div>
-        
+
         <main className="pt-24 pb-16 px-4">
           <div className="max-w-2xl mx-auto relative z-10">
             {/* Header do formulário */}
@@ -230,11 +229,11 @@ export default function AudiovisualFormPage() {
                 width={320}
                 height={90}
                 className="mx-auto mb-6 logo-grunge"
-                style={{ 
-                  filter: 'brightness(0) invert(0)', 
-                  maxWidth: '90vw', 
-                  height: 'auto', 
-                  width: 'auto' 
+                style={{
+                  filter: 'brightness(0) invert(0)',
+                  maxWidth: '90vw',
+                  height: 'auto',
+                  width: 'auto',
                 }}
               />
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 tracking-tight glitch-text">
@@ -262,7 +261,7 @@ export default function AudiovisualFormPage() {
                   <p className="text-gray-600 mb-6">
                     Sua candidatura foi processada com sucesso! Agora você será redirecionado para o pagamento seguro da FlowPay.
                   </p>
-                  
+
                   <div className="bg-gray-50 rounded-lg p-4 mb-6">
                     <p className="text-gray-800 font-semibold mb-2">Resumo do Pagamento</p>
                     <div className="flex justify-between text-sm">
@@ -323,7 +322,7 @@ export default function AudiovisualFormPage() {
                       <p className="text-red-800 text-sm">{error}</p>
                     </div>
                   )}
-                  
+
                   {formErrors.length > 0 && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                       <h4 className="text-red-800 font-semibold mb-2">Erros no formulário:</h4>
@@ -340,7 +339,7 @@ export default function AudiovisualFormPage() {
                     <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
                       Dados Pessoais
                     </h3>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
@@ -356,7 +355,7 @@ export default function AudiovisualFormPage() {
                           placeholder="Seu nome completo"
                         />
                       </div>
-                      
+
                       <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                           Email *
@@ -388,7 +387,7 @@ export default function AudiovisualFormPage() {
                           placeholder="(11) 99999-9999"
                         />
                       </div>
-                      
+
                       <div>
                         <label htmlFor="cidade" className="block text-sm font-medium text-gray-700 mb-1">
                           Cidade *
@@ -403,7 +402,7 @@ export default function AudiovisualFormPage() {
                           placeholder="Sua cidade"
                         />
                       </div>
-                      
+
                       <div>
                         <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-1">
                           Estado *
@@ -416,7 +415,7 @@ export default function AudiovisualFormPage() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                         >
                           <option value="">Selecione...</option>
-                          {ESTADOS_BRASIL.map(estado => (
+                          {ESTADOS_BRASIL.map((estado) => (
                             <option key={estado} value={estado}>{estado}</option>
                           ))}
                         </select>
@@ -429,7 +428,7 @@ export default function AudiovisualFormPage() {
                     <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
                       Área de Atuação
                     </h3>
-                    
+
                     <div>
                       <label htmlFor="tipo" className="block text-sm font-medium text-gray-700 mb-1">
                         Área de Atuação *
@@ -441,7 +440,7 @@ export default function AudiovisualFormPage() {
                         onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                       >
-                        {AREA_ATUACAO_OPTIONS.map(option => (
+                        {AREA_ATUACAO_OPTIONS.map((option) => (
                           <option key={option.value} value={option.value}>
                             {option.label} - {option.description}
                           </option>
@@ -455,7 +454,7 @@ export default function AudiovisualFormPage() {
                     <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
                       Experiência e Portfólio
                     </h3>
-                    
+
                     <div>
                       <label htmlFor="experiencia" className="block text-sm font-medium text-gray-700 mb-1">
                         Experiência Profissional *
@@ -470,7 +469,7 @@ export default function AudiovisualFormPage() {
                         placeholder="Descreva sua experiência na área..."
                       />
                     </div>
-                    
+
                     <div>
                       <label htmlFor="portfolio" className="block text-sm font-medium text-gray-700 mb-1">
                         Links do Portfólio * (um por linha)
@@ -485,7 +484,7 @@ export default function AudiovisualFormPage() {
                         placeholder="https://instagram.com/seuperfil&#10;https://behance.net/seuperfil&#10;https://vimeo.com/seuperfil"
                       />
                     </div>
-                    
+
                     <div>
                       <label htmlFor="equipamentos" className="block text-sm font-medium text-gray-700 mb-1">
                         Equipamentos * (um por linha)
@@ -500,7 +499,7 @@ export default function AudiovisualFormPage() {
                         placeholder="Canon EOS R5&#10;DJI Mavic 3 Pro&#10;Rode NTG5"
                       />
                     </div>
-                    
+
                     <div>
                       <label htmlFor="especialidades" className="block text-sm font-medium text-gray-700 mb-1">
                         Especialidades * (uma por linha)
@@ -522,7 +521,7 @@ export default function AudiovisualFormPage() {
                     <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
                       Disponibilidade e Motivação
                     </h3>
-                    
+
                     <div>
                       <label htmlFor="disponibilidade" className="block text-sm font-medium text-gray-700 mb-1">
                         Disponibilidade para o Evento *
@@ -537,7 +536,7 @@ export default function AudiovisualFormPage() {
                         placeholder="Descreva sua disponibilidade para o evento..."
                       />
                     </div>
-                    
+
                     <div>
                       <label htmlFor="motivacao" className="block text-sm font-medium text-gray-700 mb-1">
                         Por que você quer participar? *
@@ -590,7 +589,7 @@ export default function AudiovisualFormPage() {
                         'Enviar Candidatura - R$ 29,90'
                       )}
                     </button>
-                    
+
                     <button
                       type="button"
                       onClick={handleReset}
@@ -605,9 +604,9 @@ export default function AudiovisualFormPage() {
             </div>
           </div>
         </main>
-        
+
         <Footer />
-        
+
         <style>{`
           .glitch-text {
             position: relative;
@@ -640,4 +639,4 @@ export default function AudiovisualFormPage() {
       </div>
     </>
   );
-} 
+}

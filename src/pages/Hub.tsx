@@ -13,62 +13,62 @@ export default function Hub() {
       description: 'Acompanhe eventos e dados em tempo real',
       path: '/tempo-real',
       color: 'from-blue-500 to-cyan-500',
-      icon: '📊'
+      icon: '📊',
     },
     {
       title: '🏆 Leaderboard',
       description: 'Ranking gamificado dos participantes',
       path: '/leaderboard',
       color: 'from-yellow-500 to-orange-500',
-      icon: '🏆'
+      icon: '🏆',
     },
     {
       title: '🎬 Audiovisual',
       description: 'Análise de conteúdo audiovisual',
       path: '/audiovisual',
       color: 'from-purple-500 to-pink-500',
-      icon: '🎬'
+      icon: '🎬',
     },
     {
       title: '🔗 Encurtador de Links',
       description: 'Crie links curtos e acompanhe estatísticas',
       path: '/links',
       color: 'from-green-500 to-emerald-500',
-      icon: '🔗'
+      icon: '🔗',
     },
     {
       title: '👤 Perfil',
       description: 'Gerencie suas informações pessoais',
       path: '/perfil',
       color: 'from-indigo-500 to-blue-500',
-      icon: '👤'
+      icon: '👤',
     },
     {
       title: 'ℹ️ Sobre',
       description: 'Informações sobre o evento',
       path: '/sobre',
       color: 'from-gray-500 to-slate-500',
-      icon: 'ℹ️'
-    }
+      icon: 'ℹ️',
+    },
   ];
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Header />
-      
+
       {/* Background com imagem principal */}
-      <div 
+      <div
         className="flex-1 relative"
         style={{
           backgroundImage: 'url(/images/bg_main.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         {/* Overlay gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60"></div>
-        
+
         {/* Conteúdo principal */}
         <div className="relative z-10 container mx-auto px-4 py-8">
           {/* Header com informações do usuário */}
@@ -81,9 +81,9 @@ export default function Hub() {
             <div className="flex items-center space-x-4">
               <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
                 {user?.photoURL ? (
-                  <img 
-                    src={user.photoURL} 
-                    alt={user.displayName || 'Usuário'} 
+                  <img
+                    src={user.photoURL}
+                    alt={user.displayName || 'Usuário'}
                     className="w-14 h-14 rounded-full object-cover"
                   />
                 ) : (
@@ -174,8 +174,8 @@ export default function Hub() {
           </motion.div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );
-} 
+}

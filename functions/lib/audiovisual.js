@@ -40,33 +40,33 @@ const db = admin.firestore();
 exports.validaAudiovisual = functions.https.onCall(async (data, context) => {
     var _a, _b, _c;
     const contextData = {
-        functionName: 'validaAudiovisual',
-        userId: (_a = context === null || context === void 0 ? void 0 : context.auth) === null || _a === void 0 ? void 0 : _a.uid
+        functionName: "validaAudiovisual",
+        userId: (_a = context === null || context === void 0 ? void 0 : context.auth) === null || _a === void 0 ? void 0 : _a.uid,
     };
     try {
         // Verificar autenticação
         if (!(context === null || context === void 0 ? void 0 : context.auth)) {
-            console.log('Tentativa de acesso não autenticado', contextData);
-            throw new functions.https.HttpsError('unauthenticated', 'Usuário não autenticado');
+            console.log("Tentativa de acesso não autenticado", contextData);
+            throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
         }
         const { audiovisualId, adminId, aprovado, motivoRejeicao } = data;
         // Verificar se é admin
-        const adminUser = await db.collection('users').doc(adminId).get();
-        if (!adminUser.exists || ((_b = adminUser.data()) === null || _b === void 0 ? void 0 : _b.role) !== 'admin') {
-            console.log('Tentativa de validação por não-admin', { adminId }, contextData);
-            throw new functions.https.HttpsError('permission-denied', 'Apenas admins podem validar profissionais audiovisuais');
+        const adminUser = await db.collection("users").doc(adminId).get();
+        if (!adminUser.exists || ((_b = adminUser.data()) === null || _b === void 0 ? void 0 : _b.role) !== "admin") {
+            console.log("Tentativa de validação por não-admin", { adminId }, contextData);
+            throw new functions.https.HttpsError("permission-denied", "Apenas admins podem validar profissionais audiovisuais");
         }
         // Buscar profissional audiovisual
-        const audiovisualRef = db.collection('audiovisual').doc(audiovisualId);
+        const audiovisualRef = db.collection("audiovisual").doc(audiovisualId);
         const audiovisualDoc = await audiovisualRef.get();
         if (!audiovisualDoc.exists) {
-            throw new functions.https.HttpsError('not-found', 'Profissional audiovisual não encontrado');
+            throw new functions.https.HttpsError("not-found", "Profissional audiovisual não encontrado");
         }
         const audiovisualData = audiovisualDoc.data();
-        const tipo = (audiovisualData === null || audiovisualData === void 0 ? void 0 : audiovisualData.tipo) || 'fotografo';
+        const tipo = (audiovisualData === null || audiovisualData === void 0 ? void 0 : audiovisualData.tipo) || "fotografo";
         // Atualizar status do profissional audiovisual
         const updateData = {
-            status: aprovado ? 'approved' : 'rejected',
+            status: aprovado ? "approved" : "rejected",
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         };
         if (aprovado) {
@@ -76,12 +76,12 @@ exports.validaAudiovisual = functions.https.onCall(async (data, context) => {
         else {
             updateData.rejeitadoPor = adminId;
             updateData.rejeitadoEm = admin.firestore.FieldValue.serverTimestamp();
-            updateData.motivoRejeicao = motivoRejeicao || 'Não especificado';
+            updateData.motivoRejeicao = motivoRejeicao || "Não especificado";
         }
         await audiovisualRef.update(updateData);
         // Atualizar role do usuário se aprovado
         if (aprovado) {
-            await db.collection('users').doc(audiovisualData === null || audiovisualData === void 0 ? void 0 : audiovisualData.userId).update({
+            await db.collection("users").doc(audiovisualData === null || audiovisualData === void 0 ? void 0 : audiovisualData.userId).update({
                 role: tipo, // 'fotografo', 'videomaker', 'editor', etc.
                 updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             });
@@ -90,9 +90,9 @@ exports.validaAudiovisual = functions.https.onCall(async (data, context) => {
         const logData = {
             adminId,
             adminEmail: (_c = adminUser.data()) === null || _c === void 0 ? void 0 : _c.email,
-            acao: aprovado ? 'aprovacao_audiovisual' : 'rejeicao_audiovisual',
+            acao: aprovado ? "aprovacao_audiovisual" : "rejeicao_audiovisual",
             targetId: audiovisualId,
-            targetType: 'audiovisual',
+            targetType: "audiovisual",
             detalhes: {
                 tipo,
                 aprovado,
@@ -100,14 +100,14 @@ exports.validaAudiovisual = functions.https.onCall(async (data, context) => {
             },
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
         };
-        await db.collection('adminLogs').add(logData);
-        console.log('Profissional audiovisual validado', { audiovisualId, aprovado, tipo }, contextData);
+        await db.collection("adminLogs").add(logData);
+        console.log("Profissional audiovisual validado", { audiovisualId, aprovado, tipo }, contextData);
         return { success: true, audiovisualId, aprovado };
     }
     catch (error) {
-        console.error('Erro ao validar profissional audiovisual', {
+        console.error("Erro ao validar profissional audiovisual", {
             error: error.message,
-            audiovisualId: data.audiovisualId
+            audiovisualId: data.audiovisualId,
         }, contextData);
         throw error;
     }
@@ -115,6 +115,6 @@ exports.validaAudiovisual = functions.https.onCall(async (data, context) => {
 // Função auxiliar para enviar email (será implementada em emails.ts)
 async function enviaEmailConfirmacao(data) {
     // Implementação será movida para emails.ts
-    console.log('Enviando email de confirmação:', data);
+    console.log("Enviando email de confirmação:", data);
 }
 //# sourceMappingURL=audiovisual.js.map

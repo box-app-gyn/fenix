@@ -22,7 +22,7 @@ export default function SetupProfile() {
     box: '',
     categoria: 'publico',
     cidade: '',
-    mensagem: ''
+    mensagem: '',
   });
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,8 +92,8 @@ export default function SetupProfile() {
               balance: (existingGamification?.tokens?.box?.balance || 0) + tokensEarned,
               totalEarned: (existingGamification?.tokens?.box?.totalEarned || 0) + tokensEarned,
               totalSpent: existingGamification?.tokens?.box?.totalSpent || 0,
-              lastTransaction: serverTimestamp()
-            }
+              lastTransaction: serverTimestamp(),
+            },
           },
           level: existingGamification?.level || 'iniciante',
           totalActions: (existingGamification?.totalActions || 0) + 1,
@@ -110,8 +110,8 @@ export default function SetupProfile() {
           yearlyTokens: (existingGamification?.yearlyTokens || 0) + tokensEarned,
           bestStreak: existingGamification?.bestStreak || 1,
           badges: [...(existingGamification?.badges || []), ...achievements],
-          challenges: existingGamification?.challenges || []
-        }
+          challenges: existingGamification?.challenges || [],
+        },
       });
 
       // Trigger confetti - Entrada oficial no webapp!
@@ -121,7 +121,7 @@ export default function SetupProfile() {
         origin: { y: 0.6 },
         colors: ['#fb05e4', '#00259f', '#10B981', '#F59E0B', '#FF6B6B', '#4ECDC4'],
         shapes: ['circle', 'square'],
-        ticks: 200
+        ticks: 200,
       });
 
       // Segunda explosão após 500ms
@@ -132,7 +132,7 @@ export default function SetupProfile() {
           origin: { y: 0.4, x: 0.3 },
           colors: ['#fb05e4', '#00259f', '#10B981', '#F59E0B'],
           shapes: ['circle'],
-          ticks: 150
+          ticks: 150,
         });
       }, 500);
 
@@ -144,7 +144,7 @@ export default function SetupProfile() {
           origin: { y: 0.5, x: 0.7 },
           colors: ['#fb05e4', '#00259f', '#FF6B6B', '#4ECDC4'],
           shapes: ['square'],
-          ticks: 120
+          ticks: 120,
         });
       }, 1000);
 
@@ -164,7 +164,6 @@ export default function SetupProfile() {
 Acesse o Hub para explorar todas as funcionalidades.`);
         window.location.href = '/home';
       }, 2000);
-
     } catch (error) {
       console.error('Erro ao configurar perfil:', error);
       alert('Erro ao configurar perfil. Tente novamente.');
@@ -176,27 +175,27 @@ Acesse o Hub para explorar todas as funcionalidades.`);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Header />
-      
+
       {/* Background com imagem principal */}
-      <div 
+      <div
         className="flex-1 relative"
         style={{
           backgroundImage: 'url(/images/bg_main.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         {/* Overlay gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80"></div>
-        
+
         {/* Conteúdo principal */}
         <div className="relative z-10 flex-1 flex items-center justify-center py-20 px-4">
           <div className="max-w-2xl w-full">
@@ -236,7 +235,7 @@ Acesse o Hub para explorar todas as funcionalidades.`);
                         </div>
                       )}
                     </div>
-                    
+
                     <label className="mt-3 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer transition-colors">
                       <input
                         type="file"
@@ -247,7 +246,7 @@ Acesse o Hub para explorar todas as funcionalidades.`);
                       {photoFile ? '📸 Foto selecionada' : '📷 Adicionar foto'}
                     </label>
                   </div>
-                  
+
                   {photoFile && (
                     <p className="mt-2 text-sm" style={{ color: 'rgb(251, 5, 228)' }}>
                       ✅ +10 ₿ garantidos pela foto!
@@ -394,8 +393,8 @@ Acesse o Hub para explorar todas as funcionalidades.`);
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );
-} 
+}

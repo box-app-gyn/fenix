@@ -5,7 +5,7 @@ export default function Footer() {
 
   const handleAdminClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     if (!user || user.role !== 'admin') {
       alert('Acesso negado. Apenas administradores podem acessar esta área.');
       return;
@@ -13,10 +13,10 @@ export default function Footer() {
 
     // Confirmar se realmente é admin
     const isConfirmed = window.confirm(
-      `🔐 Confirmação de Admin\n\n` +
-      `Usuário: ${user.displayName || user.email}\n` +
-      `Role: ${user.role}\n\n` +
-      `Deseja acessar o painel administrativo?`
+      '🔐 Confirmação de Admin\n\n'
+      + `Usuário: ${user.displayName || user.email}\n`
+      + `Role: ${user.role}\n\n`
+      + 'Deseja acessar o painel administrativo?',
     );
 
     if (isConfirmed) {
@@ -26,7 +26,7 @@ export default function Footer() {
 
   const handleDashboardClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     if (!user || user.role !== 'admin') {
       alert('Acesso negado. Apenas administradores podem acessar esta área.');
       return;
@@ -34,10 +34,10 @@ export default function Footer() {
 
     // Confirmar acesso ao dashboard
     const isConfirmed = window.confirm(
-      `📊 Dashboard Administrativo\n\n` +
-      `Usuário: ${user.displayName || user.email}\n` +
-      `Role: ${user.role}\n\n` +
-      `Deseja acessar o dashboard de eventos?`
+      '📊 Dashboard Administrativo\n\n'
+      + `Usuário: ${user.displayName || user.email}\n`
+      + `Role: ${user.role}\n\n`
+      + 'Deseja acessar o dashboard de eventos?',
     );
 
     if (isConfirmed) {
@@ -47,7 +47,7 @@ export default function Footer() {
 
   const handleDevClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     if (!user || user.role !== 'dev') {
       alert('Acesso negado. Apenas desenvolvedores podem acessar esta área.');
       return;
@@ -55,10 +55,10 @@ export default function Footer() {
 
     // Confirmar acesso ao painel de desenvolvimento
     const isConfirmed = window.confirm(
-      `🛠️ Painel do Desenvolvedor\n\n` +
-      `Usuário: ${user.displayName || user.email}\n` +
-      `Role: ${user.role}\n\n` +
-      `Deseja acessar o painel de desenvolvimento?`
+      '🛠️ Painel do Desenvolvedor\n\n'
+      + `Usuário: ${user.displayName || user.email}\n`
+      + `Role: ${user.role}\n\n`
+      + 'Deseja acessar o painel de desenvolvimento?',
     );
 
     if (isConfirmed) {
@@ -113,7 +113,7 @@ export default function Footer() {
         <p className="mt-1 italic text-neutral-500">
           Desenvolvido por Protocolo <span className="text-pink-500">NEØ</span>
         </p>
-        
+
         {/* Informações do Admin */}
         {user && user.role === 'admin' && (
           <div className="mt-4 p-3 bg-gradient-to-r from-pink-500/10 to-blue-500/10 border border-pink-500/20 rounded-lg max-w-md mx-auto">
@@ -185,4 +185,4 @@ export default function Footer() {
       </div>
     </footer>
   )
-} 
+}

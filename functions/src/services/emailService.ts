@@ -1,7 +1,7 @@
-import * as nodemailer from 'nodemailer';
-import * as functions from 'firebase-functions';
-import { logger } from '../utils/logger';
-import { emailConfig, emailTemplates, emailRateLimit, emailValidations } from '../config/email';
+import * as nodemailer from "nodemailer";
+import * as functions from "firebase-functions";
+import { logger } from "../utils/logger";
+import { emailConfig, emailTemplates, emailRateLimit, emailValidations } from "../config/email";
 
 // Tipos para o serviço de email
 interface EmailOptions {
@@ -30,7 +30,7 @@ const emailRateLimitCache = new Map<string, { count: number; resetTime: number }
 
 // Classe principal do serviço de email
 export class EmailService {
-  private transporter: nodemailer.Transporter;
+  private transporter!: nodemailer.Transporter;
   private isInitialized = false;
 
   constructor() {
@@ -42,44 +42,41 @@ export class EmailService {
     try {
       // Tentar Gmail primeiro
       if (emailConfig.gmail.auth.user && emailConfig.gmail.auth.pass) {
-        this.transporter = nodemailer.createTransporter(emailConfig.gmail);
+        this.transporter = nodemailer.createTransport(emailConfig.gmail);
         await this.transporter.verify();
         this.isInitialized = true;
-        logger.info('Transporter Gmail inicializado com sucesso');
+        console.log("✅ Transporter Gmail inicializado");
         return;
       }
 
       // Fallback para SendGrid ou outros provedores
       if (emailConfig.sendgrid.apiKey) {
-        this.transporter = nodemailer.createTransporter({
-          host: 'smtp.sendgrid.net',
+        this.transporter = nodemailer.createTransport({
+          host: "smtp.sendgrid.net",
           port: 587,
           secure: false,
           auth: {
-            user: 'apikey',
+            user: "apikey",
             pass: emailConfig.sendgrid.apiKey,
           },
         });
         await this.transporter.verify();
         this.isInitialized = true;
-        logger.info('Transporter SendGrid inicializado com sucesso');
+        console.log("✅ Transporter SendGrid inicializado");
         return;
       }
 
       // Transporter de teste para desenvolvimento
-      this.transporter = nodemailer.createTransporter({
-        host: 'localhost',
+      this.transporter = nodemailer.createTransport({
+        host: "localhost",
         port: 1025,
         secure: false,
         ignoreTLS: true,
       });
       this.isInitialized = true;
-      logger.warn('Transporter de teste inicializado (desenvolvimento)');
-
+      console.log("✅ Transporter de teste inicializado");
     } catch (error) {
-      logger.error('Erro ao inicializar transporter', { 
-        error: error instanceof Error ? error.message : 'Erro desconhecido' 
-      });
+      console.error("❌ Erro ao inicializar transporter:", error);
       throw error;
     }
   }
@@ -91,9 +88,9 @@ export class EmailService {
     const data = emailRateLimitCache.get(key);
 
     if (!data || now > data.resetTime) {
-      emailRateLimitCache.set(key, { 
-        count: 1, 
-        resetTime: now + emailRateLimit.cooldownPeriod 
+      emailRateLimitCache.set(key, {
+        count: 1,
+        resetTime: now + emailRateLimit.cooldownPeriod,
       });
       return true;
     }
@@ -113,8 +110,8 @@ export class EmailService {
     }
 
     // Verificar domínio permitido (opcional)
-    const domain = email.split('@')[1];
-    if (emailValidations.allowedDomains.length > 0 && 
+    const domain = email.split("@")[1];
+    if (emailValidations.allowedDomains.length > 0 &&
         !emailValidations.allowedDomains.includes(domain)) {
       return false;
     }
@@ -124,7 +121,7 @@ export class EmailService {
 
   // Enviar email com retry
   public async sendEmail(options: EmailOptions, retries = 0): Promise<EmailResult> {
-    const contextData = { functionName: 'EmailService.sendEmail' };
+    const contextData = { functionName: "EmailService.sendEmail" };
 
     try {
       // Verificar se o transporter está inicializado
@@ -134,20 +131,20 @@ export class EmailService {
 
       // Validar emails
       const emails = Array.isArray(options.to) ? options.to : [options.to];
-      const validEmails = emails.filter(email => this.validateEmail(email));
-      
+      const validEmails = emails.filter((email) => this.validateEmail(email));
+
       if (validEmails.length === 0) {
-        throw new Error('Nenhum email válido fornecido');
+        throw new Error("Nenhum email válido fornecido");
       }
 
       // Verificar rate limiting
       for (const email of validEmails) {
         if (!this.checkRateLimit(email)) {
-          logger.warn('Rate limit excedido para email', { email }, contextData);
+          logger.warn("Rate limit excedido para email", { email }, contextData);
           return {
             success: false,
-            error: 'Rate limit excedido',
-            retries
+            error: "Rate limit excedido",
+            retries,
           };
         }
       }
@@ -155,7 +152,7 @@ export class EmailService {
       // Preparar opções do email
       const mailOptions = {
         from: options.from || emailConfig.general.from,
-        to: validEmails.join(', '),
+        to: validEmails.join(", "),
         subject: options.subject.substring(0, emailValidations.maxSubjectLength),
         html: options.html.substring(0, emailValidations.maxBodyLength),
         text: options.text,
@@ -166,55 +163,54 @@ export class EmailService {
       // Enviar email
       const info = await this.transporter.sendMail(mailOptions);
 
-      logger.business('Email enviado com sucesso', {
+      logger.business("Email enviado com sucesso", {
         messageId: info.messageId,
         to: validEmails,
-        subject: options.subject
+        subject: options.subject,
       }, contextData);
 
       return {
         success: true,
         messageId: info.messageId,
-        retries
+        retries,
       };
-
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+
       // Tentar novamente se ainda não excedeu o número máximo de tentativas
       if (retries < emailConfig.general.maxRetries) {
-        logger.warn('Tentativa de envio de email falhou, tentando novamente', {
+        logger.warn("Tentativa de envio de email falhou, tentando novamente", {
           error: errorMessage,
-          retries: retries + 1
+          retries: retries + 1,
         }, contextData);
 
         // Aguardar antes de tentar novamente
-        await new Promise(resolve => setTimeout(resolve, emailConfig.general.retryDelay));
+        await new Promise((resolve) => setTimeout(resolve, emailConfig.general.retryDelay));
 
         return this.sendEmail(options, retries + 1);
       }
 
-      logger.error('Falha ao enviar email após todas as tentativas', {
+      logger.error("Falha ao enviar email após todas as tentativas", {
         error: errorMessage,
         retries,
-        to: options.to
+        to: options.to,
       }, contextData);
 
       return {
         success: false,
         error: errorMessage,
-        retries
+        retries,
       };
     }
   }
 
   // Enviar email usando template
   public async sendTemplateEmail(
-    templateName: keyof typeof emailTemplates,
-    data: any,
-    to: string | string[]
+      templateName: keyof typeof emailTemplates,
+      data: any,
+      to: string | string[],
   ): Promise<EmailResult> {
-    const contextData = { functionName: 'EmailService.sendTemplateEmail' };
+    const contextData = { functionName: "EmailService.sendTemplateEmail" };
 
     try {
       // Verificar se o template existe
@@ -223,22 +219,22 @@ export class EmailService {
       }
 
       // Gerar HTML do template
-      const html = emailTemplates[templateName](data);
-      
+      const html = emailTemplates[templateName](data, "Interbox 2025");
+
       // Determinar assunto baseado no template
-      let subject = 'Interbox 2025';
+      let subject = "Interbox 2025";
       switch (templateName) {
-        case 'pedido':
-          subject = 'Pedido Confirmado - Interbox 2025';
+        case "pedido":
+          subject = "Pedido Confirmado - Interbox 2025";
           break;
-        case 'audiovisual':
-          subject = 'Status da Inscrição - Interbox 2025';
+        case "audiovisual":
+          subject = "Status da Inscrição - Interbox 2025";
           break;
-        case 'admin':
-          subject = 'Notificação - Interbox 2025';
+        case "admin":
+          subject = "Notificação - Interbox 2025";
           break;
-        case 'boasVindas':
-          subject = 'Bem-vindo ao Interbox 2025';
+        case "boasVindas":
+          subject = "Bem-vindo ao Interbox 2025";
           break;
       }
 
@@ -246,42 +242,41 @@ export class EmailService {
       return await this.sendEmail({
         to,
         subject,
-        html
+        html,
       });
-
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      logger.error('Erro ao enviar email com template', {
+      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+      logger.error("Erro ao enviar email com template", {
         error: errorMessage,
         template: templateName,
-        to
+        to,
       }, contextData);
 
       return {
         success: false,
-        error: errorMessage
+        error: errorMessage,
       };
     }
   }
 
   // Enviar email de confirmação
   public async sendConfirmationEmail(data: any): Promise<EmailResult> {
-    return this.sendTemplateEmail('pedido', data, data.userEmail);
+    return this.sendTemplateEmail("pedido", data, data.userEmail);
   }
 
   // Enviar email de status audiovisual
   public async sendAudiovisualStatusEmail(data: any): Promise<EmailResult> {
-    return this.sendTemplateEmail('audiovisual', data, data.userEmail);
+    return this.sendTemplateEmail("audiovisual", data, data.userEmail);
   }
 
   // Enviar email de notificação
   public async sendNotificationEmail(data: any): Promise<EmailResult> {
-    return this.sendTemplateEmail('admin', data, data.userEmail);
+    return this.sendTemplateEmail("admin", data, data.userEmail);
   }
 
   // Enviar email de boas-vindas
   public async sendWelcomeEmail(data: any): Promise<EmailResult> {
-    return this.sendTemplateEmail('boasVindas', data, data.userEmail);
+    return this.sendTemplateEmail("boasVindas", data, data.userEmail);
   }
 
   // Verificar status do serviço
@@ -293,8 +288,8 @@ export class EmailService {
       await this.transporter.verify();
       return true;
     } catch (error) {
-      logger.error('Serviço de email não está saudável', {
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      logger.error("Serviço de email não está saudável", {
+        error: error instanceof Error ? error.message : "Erro desconhecido",
       });
       return false;
     }
@@ -303,9 +298,9 @@ export class EmailService {
   // Limpar cache de rate limiting
   public clearRateLimitCache(): void {
     emailRateLimitCache.clear();
-    logger.info('Cache de rate limiting limpo');
+    logger.info("Cache de rate limiting limpo");
   }
 }
 
 // Instância singleton do serviço
-export const emailService = new EmailService(); 
+export const emailService = new EmailService();

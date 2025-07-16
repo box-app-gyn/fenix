@@ -81,7 +81,7 @@ export const STORAGE_KEYS = {
   CHAT_HISTORY: 'chatHistory',
   AUDIOVISUAL_SUBMISSIONS: 'audiovisualSubmissions',
   TEAM_INVITES: 'teamInvites',
-  PAYMENT_HISTORY: 'paymentHistory'
+  PAYMENT_HISTORY: 'paymentHistory',
 } as const;
 
 // Classe principal de storage
@@ -98,7 +98,7 @@ export class StorageManager {
       removeItem: () => {},
       clear: () => {},
       length: 0,
-      key: () => null
+      key: () => null,
     };
   }
 
@@ -141,10 +141,10 @@ export class StorageManager {
 
       const parsed = JSON.parse(item);
       this.cache.set(key, parsed);
-      
+
       // Notificar listeners
       this.notifyListeners(key, parsed);
-      
+
       return parsed;
     } catch (error) {
       console.error(`Error reading from storage (${key}):`, error);
@@ -161,13 +161,13 @@ export class StorageManager {
 
       const serialized = JSON.stringify(value);
       this.storage.setItem(key, serialized);
-      
+
       // Atualizar cache
       this.cache.set(key, value);
-      
+
       // Notificar listeners
       this.notifyListeners(key, value);
-      
+
       return true;
     } catch (error) {
       console.error(`Error writing to storage (${key}):`, error);
@@ -184,10 +184,10 @@ export class StorageManager {
 
       this.storage.removeItem(key);
       this.cache.delete(key);
-      
+
       // Notificar listeners
       this.notifyListeners(key, null);
-      
+
       return true;
     } catch (error) {
       console.error(`Error removing from storage (${key}):`, error);
@@ -204,12 +204,12 @@ export class StorageManager {
 
       this.storage.clear();
       this.cache.clear();
-      
+
       // Notificar todos os listeners
       this.listeners.forEach((listeners) => {
-        listeners.forEach(listener => listener(null));
+        listeners.forEach((listener) => listener(null));
       });
-      
+
       return true;
     } catch (error) {
       console.error('Error clearing storage:', error);
@@ -258,9 +258,9 @@ export class StorageManager {
     if (!this.listeners.has(key)) {
       this.listeners.set(key, new Set());
     }
-    
+
     this.listeners.get(key)!.add(callback);
-    
+
     // Retornar função para remover listener
     return () => {
       this.listeners.get(key)?.delete(callback);
@@ -271,7 +271,7 @@ export class StorageManager {
   private notifyListeners(key: string, value: any): void {
     const keyListeners = this.listeners.get(key);
     if (keyListeners) {
-      keyListeners.forEach(listener => {
+      keyListeners.forEach((listener) => {
         try {
           listener(value);
         } catch (error) {
@@ -292,12 +292,12 @@ export class StorageManager {
     size: number;
     keys: string[];
     cacheSize: number;
-  } {
+    } {
     return {
       available: this.isStorageAvailable(),
       size: this.size(),
       keys: this.keys(),
-      cacheSize: this.cache.size
+      cacheSize: this.cache.size,
     };
   }
 }
@@ -330,7 +330,7 @@ export const getUserProfile = () => {
 export const setUserProfile = (profile: any): boolean => {
   return storage.set(STORAGE_KEYS.USER_PROFILE, {
     ...profile,
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
   });
 };
 
@@ -342,15 +342,15 @@ export const getPreferences = () => {
     notifications: {
       email: true,
       push: true,
-      sms: false
+      sms: false,
     },
     privacy: {
       profileVisibility: 'public' as const,
       showEmail: false,
-      showPhone: false
-    }
+      showPhone: false,
+    },
   };
-  
+
   return storage.get(STORAGE_KEYS.PREFERENCES, defaultPreferences);
 };
 
@@ -366,7 +366,7 @@ export const getGamification = () => {
 export const setGamification = (gamification: any): boolean => {
   return storage.set(STORAGE_KEYS.GAMIFICATION, {
     ...gamification,
-    lastActionAt: new Date().toISOString()
+    lastActionAt: new Date().toISOString(),
   });
 };
 
@@ -378,7 +378,7 @@ export const getSession = () => {
 export const setSession = (session: any): boolean => {
   return storage.set(STORAGE_KEYS.SESSION, {
     ...session,
-    lastLogin: new Date().toISOString()
+    lastLogin: new Date().toISOString(),
   });
 };
 
@@ -390,19 +390,19 @@ export const getCache = (key: string) => {
 
 export const setCache = (key: string, value: any, ttl: number = 3600000): boolean => {
   const cache = storage.get(STORAGE_KEYS.CACHE, { data: {}, lastUpdated: '', version: '1.0.0' }) as any;
-  
+
   if (cache && cache.data) {
     cache.data[key] = {
       value,
       timestamp: Date.now(),
-      ttl
+      ttl,
     };
-    
+
     cache.lastUpdated = new Date().toISOString();
-    
+
     return storage.set(STORAGE_KEYS.CACHE, cache);
   }
-  
+
   return false;
 };
 
@@ -419,7 +419,7 @@ export const clearExpiredCache = (): void => {
     }
   });
 
-  expiredKeys.forEach(key => {
+  expiredKeys.forEach((key) => {
     delete cache.data[key];
   });
 
@@ -437,11 +437,11 @@ export const clearUserData = (): boolean => {
     STORAGE_KEYS.CHAT_HISTORY,
     STORAGE_KEYS.AUDIOVISUAL_SUBMISSIONS,
     STORAGE_KEYS.TEAM_INVITES,
-    STORAGE_KEYS.PAYMENT_HISTORY
+    STORAGE_KEYS.PAYMENT_HISTORY,
   ];
 
   let success = true;
-  keysToRemove.forEach(key => {
+  keysToRemove.forEach((key) => {
     if (!storage.remove(key)) {
       success = false;
     }
@@ -452,8 +452,8 @@ export const clearUserData = (): boolean => {
 
 export const exportUserData = (): any => {
   const data: any = {};
-  
-  Object.values(STORAGE_KEYS).forEach(key => {
+
+  Object.values(STORAGE_KEYS).forEach((key) => {
     const value = storage.get(key);
     if (value !== null) {
       data[key] = value;
@@ -463,7 +463,7 @@ export const exportUserData = (): any => {
   return {
     exportDate: new Date().toISOString(),
     version: '1.0.0',
-    data
+    data,
   };
 };
 
@@ -508,4 +508,4 @@ export const useStorage = (key: string, defaultValue?: any) => {
 // Exportar funções específicas do arquivo original
 export const getValidatedUserType = (): UserType => {
   return getUserType();
-}; 
+};

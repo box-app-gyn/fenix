@@ -19,7 +19,7 @@ export default function PerfilJudge() {
     displayName: '',
     email: '',
     telefone: '',
-    cidade: ''
+    cidade: '',
   });
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string>('');
@@ -47,7 +47,7 @@ export default function PerfilJudge() {
             displayName: data.displayName || '',
             email: data.email || '',
             telefone: data.telefone || '',
-            cidade: data.cidade || ''
+            cidade: data.cidade || '',
           });
           if (data.photoURL) setPhotoPreview(data.photoURL);
         } else {
@@ -87,7 +87,7 @@ export default function PerfilJudge() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
@@ -106,7 +106,7 @@ export default function PerfilJudge() {
         telefone: formData.telefone,
         cidade: formData.cidade,
         photoURL,
-        updatedAt: serverTimestamp() as any
+        updatedAt: serverTimestamp() as any,
       };
       await updateDoc(doc(db, 'users', user.uid), updateData);
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
@@ -195,4 +195,4 @@ export default function PerfilJudge() {
       </div>
     </div>
   );
-} 
+}

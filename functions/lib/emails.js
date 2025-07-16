@@ -36,39 +36,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.enviaEmailBoasVindas = exports.enviaEmailConfirmacao = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
-const logger_1 = require("../utils/logger");
 const db = admin.firestore();
 exports.enviaEmailConfirmacao = functions.https.onCall(async (data, context) => {
     var _a;
     const contextData = {
-        functionName: 'enviaEmailConfirmacao',
-        userId: (_a = context.auth) === null || _a === void 0 ? void 0 : _a.uid
+        functionName: "enviaEmailConfirmacao",
+        userId: (_a = context.auth) === null || _a === void 0 ? void 0 : _a.uid,
     };
     try {
         if (!context.auth) {
-            throw new functions.https.HttpsError('unauthenticated', 'Usuário não autenticado');
+            throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
         }
         const { userEmail, userName, tipo, inscricaoId } = data;
         // Salvar log do email
-        await db.collection('email_logs').add({
+        await db.collection("email_logs").add({
             userEmail,
             userName,
             tipo,
             inscricaoId,
             enviadoPor: context.auth.uid,
             timestamp: admin.firestore.Timestamp.now(),
-            status: 'pending',
+            status: "pending",
         });
-        logger_1.logger.business('Email de confirmação solicitado', {
+        console.log("Email de confirmação solicitado", {
             userEmail,
-            tipo
+            tipo,
         }, contextData);
-        return { success: true, message: 'Email de confirmação enviado' };
+        return { success: true, message: "Email de confirmação enviado" };
     }
     catch (error) {
-        logger_1.logger.error('Erro ao enviar email de confirmação', {
+        console.error("Erro ao enviar email de confirmação", {
             error: error.message,
-            userEmail: data.userEmail
+            userEmail: data.userEmail,
         }, contextData);
         throw error;
     }
@@ -79,19 +78,19 @@ const enviaEmailBoasVindas = async (data) => {
         // Aqui você pode integrar com um serviço de email como SendGrid, Mailgun, etc.
         console.log(`Enviando email de boas-vindas para ${userEmail} (${userName}) - Tipo: ${tipo}`);
         // Salvar log
-        await db.collection('email_logs').add({
+        await db.collection("email_logs").add({
             userEmail,
             userName,
             tipo,
             timestamp: admin.firestore.Timestamp.now(),
-            status: 'sent',
-            tipoEmail: 'boas_vindas',
+            status: "sent",
+            tipoEmail: "boas_vindas",
         });
     }
     catch (error) {
-        logger_1.logger.error('Erro ao enviar email de boas-vindas', {
+        console.error("Erro ao enviar email de boas-vindas", {
             error: error.message,
-            userEmail: data.userEmail
+            userEmail: data.userEmail,
         });
         throw error;
     }

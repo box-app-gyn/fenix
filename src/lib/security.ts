@@ -48,36 +48,36 @@ export const SECURITY_CONSTANTS = {
 
   // Content Security Policy
   CSP: {
-    'default-src': ["'self'"],
+    'default-src': ['\'self\''],
     'script-src': [
-      "'self'",
-      "'unsafe-eval'",
-      "'unsafe-inline'",
+      '\'self\'',
+      '\'unsafe-eval\'',
+      '\'unsafe-inline\'',
       'https://www.googletagmanager.com',
       'https://www.google-analytics.com',
       'https://apis.google.com',
       'https://accounts.google.com',
       'https://firebase.googleapis.com',
-      'https://www.gstatic.com'
+      'https://www.gstatic.com',
     ],
     'style-src': [
-      "'self'",
-      "'unsafe-inline'",
+      '\'self\'',
+      '\'unsafe-inline\'',
       'https://fonts.googleapis.com',
     ],
     'font-src': [
-      "'self'",
+      '\'self\'',
       'https://fonts.gstatic.com',
     ],
     'img-src': [
-      "'self'",
+      '\'self\'',
       'data:',
       'https:',
       'blob:',
       'https://firebasestorage.googleapis.com',
     ],
     'connect-src': [
-      "'self'",
+      '\'self\'',
       'https://api.flowpay.com.br',
       'https://www.google-analytics.com',
       'https://firestore.googleapis.com',
@@ -86,17 +86,17 @@ export const SECURITY_CONSTANTS = {
       'https://securetoken.googleapis.com',
       'https://accounts.google.com',
       'https://apis.google.com',
-      'https://*.googleapis.com'
+      'https://*.googleapis.com',
     ],
     'frame-src': [
-      "'self'",
+      '\'self\'',
       'https://accounts.google.com',
       'https://*.firebaseapp.com',
-      'https://firebaseapp.com'
+      'https://firebaseapp.com',
     ],
-    'object-src': ["'none'"],
-    'base-uri': ["'self'"],
-    'form-action': ["'self'"],
+    'object-src': ['\'none\''],
+    'base-uri': ['\'self\''],
+    'form-action': ['\'self\''],
     'upgrade-insecure-requests': [],
   },
 
@@ -194,15 +194,15 @@ export const SECURITY_CONSTANTS = {
 export const SECURITY_UTILS = {
   // Verificar se string contém padrões suspeitos
   containsSuspiciousPattern: (input: string): boolean => {
-    return SECURITY_CONSTANTS.SUSPICIOUS_PATTERNS.some(pattern => 
-      pattern.test(input)
+    return SECURITY_CONSTANTS.SUSPICIOUS_PATTERNS.some((pattern) =>
+      pattern.test(input),
     );
   },
 
   // Sanitizar string
   sanitizeString: (input: string, maxLength: number = SECURITY_CONSTANTS.VALIDATION.MAX_STRING_LENGTH): string => {
     if (typeof input !== 'string') return '';
-    
+
     return input
       .trim()
       .slice(0, maxLength)
@@ -222,10 +222,10 @@ export const SECURITY_UTILS = {
   isValidUrl: (url: string): boolean => {
     try {
       const urlObj = new URL(url);
-      return urlObj.protocol === 'https:' && 
-             url.length <= SECURITY_CONSTANTS.VALIDATION.MAX_URL_LENGTH &&
-             SECURITY_CONSTANTS.ALLOWED_DOMAINS.some(domain => 
-               urlObj.hostname.endsWith(domain)
+      return urlObj.protocol === 'https:'
+             && url.length <= SECURITY_CONSTANTS.VALIDATION.MAX_URL_LENGTH
+             && SECURITY_CONSTANTS.ALLOWED_DOMAINS.some((domain) =>
+               urlObj.hostname.endsWith(domain),
              );
     } catch {
       return false;
@@ -263,7 +263,7 @@ export const SECURITY_UTILS = {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   },
 
@@ -280,22 +280,22 @@ export const SECURITY_UTILS = {
   // Verificar se User-Agent é suspeito
   isSuspiciousUserAgent: (userAgent: string): boolean => {
     const lowerUA = userAgent.toLowerCase();
-    return SECURITY_CONSTANTS.BLOCKED_USER_AGENTS.some(blocked => 
-      lowerUA.includes(blocked)
+    return SECURITY_CONSTANTS.BLOCKED_USER_AGENTS.some((blocked) =>
+      lowerUA.includes(blocked),
     );
   },
 
   // Verificar se rota é protegida
   isProtectedRoute: (pathname: string): boolean => {
-    return SECURITY_CONSTANTS.PROTECTED_ROUTES.some(route => 
-      pathname.startsWith(route)
+    return SECURITY_CONSTANTS.PROTECTED_ROUTES.some((route) =>
+      pathname.startsWith(route),
     );
   },
 
   // Verificar se rota é pública
   isPublicRoute: (pathname: string): boolean => {
-    return SECURITY_CONSTANTS.PUBLIC_ROUTES.some(route => 
-      pathname === route || pathname.startsWith(route)
+    return SECURITY_CONSTANTS.PUBLIC_ROUTES.some((route) =>
+      pathname === route || pathname.startsWith(route),
     );
   },
-} as const; 
+} as const;

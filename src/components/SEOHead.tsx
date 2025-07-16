@@ -17,7 +17,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
   image = '/images/og-interbox.png',
   type = 'website',
   url,
-  noIndex = false
+  noIndex = false,
 }) => {
   const fullUrl = url ? `${window.location.origin}${url}` : window.location.href;
   const fullImageUrl = image.startsWith('http') ? image : `${window.location.origin}${image}`;
@@ -82,50 +82,50 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       {/* JSON-LD Rich Snippet para Evento + Ingressos */}
       <script type="application/ld+json">
         {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "SportsEvent",
-          "name": "CERRADØ INTERBOX 2025",
-          "startDate": "2025-10-24",
-          "endDate": "2025-10-26",
-          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-          "eventStatus": "https://schema.org/EventScheduled",
-          "description": description,
-          "image": [fullImageUrl],
-          "url": "https://cerradointerbox.com",
-          "location": {
-            "@type": "Place",
-            "name": "Ginásio Rio Vermelho",
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "Rua 74, Centro",
-              "addressLocality": "Goiânia",
-              "addressRegion": "GO",
-              "postalCode": "74000-000",
-              "addressCountry": "BR"
+          '@context': 'https://schema.org',
+          '@type': 'SportsEvent',
+          'name': 'CERRADØ INTERBOX 2025',
+          'startDate': '2025-10-24',
+          'endDate': '2025-10-26',
+          'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',
+          'eventStatus': 'https://schema.org/EventScheduled',
+          'description': description,
+          'image': [fullImageUrl],
+          'url': 'https://cerradointerbox.com',
+          'location': {
+            '@type': 'Place',
+            'name': 'Ginásio Rio Vermelho',
+            'address': {
+              '@type': 'PostalAddress',
+              'streetAddress': 'Rua 74, Centro',
+              'addressLocality': 'Goiânia',
+              'addressRegion': 'GO',
+              'postalCode': '74000-000',
+              'addressCountry': 'BR',
             },
-            "geo": {
-              "@type": "GeoCoordinates",
-              "latitude": -16.6869,
-              "longitude": -49.2648
-            }
+            'geo': {
+              '@type': 'GeoCoordinates',
+              'latitude': -16.6869,
+              'longitude': -49.2648,
+            },
           },
-          "organizer": {
-            "@type": "Organization",
-            "name": "CERRADØ INTERBOX",
-            "url": "https://cerradointerbox.com"
+          'organizer': {
+            '@type': 'Organization',
+            'name': 'CERRADØ INTERBOX',
+            'url': 'https://cerradointerbox.com',
           },
-          "offers": {
-            "@type": "Offer",
-            "url": "https://cerradointerbox.com/ingressos",
-            "price": "385.00",
-            "priceCurrency": "BRL",
-            "availability": "https://schema.org/InStock",
-            "validFrom": "2025-07-01"
-          }
+          'offers': {
+            '@type': 'Offer',
+            'url': 'https://cerradointerbox.com/ingressos',
+            'price': '385.00',
+            'priceCurrency': 'BRL',
+            'availability': 'https://schema.org/InStock',
+            'validFrom': '2025-07-01',
+          },
         })}
       </script>
     </>
   );
 };
 
-export default SEOHead; 
+export default SEOHead;

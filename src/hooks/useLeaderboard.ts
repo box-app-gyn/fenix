@@ -20,15 +20,15 @@ export function useLeaderboard() {
           const leaderboardQuery = query(
             collection(db, 'gamification_leaderboard'),
             orderBy('points', 'desc'),
-            limit(50)
+            limit(50),
           );
-          
+
           const snapshot = await getDocs(leaderboardQuery);
-          const leaderboardData = snapshot.docs.map(doc => ({ 
-            id: doc.id, 
-            ...doc.data() 
+          const leaderboardData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
           })) as FirestoreGamificationLeaderboard[];
-          
+
           setLeaderboard(leaderboardData);
           setError(null);
         } catch (err: any) {
@@ -49,4 +49,4 @@ export function useLeaderboard() {
   }, []);
 
   return { leaderboard, loading, error };
-} 
+}

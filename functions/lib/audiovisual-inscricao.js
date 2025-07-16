@@ -36,7 +36,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.criarInscricaoAudiovisual = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
-const logger_1 = require("../utils/logger");
 const db = admin.firestore();
 function validateAudiovisualData(data) {
     return !!(data.userEmail &&
@@ -48,8 +47,8 @@ function validateAudiovisualData(data) {
 }
 async function checkExistingAudiovisual(email) {
     const existing = await db
-        .collection('audiovisual')
-        .where('userEmail', '==', email)
+        .collection("audiovisual")
+        .where("userEmail", "==", email)
         .limit(1)
         .get();
     return !existing.empty;
@@ -57,27 +56,27 @@ async function checkExistingAudiovisual(email) {
 exports.criarInscricaoAudiovisual = functions.https.onCall(async (data, context) => {
     var _a;
     const contextData = {
-        functionName: 'criarInscricaoAudiovisual',
-        userId: (_a = context.auth) === null || _a === void 0 ? void 0 : _a.uid
+        functionName: "criarInscricaoAudiovisual",
+        userId: (_a = context.auth) === null || _a === void 0 ? void 0 : _a.uid,
     };
     try {
         // Verificar autenticação
         if (!context.auth) {
-            logger_1.logger.security('Tentativa de inscrição não autenticada', {}, contextData);
-            throw new functions.https.HttpsError('unauthenticated', 'Usuário não autenticado');
+            console.log("Tentativa de inscrição não autenticada", contextData);
+            throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
         }
         // Validar dados
         if (!validateAudiovisualData(data)) {
-            throw new functions.https.HttpsError('invalid-argument', 'Dados incompletos');
+            throw new functions.https.HttpsError("invalid-argument", "Dados incompletos");
         }
         // Verificar se já existe inscrição
         const existing = await checkExistingAudiovisual(data.userEmail);
         if (existing) {
-            throw new functions.https.HttpsError('already-exists', 'Já existe uma inscrição para este email');
+            throw new functions.https.HttpsError("already-exists", "Já existe uma inscrição para este email");
         }
         // Criar inscrição usando transação
         const result = await db.runTransaction(async (transaction) => {
-            const inscricaoRef = db.collection('audiovisual').doc();
+            const inscricaoRef = db.collection("audiovisual").doc();
             const inscricaoData = {
                 userId: context.auth.uid,
                 userEmail: data.userEmail,
@@ -86,27 +85,29 @@ exports.criarInscricaoAudiovisual = functions.https.onCall(async (data, context)
                 experiencia: data.experiencia,
                 portfolio: data.portfolio,
                 telefone: data.telefone,
-                status: 'pending',
+                status: "pending",
                 createdAt: admin.firestore.FieldValue.serverTimestamp(),
                 updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             };
             transaction.set(inscricaoRef, inscricaoData);
             return inscricaoRef.id;
         });
-        logger_1.logger.business('Inscrição audiovisual criada', {
+        console.log("Inscrição audiovisual criada", {
             inscricaoId: result,
-            tipo: data.tipo
-        }, contextData);
+            tipo: data.tipo,
+            contextData,
+        });
         return {
             success: true,
-            inscricaoId: result
+            inscricaoId: result,
         };
     }
     catch (error) {
-        logger_1.logger.error('Erro ao criar inscrição audiovisual', {
+        console.error("Erro ao criar inscrição audiovisual", {
             error: error.message,
-            userEmail: data.userEmail
-        }, contextData);
+            userEmail: data.userEmail,
+            contextData,
+        });
         throw error;
     }
 });

@@ -58,7 +58,7 @@ export const createInitialLinks = async (adminUserId: string) => {
     for (const linkData of INITIAL_LINKS) {
       // Verificar se o link já existe
       const existingLink = await getDocs(
-        query(collection(db, 'shortLinks'), where('shortCode', '==', linkData.shortCode))
+        query(collection(db, 'shortLinks'), where('shortCode', '==', linkData.shortCode)),
       );
 
       if (!existingLink.empty) {
@@ -81,7 +81,7 @@ export const createInitialLinks = async (adminUserId: string) => {
           clicksByHour: {},
           clicksByDevice: {},
           clicksByCountry: {},
-        }
+        },
       };
 
       await addDoc(collection(db, 'shortLinks'), newLink);
@@ -103,12 +103,12 @@ export const createSingleLink = async (
   shortCode: string,
   title?: string,
   description?: string,
-  category: 'evento' | 'ingresso' | 'comunidade' | 'midia' | 'admin' | 'outro' = 'outro'
+  category: 'evento' | 'ingresso' | 'comunidade' | 'midia' | 'admin' | 'outro' = 'outro',
 ) => {
   try {
     // Verificar se o link já existe
     const existingLink = await getDocs(
-      query(collection(db, 'shortLinks'), where('shortCode', '==', shortCode))
+      query(collection(db, 'shortLinks'), where('shortCode', '==', shortCode)),
     );
 
     if (!existingLink.empty) {
@@ -137,7 +137,7 @@ export const createSingleLink = async (
         clicksByHour: {},
         clicksByDevice: {},
         clicksByCountry: {},
-      }
+      },
     };
 
     await addDoc(collection(db, 'shortLinks'), newLink);
@@ -147,4 +147,4 @@ export const createSingleLink = async (
     console.error('❌ Erro ao criar link:', error);
     return false;
   }
-}; 
+};

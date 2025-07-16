@@ -1,25 +1,25 @@
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  collection, 
-  doc, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  getDoc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
   onSnapshot,
   serverTimestamp,
-  increment
+  increment,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from './useAuth';
-import { 
-  ShortLink, 
-  ShortLinkCreate, 
-  ShortLinkUpdate, 
+import {
+  ShortLink,
+  ShortLinkCreate,
+  ShortLinkUpdate,
   ShortLinkClick,
   ShortLinkStats,
   validateShortLink,
@@ -29,7 +29,7 @@ import {
   detectDevice,
 
   isLinkActive,
-  isLinkExpired
+  isLinkExpired,
 } from '../types/linkShortener';
 
 export const useLinkShortener = () => {
@@ -50,7 +50,7 @@ export const useLinkShortener = () => {
       const q = query(
         collection(db, 'shortLinks'),
         where('createdBy', '==', user.uid),
-        orderBy('createdAt', 'desc')
+        orderBy('createdAt', 'desc'),
       );
 
       const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -69,7 +69,7 @@ export const useLinkShortener = () => {
               clicksByHour: {},
               clicksByDevice: {},
               clicksByCountry: {},
-            }
+            },
           } as ShortLink);
         });
         setLinks(linksData);
@@ -107,15 +107,15 @@ export const useLinkShortener = () => {
 
       // Gerar código curto
       let shortCode = sanitizedData.customCode || generateShortCode();
-      
+
       // Verificar se código já existe
       if (!sanitizedData.customCode) {
         let attempts = 0;
         while (attempts < 10) {
           const existingLink = await getDocs(
-            query(collection(db, 'shortLinks'), where('shortCode', '==', shortCode))
+            query(collection(db, 'shortLinks'), where('shortCode', '==', shortCode)),
           );
-          
+
           if (existingLink.empty) break;
           shortCode = generateShortCode();
           attempts++;
@@ -145,7 +145,7 @@ export const useLinkShortener = () => {
           clicksByHour: {},
           clicksByDevice: {},
           clicksByCountry: {},
-        }
+        },
       };
 
       const docRef = await addDoc(collection(db, 'shortLinks'), {
@@ -156,7 +156,7 @@ export const useLinkShortener = () => {
 
       const createdLink: ShortLink = {
         id: docRef.id,
-        ...newLink
+        ...newLink,
       };
 
       return createdLink;
@@ -249,12 +249,12 @@ export const useLinkShortener = () => {
   const registerClick = useCallback(async (linkId: string): Promise<void> => {
     try {
       const linkRef = doc(db, 'shortLinks', linkId);
-      
+
       // Obter dados do usuário
       const userAgent = navigator.userAgent;
       const referrer = document.referrer;
       const device = detectDevice(userAgent);
-      
+
       // Criar registro de clique
       const clickData: Omit<ShortLinkClick, 'id'> = {
         shortLinkId: linkId,
@@ -281,7 +281,6 @@ export const useLinkShortener = () => {
         [`analytics.clicksByDevice.${device}`]: increment(1),
         'analytics.lastClickedAt': serverTimestamp(),
       });
-
     } catch (err) {
       console.error('Erro ao registrar clique:', err);
     }
@@ -293,7 +292,7 @@ export const useLinkShortener = () => {
       const q = query(
         collection(db, 'shortLinks'),
         where('shortCode', '==', shortCode),
-        where('isActive', '==', true)
+        where('isActive', '==', true),
       );
 
       const snapshot = await getDocs(q);
@@ -326,7 +325,7 @@ export const useLinkShortener = () => {
           clicksByHour: {},
           clicksByDevice: {},
           clicksByCountry: {},
-        }
+        },
       };
 
       // Verificar se link expirou
@@ -349,8 +348,8 @@ export const useLinkShortener = () => {
       const userLinks = await getDocs(
         query(
           collection(db, 'shortLinks'),
-          where('createdBy', '==', user.uid)
-        )
+          where('createdBy', '==', user.uid),
+        ),
       );
 
       const statsData: ShortLinkStats = {
@@ -368,9 +367,9 @@ export const useLinkShortener = () => {
       userLinks.forEach((doc) => {
         const data = doc.data();
         const clicks = data.clickCount || 0;
-        
+
         statsData.totalClicks += clicks;
-        
+
         if (isLinkActive(data as ShortLink)) {
           statsData.activeLinks++;
         } else {
@@ -420,4 +419,4 @@ export const useLinkShortener = () => {
     fetchUserLinks,
     fetchStats,
   };
-}; 
+};

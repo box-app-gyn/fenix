@@ -1,8 +1,8 @@
-import * as functions from 'firebase-functions';
+import * as functions from "firebase-functions";
 interface EmailData {
     userEmail: string;
     userName: string;
-    tipo: 'pedido' | 'audiovisual' | 'admin';
+    tipo: "pedido" | "audiovisual" | "admin";
     dadosAdicionais?: Record<string, any>;
 }
 export declare const enviaEmailConfirmacao: functions.HttpsFunction & functions.Runnable<any>;

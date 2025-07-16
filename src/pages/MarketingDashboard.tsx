@@ -52,7 +52,7 @@ export default function MarketingDashboard() {
     engagementRate: 0,
     conversionRate: 0,
     socialMediaReach: 0,
-    emailCampaigns: 0
+    emailCampaigns: 0,
   })
   const [users, setUsers] = useState<any[]>([])
   const [teams, setTeams] = useState<any[]>([])
@@ -61,19 +61,19 @@ export default function MarketingDashboard() {
     total: 0,
     media: 0,
     holders: 0,
-    marketCap: 0
+    marketCap: 0,
   })
   const [campaigns, setCampaigns] = useState<CampaignData[]>([])
   const [emailConfig, setEmailConfig] = useState({
     gmail: { email: '', password: '' },
-    sendgrid: { apiKey: '', from: '' }
+    sendgrid: { apiKey: '', from: '' },
   })
   const [configStatus, setConfigStatus] = useState({
     firebase: true,
     gmail: false,
-    sendgrid: false
+    sendgrid: false,
   })
-  
+
   const { trackPage, trackAdmin } = useAnalytics()
 
   const loadStats = useCallback(async () => {
@@ -84,7 +84,7 @@ export default function MarketingDashboard() {
 
       // Calcular métricas de marketing
       const totalUsers = usersSnapshot.size
-      const activeUsers = usersSnapshot.docs.filter(doc => doc.data().isActive).length
+      const activeUsers = usersSnapshot.docs.filter((doc) => doc.data().isActive).length
       const engagementRate = totalUsers > 0 ? (activeUsers / totalUsers) * 100 : 0
 
       setStats({
@@ -94,7 +94,7 @@ export default function MarketingDashboard() {
         engagementRate: Math.round(engagementRate),
         conversionRate: 15, // Simulado
         socialMediaReach: 2500, // Simulado
-        emailCampaigns: 8 // Simulado
+        emailCampaigns: 8, // Simulado
       })
     } catch (error) {
       console.error('Erro ao carregar estatísticas:', error)
@@ -104,9 +104,9 @@ export default function MarketingDashboard() {
   const loadUsers = useCallback(async () => {
     try {
       const snapshot = await getDocs(collection(db, 'users'))
-      const usersData = snapshot.docs.map(doc => ({
+      const usersData = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }))
       setUsers(usersData)
     } catch (error) {
@@ -117,9 +117,9 @@ export default function MarketingDashboard() {
   const loadTeams = useCallback(async () => {
     try {
       const snapshot = await getDocs(collection(db, 'teams'))
-      const teamsData = snapshot.docs.map(doc => ({
+      const teamsData = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }))
       setTeams(teamsData)
     } catch (error) {
@@ -130,9 +130,9 @@ export default function MarketingDashboard() {
   const loadAudiovisual = useCallback(async () => {
     try {
       const snapshot = await getDocs(collection(db, 'audiovisual'))
-      const audiovisualData = snapshot.docs.map(doc => ({
+      const audiovisualData = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }))
       setAudiovisual(audiovisualData)
     } catch (error) {
@@ -151,10 +151,10 @@ export default function MarketingDashboard() {
               total: data.token?.box?.total || 0,
               media: data.token?.box?.media || 0,
               holders: data.token?.box?.holders || 0,
-              marketCap: data.token?.box?.marketCap || 0
+              marketCap: data.token?.box?.marketCap || 0,
             })
           }
-        }
+        },
       )
       return unsubscribe
     } catch (error) {
@@ -173,7 +173,7 @@ export default function MarketingDashboard() {
         reach: 1500,
         clicks: 450,
         conversions: 89,
-        createdAt: new Date('2025-01-15')
+        createdAt: new Date('2025-01-15'),
       },
       {
         id: '2',
@@ -183,7 +183,7 @@ export default function MarketingDashboard() {
         reach: 3200,
         clicks: 1200,
         conversions: 156,
-        createdAt: new Date('2025-01-20')
+        createdAt: new Date('2025-01-20'),
       },
       {
         id: '3',
@@ -193,7 +193,7 @@ export default function MarketingDashboard() {
         reach: 800,
         clicks: 320,
         conversions: 45,
-        createdAt: new Date('2025-01-25')
+        createdAt: new Date('2025-01-25'),
       },
       {
         id: '4',
@@ -203,8 +203,8 @@ export default function MarketingDashboard() {
         reach: 5000,
         clicks: 1800,
         conversions: 234,
-        createdAt: new Date('2025-01-10')
-      }
+        createdAt: new Date('2025-01-10'),
+      },
     ]
     setCampaigns(mockCampaigns)
   }, [])
@@ -238,7 +238,7 @@ export default function MarketingDashboard() {
   }, [])
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async user => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await loadUserData(user.uid)
       } else {
@@ -268,11 +268,11 @@ export default function MarketingDashboard() {
       alert('Preencha todos os campos do Gmail')
       return
     }
-    
+
     try {
       // Aqui você pode implementar a chamada para configurar o Gmail
       // Por enquanto, apenas simula o sucesso
-      setConfigStatus(prev => ({ ...prev, gmail: true }))
+      setConfigStatus((prev) => ({ ...prev, gmail: true }))
       alert('Configuração Gmail salva com sucesso!')
       trackAdmin('email_config_gmail', userData?.email || '')
     } catch (error) {
@@ -285,11 +285,11 @@ export default function MarketingDashboard() {
       alert('Preencha todos os campos do SendGrid')
       return
     }
-    
+
     try {
       // Aqui você pode implementar a chamada para configurar o SendGrid
       // Por enquanto, apenas simula o sucesso
-      setConfigStatus(prev => ({ ...prev, sendgrid: true }))
+      setConfigStatus((prev) => ({ ...prev, sendgrid: true }))
       alert('Configuração SendGrid salva com sucesso!')
       trackAdmin('email_config_sendgrid', userData?.email || '')
     } catch (error) {
@@ -318,7 +318,7 @@ export default function MarketingDashboard() {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Acesso Negado</h1>
           <p className="text-gray-400 mb-4">Apenas profissionais de marketing podem acessar este painel</p>
-          <button 
+          <button
             onClick={() => window.location.href = '/marketing'}
             className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded transition-all duration-300"
           >
@@ -332,20 +332,20 @@ export default function MarketingDashboard() {
   return (
     <div className="min-h-screen bg-black flex flex-col">
       <Header />
-      
+
       {/* Background com imagem principal */}
-      <div 
+      <div
         className="flex-1 relative"
         style={{
           backgroundImage: 'url(/images/bg_main.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         {/* Overlay gradiente */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80"></div>
-        
+
         {/* Conteúdo principal */}
         <div className="relative z-10 container mx-auto px-4 py-8">
           {/* Header do Marketing */}
@@ -537,14 +537,14 @@ export default function MarketingDashboard() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              campaign.status === 'active' ? 'bg-green-100 text-green-800' :
-                              campaign.status === 'paused' ? 'bg-yellow-100 text-yellow-800' :
-                              campaign.status === 'completed' ? 'bg-blue-100 text-blue-800' :
-                              'bg-gray-100 text-gray-800'
+                              campaign.status === 'active' ? 'bg-green-100 text-green-800'
+                                : campaign.status === 'paused' ? 'bg-yellow-100 text-yellow-800'
+                                  : campaign.status === 'completed' ? 'bg-blue-100 text-blue-800'
+                                    : 'bg-gray-100 text-gray-800'
                             }`}>
-                              {campaign.status === 'active' ? 'Ativa' :
-                               campaign.status === 'paused' ? 'Pausada' :
-                               campaign.status === 'completed' ? 'Concluída' : 'Rascunho'}
+                              {campaign.status === 'active' ? 'Ativa'
+                                : campaign.status === 'paused' ? 'Pausada'
+                                  : campaign.status === 'completed' ? 'Concluída' : 'Rascunho'}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -572,11 +572,11 @@ export default function MarketingDashboard() {
                     <div className="space-y-3">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Atletas</span>
-                        <span className="font-semibold">{users.filter(u => u.role === 'atleta').length}</span>
+                        <span className="font-semibold">{users.filter((u) => u.role === 'atleta').length}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Espectadores</span>
-                        <span className="font-semibold">{users.filter(u => u.role === 'espectador').length}</span>
+                        <span className="font-semibold">{users.filter((u) => u.role === 'espectador').length}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Profissionais</span>
@@ -626,7 +626,7 @@ export default function MarketingDashboard() {
                           <span className="text-sm font-semibold">{stats.conversionRate}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div className="bg-green-600 h-2 rounded-full" style={{width: `${stats.conversionRate}%`}}></div>
+                          <div className="bg-green-600 h-2 rounded-full" style={{ width: `${stats.conversionRate}%` }}></div>
                         </div>
                       </div>
                       <div>
@@ -635,7 +635,7 @@ export default function MarketingDashboard() {
                           <span className="text-sm font-semibold">{stats.engagementRate}%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div className="bg-blue-600 h-2 rounded-full" style={{width: `${stats.engagementRate}%`}}></div>
+                          <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${stats.engagementRate}%` }}></div>
                         </div>
                       </div>
                       <div>
@@ -644,7 +644,7 @@ export default function MarketingDashboard() {
                           <span className="text-sm font-semibold">78%</span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div className="bg-purple-600 h-2 rounded-full" style={{width: '78%'}}></div>
+                          <div className="bg-purple-600 h-2 rounded-full" style={{ width: '78%' }}></div>
                         </div>
                       </div>
                     </div>
@@ -679,7 +679,7 @@ export default function MarketingDashboard() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-xl font-bold text-gray-800">📧 Configuração do Sistema de Email</h3>
-                  <button 
+                  <button
                     onClick={openEmailScript}
                     className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-md hover:from-purple-700 hover:to-pink-700 transition-colors"
                   >
@@ -700,9 +700,9 @@ export default function MarketingDashboard() {
                           type="email"
                           placeholder="seu-email@gmail.com"
                           value={emailConfig.gmail.email}
-                          onChange={(e) => setEmailConfig(prev => ({
+                          onChange={(e) => setEmailConfig((prev) => ({
                             ...prev,
-                            gmail: { ...prev.gmail, email: e.target.value }
+                            gmail: { ...prev.gmail, email: e.target.value },
                           }))}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
@@ -715,9 +715,9 @@ export default function MarketingDashboard() {
                           type="password"
                           placeholder="Senha de aplicativo"
                           value={emailConfig.gmail.password}
-                          onChange={(e) => setEmailConfig(prev => ({
+                          onChange={(e) => setEmailConfig((prev) => ({
                             ...prev,
-                            gmail: { ...prev.gmail, password: e.target.value }
+                            gmail: { ...prev.gmail, password: e.target.value },
                           }))}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
@@ -725,7 +725,7 @@ export default function MarketingDashboard() {
                           Use senha de app, não sua senha principal
                         </p>
                       </div>
-                      <button 
+                      <button
                         onClick={handleGmailConfig}
                         className="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md transition-colors"
                       >
@@ -746,9 +746,9 @@ export default function MarketingDashboard() {
                           type="password"
                           placeholder="SG.xxxxxxxxxxxxxxxxxxxxx"
                           value={emailConfig.sendgrid.apiKey}
-                          onChange={(e) => setEmailConfig(prev => ({
+                          onChange={(e) => setEmailConfig((prev) => ({
                             ...prev,
-                            sendgrid: { ...prev.sendgrid, apiKey: e.target.value }
+                            sendgrid: { ...prev.sendgrid, apiKey: e.target.value },
                           }))}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
@@ -761,14 +761,14 @@ export default function MarketingDashboard() {
                           type="email"
                           placeholder="noreply@interbox2025.com"
                           value={emailConfig.sendgrid.from}
-                          onChange={(e) => setEmailConfig(prev => ({
+                          onChange={(e) => setEmailConfig((prev) => ({
                             ...prev,
-                            sendgrid: { ...prev.sendgrid, from: e.target.value }
+                            sendgrid: { ...prev.sendgrid, from: e.target.value },
                           }))}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       </div>
-                      <button 
+                      <button
                         onClick={handleSendGridConfig}
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors"
                       >
@@ -851,8 +851,8 @@ export default function MarketingDashboard() {
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   )
-} 
+}

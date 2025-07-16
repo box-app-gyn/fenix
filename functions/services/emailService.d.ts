@@ -1,4 +1,4 @@
-import { emailTemplates } from '../config/email';
+import { emailTemplates } from "../config/email";
 interface EmailOptions {
     to: string | string[];
     subject: string;
@@ -19,21 +19,21 @@ interface EmailResult {
     retries?: number;
 }
 export declare class EmailService {
-    private transporter;
-    private isInitialized;
-    constructor();
-    private initializeTransporter;
-    private checkRateLimit;
-    private validateEmail;
-    sendEmail(options: EmailOptions, retries?: number): Promise<EmailResult>;
-    sendTemplateEmail(templateName: keyof typeof emailTemplates, data: any, to: string | string[]): Promise<EmailResult>;
-    sendConfirmationEmail(data: any): Promise<EmailResult>;
-    sendAudiovisualStatusEmail(data: any): Promise<EmailResult>;
-    sendNotificationEmail(data: any): Promise<EmailResult>;
-    sendWelcomeEmail(data: any): Promise<EmailResult>;
-    checkHealth(): Promise<boolean>;
-    clearRateLimitCache(): void;
+  private transporter;
+  private isInitialized;
+  constructor();
+  private initializeTransporter;
+  private checkRateLimit;
+  private validateEmail;
+  sendEmail(options: EmailOptions, retries?: number): Promise<EmailResult>;
+  sendTemplateEmail(templateName: keyof typeof emailTemplates, data: any, to: string | string[]): Promise<EmailResult>;
+  sendConfirmationEmail(data: any): Promise<EmailResult>;
+  sendAudiovisualStatusEmail(data: any): Promise<EmailResult>;
+  sendNotificationEmail(data: any): Promise<EmailResult>;
+  sendWelcomeEmail(data: any): Promise<EmailResult>;
+  checkHealth(): Promise<boolean>;
+  clearRateLimitCache(): void;
 }
 export declare const emailService: EmailService;
 export {};
-//# sourceMappingURL=emailService.d.ts.map
+// # sourceMappingURL=emailService.d.ts.map

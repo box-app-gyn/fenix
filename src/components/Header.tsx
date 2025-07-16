@@ -13,10 +13,10 @@ export default function Header() {
 
   // Verificar se usuário tem acesso ao dashboard
   const hasDashboardAccess = authUser && (
-    authUser.role === 'admin' || 
-    authUser.role === 'jurado' || 
-    authUser.role === 'midia' ||
-    authUser.role === 'fotografo'
+    authUser.role === 'admin'
+    || authUser.role === 'jurado'
+    || authUser.role === 'midia'
+    || authUser.role === 'fotografo'
   )
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function Header() {
           className="container mx-auto px-4 transition-all duration-300"
           animate={{
             paddingTop: isScrolled ? '0.5rem' : '1rem',
-            paddingBottom: isScrolled ? '0.5rem' : '1rem'
+            paddingBottom: isScrolled ? '0.5rem' : '1rem',
           }}
         >
           <div className="flex items-center justify-between">
@@ -101,7 +101,7 @@ export default function Header() {
                 whileHover={{
                   scale: 1.05,
                   filter:
-                    'brightness(1.2) drop-shadow(0 0 10px rgba(236, 72, 153, 0.6))'
+                    'brightness(1.2) drop-shadow(0 0 10px rgba(236, 72, 153, 0.6))',
                 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
                 className="relative overflow-hidden rounded-lg"
@@ -178,7 +178,7 @@ export default function Header() {
               className="md:hidden menu-mobile-overlay backdrop-blur-fallback"
               style={{
                 backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)'
+                WebkitBackdropFilter: 'blur(10px)',
               }}
               onClick={() => setIsMenuOpen(false)}
             />
@@ -190,7 +190,7 @@ export default function Header() {
               className="md:hidden menu-mobile-container border-l border-pink-500/20 backdrop-blur-fallback menu-mobile-fix"
               style={{
                 backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)'
+                WebkitBackdropFilter: 'blur(10px)',
               }}
             >
               <div className="flex flex-col h-full p-6">
@@ -203,32 +203,32 @@ export default function Header() {
                     ✕
                   </button>
                 </div>
-                
+
                 <nav className="flex flex-col space-y-4">
-                  <a 
-                    href="/home" 
+                  <a
+                    href="/home"
                     className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Home
                   </a>
-                  <a 
-                    href="/hub" 
+                  <a
+                    href="/hub"
                     className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Hub
                   </a>
 
-                  <a 
-                    href="/leaderboard" 
+                  <a
+                    href="/leaderboard"
                     className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Leaderboard
                   </a>
-                  <a 
-                    href="/audiovisual" 
+                  <a
+                    href="/audiovisual"
                     className="text-pink-400 hover:text-pink-300 transition-all duration-300 font-medium text-lg py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -236,27 +236,27 @@ export default function Header() {
                   </a>
                   {user && (
                     <>
-                      <a 
-                        href="/perfil" 
+                      <a
+                        href="/perfil"
                         className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Perfil
                       </a>
                       {hasDashboardAccess && (
-                        <a 
-                          href="/dashboard-evento" 
+                        <a
+                          href="/dashboard-evento"
                           className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
                           onClick={() => setIsMenuOpen(false)}
                         >
                           📊 Dashboard
                         </a>
                       )}
-                      <button 
+                      <button
                         onClick={() => {
                           handleLogout();
                           setIsMenuOpen(false);
-                        }} 
+                        }}
                         className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2 text-left"
                       >
                         Sair
@@ -264,8 +264,8 @@ export default function Header() {
                     </>
                   )}
                   {!user && (
-                    <a 
-                      href="/login" 
+                    <a
+                      href="/login"
                       className="bg-gradient-to-r from-pink-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all duration-200 font-medium text-lg text-center"
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -280,4 +280,4 @@ export default function Header() {
       </AnimatePresence>
     </>
   )
-} 
+}

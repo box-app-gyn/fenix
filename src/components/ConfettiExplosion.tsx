@@ -18,7 +18,7 @@ export default function ConfettiExplosion({ trigger, onComplete }: ConfettiExplo
         origin: { y: 0.7 },
         colors: ['#ec4899', '#a21caf', '#06b6d4', '#fde047', '#fff'],
         scalar: 1.2,
-        zIndex: 9999
+        zIndex: 9999,
       })
       setTimeout(() => {
         if (onComplete) onComplete()
@@ -27,4 +27,4 @@ export default function ConfettiExplosion({ trigger, onComplete }: ConfettiExplo
   }, [trigger, onComplete])
 
   return null
-} 
+}

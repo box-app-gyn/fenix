@@ -11,33 +11,33 @@ export const useRoleRedirect = () => {
 
   useEffect(() => {
     const checkAndRedirect = async () => {
-      console.log('🔄 useRoleRedirect: Iniciando verificação...', { 
-        hasUser: !!user, 
+      console.log('🔄 useRoleRedirect: Iniciando verificação...', {
+        hasUser: !!user,
         loading,
         userEmail: user?.email,
         userRole: user?.role,
-        currentPath: location.pathname
+        currentPath: location.pathname,
       });
 
       if (!user || loading) {
-        console.log('🔄 useRoleRedirect: Aguardando usuário ou loading...', { 
-          hasUser: !!user, 
-          loading 
+        console.log('🔄 useRoleRedirect: Aguardando usuário ou loading...', {
+          hasUser: !!user,
+          loading,
         });
         return;
       }
 
-      // Se estamos na página de login e já temos usuário, não fazer nada
+      // Se estamos na página de login e já temos usuário, redirecionar baseado no perfil
       if (location.pathname === '/login') {
-        console.log('🔄 useRoleRedirect: Na página de login com usuário logado, aguardando...');
-        return;
+        console.log('🔄 useRoleRedirect: Na página de login com usuário logado, verificando perfil...');
+        // Não retornar aqui, continuar para verificar o perfil e redirecionar
       }
 
-      console.log('🎯 useRoleRedirect: Verificando perfil do usuário...', { 
-        uid: user.uid, 
+      console.log('🎯 useRoleRedirect: Verificando perfil do usuário...', {
+        uid: user.uid,
         email: user.email,
         role: user.role,
-        profileComplete: user.profileComplete
+        profileComplete: user.profileComplete,
       });
 
       try {
@@ -52,13 +52,13 @@ export const useRoleRedirect = () => {
           categoria: data?.categoria,
           role: data?.role,
           isActive: data?.isActive,
-          displayName: data?.displayName
+          displayName: data?.displayName,
         });
 
         console.log('🎯 useRoleRedirect: Decidindo redirecionamento...', {
           profileComplete: data?.profileComplete,
           categoria: data?.categoria,
-          currentPath: location.pathname
+          currentPath: location.pathname,
         });
 
         // Se não tem dados no Firestore, criar usuário básico
@@ -75,27 +75,27 @@ export const useRoleRedirect = () => {
             navigate('/selecao-cadastro');
             return;
           }
-          
+
           // Se tem categoria, vai direto para o cadastro específico
           console.log('🎯 useRoleRedirect: Redirecionando para cadastro específico:', data?.categoria);
           switch (data?.categoria) {
-            case 'atleta':
-              navigate('/cadastro-atleta');
-              return;
-            case 'jurado':
-            case 'judge':
-              navigate('/cadastro-jurado');
-              return;
-            case 'midia':
-              navigate('/cadastro-midialouca');
-              return;
-            case 'espectador':
-              navigate('/cadastro-curioso');
-              return;
-            default:
-              console.log('⚠️ useRoleRedirect: Categoria desconhecida, indo para setup-profile');
-              navigate('/setup-profile');
-              return;
+          case 'atleta':
+            navigate('/cadastro-atleta');
+            return;
+          case 'jurado':
+          case 'judge':
+            navigate('/cadastro-jurado');
+            return;
+          case 'midia':
+            navigate('/cadastro-midialouca');
+            return;
+          case 'espectador':
+            navigate('/cadastro-curioso');
+            return;
+          default:
+            console.log('⚠️ useRoleRedirect: Categoria desconhecida, indo para setup-profile');
+            navigate('/setup-profile');
+            return;
           }
         }
 
@@ -114,9 +114,9 @@ export const useRoleRedirect = () => {
       console.log('🚀 useRoleRedirect: Executando verificação...', {
         loading,
         currentPath: location.pathname,
-        hasUser: !!user
+        hasUser: !!user,
       });
       checkAndRedirect();
     }
   }, [user, loading, navigate, location.pathname]);
-}; 
+};

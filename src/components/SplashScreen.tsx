@@ -60,13 +60,13 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black"
-          style={{ 
+          style={{
             position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 9999
+            zIndex: 9999,
           }}
         >
           {/* Vídeo de intro ou fallback */}
@@ -81,16 +81,16 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
               style={{
                 width: '100%',
                 height: '100%',
-                objectFit: 'cover'
+                objectFit: 'cover',
               }}
             >
               <source src="/videos/intro.mp4" type="video/mp4" />
               {/* Fallback para navegadores que não suportam vídeo */}
               <div className="flex items-center justify-center w-full h-full bg-black">
                 <div className="text-center">
-                  <img 
-                    src="/logos/logo_circulo.png" 
-                    alt="CERRADØ INTERBOX" 
+                  <img
+                    src="/logos/logo_circulo.png"
+                    alt="CERRADØ INTERBOX"
                     width={128}
                     height={128}
                     className="w-32 h-32 mx-auto mb-4 animate-pulse"
@@ -103,9 +103,9 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           ) : (
             <div className="flex items-center justify-center w-full h-full bg-black">
               <div className="text-center">
-                <img 
-                  src="/logos/logo_circulo.png" 
-                  alt="CERRADØ INTERBOX" 
+                <img
+                  src="/logos/logo_circulo.png"
+                  alt="CERRADØ INTERBOX"
                   width={128}
                   height={128}
                   className="w-32 h-32 mx-auto mb-4 animate-pulse"
@@ -132,14 +132,14 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="text-center"
                 >
-                  <img 
-                    src="/logos/logo_circulo.png" 
-                    alt="CERRADØ INTERBOX" 
+                  <img
+                    src="/logos/logo_circulo.png"
+                    alt="CERRADØ INTERBOX"
                     width={128}
                     height={128}
                     className="w-32 h-32 mx-auto mb-4"
                   />
-                  <motion.h1 
+                  <motion.h1
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
@@ -147,7 +147,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
                   >
                     CERRADØ INTERBOX
                   </motion.h1>
-                  <motion.p 
+                  <motion.p
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.6 }}
@@ -163,4 +163,4 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
       )}
     </AnimatePresence>
   )
-} 
+}

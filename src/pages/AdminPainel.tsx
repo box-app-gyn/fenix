@@ -14,7 +14,7 @@ const USER_TYPES: Record<string, { color: string; icon: string; label: string }>
   publico: { color: '#3B82F6', icon: '👤', label: 'Público' },
   admin: { color: '#EF4444', icon: '🛡️', label: 'Admin' },
   patrocinador: { color: '#F472B6', icon: '💼', label: 'Patrocinador' },
-  apoio: { color: '#6366F1', icon: '🤝', label: 'Apoio' }
+  apoio: { color: '#6366F1', icon: '🤝', label: 'Apoio' },
 };
 
 export default function AdminPainel() {
@@ -41,7 +41,7 @@ export default function AdminPainel() {
       }
       // Carregar todos os usuários
       const usersSnap = await getDocs(collection(db, 'users'));
-      setUsers(usersSnap.docs.map(d => d.data() as FirestoreUser));
+      setUsers(usersSnap.docs.map((d) => d.data() as FirestoreUser));
       setLoading(false);
     };
     load();
@@ -49,7 +49,7 @@ export default function AdminPainel() {
 
   // Filtro por tipo
   const filteredUsers = filter
-    ? users.filter(u => u.role === filter)
+    ? users.filter((u) => u.role === filter)
     : users;
 
   // Iniciar edição
@@ -67,7 +67,7 @@ export default function AdminPainel() {
   const saveEdit = async (uid: string) => {
     try {
       await updateDoc(doc(db, 'users', uid), editData);
-      setUsers(users.map(u => (u.uid === uid ? { ...u, ...editData } : u)));
+      setUsers(users.map((u) => (u.uid === uid ? { ...u, ...editData } : u)));
       setEditingId(null);
       setMessage('Usuário atualizado com sucesso!');
       setTimeout(() => setMessage(null), 2000);
@@ -81,7 +81,7 @@ export default function AdminPainel() {
     if (!window.confirm('Tem certeza que deseja excluir este usuário?')) return;
     try {
       await deleteDoc(doc(db, 'users', uid));
-      setUsers(users.filter(u => u.uid !== uid));
+      setUsers(users.filter((u) => u.uid !== uid));
       setMessage('Usuário excluído.');
       setTimeout(() => setMessage(null), 2000);
     } catch {
@@ -110,7 +110,7 @@ export default function AdminPainel() {
         {message && <div className="mb-4 p-3 rounded bg-green-100 text-green-800 border border-green-200">{message}</div>}
         <div className="mb-4 flex gap-2 items-center">
           <label className="font-medium">Filtrar por tipo:</label>
-          <select value={filter} onChange={e => setFilter(e.target.value)} className="border rounded px-2 py-1">
+          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="border rounded px-2 py-1">
             <option value="">Todos</option>
             {Object.entries(USER_TYPES).map(([k, v]) => (
               <option key={k} value={k}>{v.label}</option>
@@ -129,21 +129,21 @@ export default function AdminPainel() {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map(u => (
+              {filteredUsers.map((u) => (
                 <tr key={u.uid} style={{ background: USER_TYPES[u.role]?.color + '10' }} className="border-b">
                   <td className="py-2 px-2 font-medium">
                     {editingId === u.uid ? (
-                      <input value={editData.displayName || ''} onChange={e => setEditData(ed => ({ ...ed, displayName: e.target.value }))} className="border rounded px-1" />
+                      <input value={editData.displayName || ''} onChange={(e) => setEditData((ed) => ({ ...ed, displayName: e.target.value }))} className="border rounded px-1" />
                     ) : u.displayName}
                   </td>
                   <td className="py-2 px-2">
                     {editingId === u.uid ? (
-                      <input value={editData.email || ''} onChange={e => setEditData(ed => ({ ...ed, email: e.target.value }))} className="border rounded px-1" />
+                      <input value={editData.email || ''} onChange={(e) => setEditData((ed) => ({ ...ed, email: e.target.value }))} className="border rounded px-1" />
                     ) : u.email}
                   </td>
                   <td className="py-2 px-2">
                     {editingId === u.uid ? (
-                      <select value={editData.role || u.role} onChange={e => setEditData(ed => ({ ...ed, role: e.target.value as UserRole }))} className="border rounded px-1">
+                      <select value={editData.role || u.role} onChange={(e) => setEditData((ed) => ({ ...ed, role: e.target.value as UserRole }))} className="border rounded px-1">
                         {Object.entries(USER_TYPES).map(([k, v]) => (
                           <option key={k} value={k}>{v.label}</option>
                         ))}
@@ -154,7 +154,7 @@ export default function AdminPainel() {
                   </td>
                   <td className="py-2 px-2">
                     {editingId === u.uid ? (
-                      <input value={editData.telefone || ''} onChange={e => setEditData(ed => ({ ...ed, telefone: e.target.value }))} className="border rounded px-1" />
+                      <input value={editData.telefone || ''} onChange={(e) => setEditData((ed) => ({ ...ed, telefone: e.target.value }))} className="border rounded px-1" />
                     ) : u.telefone}
                   </td>
                   <td className="py-2 px-2 flex gap-2">
@@ -178,4 +178,4 @@ export default function AdminPainel() {
       </div>
     </div>
   );
-} 
+}

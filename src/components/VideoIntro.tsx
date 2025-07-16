@@ -59,7 +59,7 @@ export default function VideoIntro({ onComplete }: VideoIntroProps) {
       >
         {/* Overlay de fundo */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
-        
+
         {/* Container do vídeo */}
         <div className="relative w-full h-full flex items-center justify-center">
           <video
@@ -144,4 +144,4 @@ export default function VideoIntro({ onComplete }: VideoIntroProps) {
       </motion.div>
     </AnimatePresence>
   );
-} 
+}
