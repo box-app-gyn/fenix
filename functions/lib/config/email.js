@@ -254,7 +254,7 @@ exports.emailTemplates = {
     // Template para boas-vindas
     boasVindas: (data) => {
         const content = `
-      <h2 style="color: #ec4899; margin-top: 0;">🎉 Bem-vindo ao Interbox 2025!</h2>
+      <h2 style="color: #ec4899; margin-top: 0;">🎉 Bem-vindo ao INTERBØX 2025!</h2>
       
       <p>Olá <strong>${data.userName}</strong>,</p>
       
@@ -274,7 +274,7 @@ exports.emailTemplates = {
       
       <a href="https://interbox2025.com" class="button">Acessar o App</a>
     `;
-        return exports.emailTemplates.base(content, "Bem-vindo ao Interbox 2025");
+        return exports.emailTemplates.base(content, "Bem-vindo ao INTERBØX 2025");
     },
 };
 // Configurações de rate limiting para emails

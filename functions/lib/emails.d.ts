@@ -5,7 +5,7 @@ interface EmailData {
     tipo: string;
     inscricaoId?: string;
 }
-export declare const enviaEmailConfirmacao: functions.HttpsFunction & functions.Runnable<any>;
+export declare const enviaEmailConfirmacao: functions.https.CallableFunction<any, any, unknown>;
 export declare const enviaEmailBoasVindas: (data: EmailData) => Promise<void>;
 export {};
 //# sourceMappingURL=emails.d.ts.map

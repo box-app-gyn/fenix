@@ -153,7 +153,7 @@ async function setupSendGrid() {
   try {
     execSync(
       `firebase functions:config:set sendgrid.api_key="${sendgridApiKey}"`,
-      {stdio: "ignore"}
+      {stdio: "ignore"},
     );
     execSync(`firebase functions:config:set sendgrid.from="${sendgridFrom}"`,
         {stdio: "ignore"});

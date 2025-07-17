@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -9,6 +9,13 @@ interface TempoRealData {
     dataAbertura?: string;
     loteAtual?: number;
     vagasRestantes?: number;
+    precoAtual?: number;
+    precoProximoLote?: number;
+    dataProximoLote?: string;
+    categoriaAtiva?: 'Scale' | 'RX' | 'Amador' | 'Iniciante' | 'Master 145+';
+    vagasCategoria?: number;
+    totalTimes?: number;
+    limiteLote?: number;
   };
   indicacoes: {
     total: number;
@@ -42,7 +49,16 @@ interface TempoRealProps {
 
 const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
   const [data, setData] = useState<TempoRealData>({
-    ingressos: { status: 'em_breve' },
+    ingressos: { 
+      status: 'em_breve',
+      precoAtual: 394.95, // 🏆 1º LOTE - Scale (valor oficial)
+      precoProximoLote: 444.95, // 🏆 2º LOTE - Scale (valor oficial)
+      dataProximoLote: '2025-07-25', // 🏆 Início do 2º lote
+      categoriaAtiva: 'Scale',
+      vagasCategoria: 80,
+      totalTimes: 0,
+      limiteLote: 120
+    },
     indicacoes: { total: 0, hoje: 0 },
     fotografos: { total: 0, aprovados: 0 },
     token: {
@@ -68,8 +84,30 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
     seconds: number;
   }>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
-  // Data de abertura do Lote 1 (13/07/2025)
-  const DATA_ABERTURA_LOTE1 = useMemo(() => new Date('2025-07-13T00:00:00-03:00'), []);
+  // 🏆 DATAS OFICIAIS DOS LOTES (VALORES-EVENTO.md)
+  const DATAS_LOTES = useMemo(() => ({
+    lote1: {
+      inicio: new Date('2025-07-13T00:00:00-03:00'),
+      fim: new Date('2025-07-24T23:59:59-03:00'),
+      limite: 120,
+      precoScale: 394.95,
+      precoRX: 494.95
+    },
+    lote2: {
+      inicio: new Date('2025-07-25T00:00:00-03:00'),
+      fim: new Date('2025-08-07T23:59:59-03:00'), // 🏆 Corrigido para evitar sobreposição
+      limite: 180,
+      precoScale: 444.95,
+      precoRX: 544.95
+    },
+    lote3: {
+      inicio: new Date('2025-08-08T00:00:00-03:00'),
+      fim: new Date('2025-09-08T23:59:59-03:00'),
+      limite: 220,
+      precoScale: 494.95,
+      precoRX: 594.95
+    }
+  }), []);
 
   useEffect(() => {
     // Se for versão pública, não carregar dados sensíveis
@@ -77,8 +115,8 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
       return;
     }
 
-    // Escutar dados em tempo real do Firestore
-    const unsubscribe = onSnapshot(
+    // 🏆 CARREGAR DADOS DE MÚLTIPLAS COLEÇÕES
+    const unsubscribe1 = onSnapshot(
       doc(db, 'config', 'tempo_real'),
       (doc) => {
         if (doc.exists()) {
@@ -90,6 +128,9 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
               dataAbertura: firestoreData.ingressos?.dataAbertura,
               loteAtual: firestoreData.ingressos?.loteAtual,
               vagasRestantes: firestoreData.ingressos?.vagasRestantes,
+              precoAtual: firestoreData.ingressos?.precoAtual || 394.95,
+              precoProximoLote: firestoreData.ingressos?.precoProximoLote || 444.95,
+              dataProximoLote: firestoreData.ingressos?.dataProximoLote || '2025-07-25',
             },
             indicacoes: {
               total: firestoreData.indicacoes?.total || 0,
@@ -119,7 +160,12 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
           // 🎯 Dados padrão se documento não existir
           console.log('📊 Documento config/tempo_real não encontrado. Usando dados padrão.');
           setData({
-            ingressos: { status: 'em_breve' },
+            ingressos: { 
+              status: 'em_breve',
+              precoAtual: 394.95, // 🏆 1º LOTE - Scale (valor oficial)
+              precoProximoLote: 444.95, // 🏆 2º LOTE - Scale (valor oficial)
+              dataProximoLote: '2025-07-25' // 🏆 Início do 2º lote
+            },
             indicacoes: { total: 0, hoje: 0 },
             fotografos: { total: 0, aprovados: 0 },
             token: {
@@ -143,7 +189,12 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
         console.error('❌ Erro ao carregar dados em tempo real:', error);
         // 🎯 Fallback em caso de erro
         setData({
-          ingressos: { status: 'em_breve' },
+          ingressos: { 
+            status: 'em_breve',
+            precoAtual: 394.95, // 🏆 1º LOTE - Scale (valor oficial)
+            precoProximoLote: 444.95, // 🏆 2º LOTE - Scale (valor oficial)
+            dataProximoLote: '2025-07-25' // 🏆 Início do 2º lote
+          },
           indicacoes: { total: 0, hoje: 0 },
           fotografos: { total: 0, aprovados: 0 },
           token: {
@@ -164,14 +215,48 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
       },
     );
 
-    return () => unsubscribe();
+    // 🏆 CARREGAR DADOS DOS LOTES
+    const unsubscribe2 = onSnapshot(
+      doc(db, 'lotes', 'lotes'),
+      (doc) => {
+        if (doc.exists()) {
+          const lotesData = doc.data();
+          console.log('📊 Dados dos lotes carregados:', lotesData);
+          // Aqui podemos usar os dados dos lotes se necessário
+        }
+      },
+      (error) => {
+        console.error('❌ Erro ao carregar dados dos lotes:', error);
+      }
+    );
+
+    // 🏆 CARREGAR DADOS DAS CATEGORIAS
+    const unsubscribe3 = onSnapshot(
+      doc(db, 'config', 'categorias_competicao'),
+      (doc) => {
+        if (doc.exists()) {
+          const categoriasData = doc.data();
+          console.log('📊 Dados das categorias carregados:', categoriasData);
+          // Aqui podemos usar os dados das categorias se necessário
+        }
+      },
+      (error) => {
+        console.error('❌ Erro ao carregar dados das categorias:', error);
+      }
+    );
+
+    return () => {
+      unsubscribe1();
+      unsubscribe2();
+      unsubscribe3();
+    };
   }, [isPublic]);
 
   useEffect(() => {
     // Contagem regressiva para abertura dos ingressos
     const timer = setInterval(() => {
       const now = new Date();
-      const diff = DATA_ABERTURA_LOTE1.getTime() - now.getTime();
+      const diff = DATAS_LOTES.lote1.inicio.getTime() - now.getTime();
 
       if (diff > 0) {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -187,10 +272,10 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [DATA_ABERTURA_LOTE1]);
+  }, [DATAS_LOTES.lote1.inicio]);
 
   const isIngressosDisponiveis = () => {
-    return new Date() >= DATA_ABERTURA_LOTE1;
+    return new Date() >= DATAS_LOTES.lote1.inicio;
   };
 
   const getIngressosStatus = () => {
@@ -202,25 +287,49 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
 
   const getIngressosText = () => {
     const status = getIngressosStatus();
+    const now = new Date();
+    
+    // 🏆 DETERMINAR LOTE ATUAL E PREÇOS (usando valores do Firestore)
+    let loteAtual = 1;
+    let precoAtual = data.ingressos.precoAtual || 394.95; // Valor do Firestore ou padrão
+    let precoProximoLote = data.ingressos.precoProximoLote || 444.95; // Valor do Firestore ou padrão
+    let limiteLote = data.ingressos.limiteLote || 120;
+    
+    // 🏆 Usar valores oficiais do VALORES-EVENTO.md como fallback
+    if (now >= DATAS_LOTES.lote2.inicio) {
+      loteAtual = 2;
+      precoAtual = DATAS_LOTES.lote2.precoScale;
+      precoProximoLote = DATAS_LOTES.lote3.precoScale;
+      limiteLote = DATAS_LOTES.lote2.limite;
+    } else if (now >= DATAS_LOTES.lote3.inicio) {
+      loteAtual = 3;
+      precoAtual = DATAS_LOTES.lote3.precoScale;
+      precoProximoLote = DATAS_LOTES.lote3.precoScale; // Último lote
+      limiteLote = DATAS_LOTES.lote3.limite;
+    }
+    
+    const economia = precoProximoLote - precoAtual;
+    const vagasRestantes = Math.max(0, (data.ingressos.vagasCategoria || 80) - (data.ingressos.totalTimes || 0));
+    const totalTimes = data.ingressos.totalTimes || 0;
 
     switch (status) {
     case 'em_breve':
       return {
-        title: '🎟️ Ingressos Lote 1',
-        subtitle: `Disponível em ${countdown.days} dias`,
-        description: '⏳ Em breve – Lote 1 abre em X dias',
+        title: '🎟️ Lote 1 - Pré-venda',
+        subtitle: `R$ ${precoAtual.toFixed(2).replace('.', ',')}`,
+        description: `⏰ Economize R$ ${economia.toFixed(2).replace('.', ',')} • Abre em ${countdown.days} dias`,
       };
     case 'disponivel':
       return {
-        title: '🎟️ Ingressos Disponíveis',
-        subtitle: `Lote ${data.ingressos.loteAtual || 1}`,
-        description: `✅ ${data.ingressos.vagasRestantes || 0} vagas restantes`,
+        title: `🎟️ Lote ${loteAtual} - ATIVO`,
+        subtitle: `R$ ${precoAtual.toFixed(2).replace('.', ',')}`,
+        description: `🔥 ${vagasRestantes} vagas restantes • Próximo lote R$ ${precoProximoLote.toFixed(2).replace('.', ',')}`,
       };
     case 'esgotado':
       return {
-        title: '🎟️ Ingressos Esgotados',
-        subtitle: 'Lote 1',
-        description: '❌ Vagas esgotadas',
+        title: '🎟️ Lote Esgotado',
+        subtitle: `R$ ${precoProximoLote.toFixed(2).replace('.', ',')}`,
+        description: '❌ Próximo lote em breve',
       };
     default:
       return {
@@ -353,20 +462,20 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
           <div className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-8 border border-pink-500/30">
             <h3 className="text-xl font-bold text-white mb-4">
               {isIngressosDisponiveis()
-                ? '🎯 Ingressos já estão disponíveis!'
+                ? `🎯 Scale - Lote ${getIngressosText().title.includes('Lote 1') ? '1' : getIngressosText().title.includes('Lote 2') ? '2' : '3'} - R$ ${getIngressosText().subtitle.replace('R$ ', '')}`
                 : '⏰ Prepare-se para a abertura'
               }
             </h3>
             <p className="text-gray-400 mb-6">
               {isIngressosDisponiveis()
-                ? 'Não perca a chance de participar do maior evento de times da América Latina.'
+                ? `🔥 ${getIngressosText().description.split(' vagas')[0].split('🔥 ')[1]} vagas restantes! Próximo lote será R$ ${getIngressosText().description.split('R$ ')[1].split(' ')[0]}`
                 : 'Entre na comunidade oficial e receba notificações em primeira mão.'
               }
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {isIngressosDisponiveis() ? (
                 <a
-                  href="/l/ingresso2025"
+                  href="https://www.brasilgamesscoreboard.com.br/checkout/77e9f9d6-f194-4bc5-bc83-6311699c68a9"
                   className="bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold py-3 px-8 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all duration-200"
                 >
                   🎫 Comprar Ingresso

@@ -3,98 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline - CERRADØ INTERBOX 2025</title>
+    <title>Offline - Interbox 2025</title>
     <style>
-        body {
+        * {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            padding: 20px;
         }
-        
+
         .offline-container {
             text-align: center;
-            max-width: 400px;
-            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
         }
-        
+
         .offline-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-        
-        .offline-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-        
-        .offline-message {
-            font-size: 1rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        
-        .retry-button {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .retry-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1rem;
-            background: rgba(255, 255, 255, 0.1);
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: linear-gradient(45deg, #fb05e4, #00259f);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 60px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .offline-title {
+            font-size: 2.5rem;
             font-weight: bold;
-            font-size: 1.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fb05e4, #00259f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .offline-message {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .offline-features {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .feature-list li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: #10B981;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .retry-button {
+            background: linear-gradient(45deg, #fb05e4, #00259f);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 15px;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(251, 5, 228, 0.3);
+        }
+
+        .home-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .home-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .connection-status {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .status-online {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10B981;
+        }
+
+        .status-offline {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #EF4444;
+        }
+
+        .cached-content {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 480px) {
+            .offline-title {
+                font-size: 2rem;
+            }
+            
+            .offline-message {
+                font-size: 1rem;
+            }
+            
+            .retry-button, .home-button {
+                display: block;
+                width: 100%;
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
 <body>
     <div class="offline-container">
-        <div class="logo">I</div>
-        <div class="offline-icon">📡</div>
-        <h1 class="offline-title">Sem Conexão</h1>
-        <p class="offline-message">
-            Parece que você está offline. Verifique sua conexão com a internet e tente novamente.
-        </p>
-        <button class="retry-button" onclick="window.location.reload()">
-            Tentar Novamente
-        </button>
-    </div>
-    
-    <script>
-        // Verificar conexão periodicamente
-        setInterval(() => {
-            if (navigator.onLine) {
-                window.location.reload();
-            }
-        }, 5000);
+        <div class="offline-icon">📱</div>
         
-        // Recarregar quando conexão for restaurada
+        <h1 class="offline-title">Sem Conexão</h1>
+        
+        <p class="offline-message">
+            Você está offline, mas não se preocupe! O Interbox 2025 continua funcionando.
+        </p>
+        
+        <div class="offline-features">
+            <h3 style="margin-bottom: 15px; color: #fb05e4;">Funcionalidades Disponíveis:</h3>
+            <ul class="feature-list">
+                <li>Visualizar perfil e configurações</li>
+                <li>Acessar conteúdo em cache</li>
+                <li>Preparar formulários offline</li>
+                <li>Ver leaderboard salvo</li>
+                <li>Navegar pelas páginas principais</li>
+            </ul>
+        </div>
+        
+        <div>
+            <button class="retry-button" onclick="retryConnection()">
+                🔄 Tentar Novamente
+            </button>
+            <a href="/" class="home-button">
+                🏠 Ir para Home
+            </a>
+        </div>
+        
+        <div id="connectionStatus" class="connection-status status-offline">
+            📡 Verificando conexão...
+        </div>
+        
+        <div class="cached-content">
+            <p>💾 Conteúdo em cache disponível</p>
+            <p>🔄 Sincronização automática quando online</p>
+        </div>
+    </div>
+
+    <script>
+        // Verificar status da conexão
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            
+            if (navigator.onLine) {
+                statusElement.className = 'connection-status status-online';
+                statusElement.innerHTML = '✅ Conectado - Sincronizando dados...';
+                
+                // Redirecionar após 2 segundos se estiver online
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            } else {
+                statusElement.className = 'connection-status status-offline';
+                statusElement.innerHTML = '❌ Sem conexão com a internet';
+            }
+        }
+
+        // Tentar reconectar
+        function retryConnection() {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.innerHTML = '🔄 Verificando conexão...';
+            
+            // Simular verificação
+            setTimeout(() => {
+                updateConnectionStatus();
+            }, 1000);
+        }
+
+        // Event listeners para mudanças de conectividade
         window.addEventListener('online', () => {
-            window.location.reload();
+            updateConnectionStatus();
         });
+
+        window.addEventListener('offline', () => {
+            updateConnectionStatus();
+        });
+
+        // Verificar status inicial
+        updateConnectionStatus();
+
+        // Verificar periodicamente
+        setInterval(updateConnectionStatus, 5000);
+
+        // Service Worker - registrar se não estiver registrado
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('✅ Service Worker registrado:', registration);
+                })
+                .catch(error => {
+                    console.error('❌ Erro ao registrar Service Worker:', error);
+                });
+        }
+
+        // Analytics offline
+        function trackOfflineEvent(event, data) {
+            const eventData = {
+                event,
+                data,
+                timestamp: Date.now(),
+                page: 'offline'
+            };
+            
+            // Salvar no localStorage para sincronizar depois
+            const offlineEvents = JSON.parse(localStorage.getItem('offlineEvents') || '[]');
+            offlineEvents.push(eventData);
+            localStorage.setItem('offlineEvents', JSON.stringify(offlineEvents));
+        }
+
+        // Track página offline
+        trackOfflineEvent('page_view', { page: 'offline' });
+
+        // Track tentativa de reconexão
+        window.retryConnection = function() {
+            trackOfflineEvent('retry_connection', { timestamp: Date.now() });
+            retryConnection();
+        };
     </script>
 </body>
 </html> 

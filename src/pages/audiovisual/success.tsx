@@ -45,8 +45,8 @@ export default function AudiovisualSuccessPage() {
   return (
     <>
       <SEOHead
-        title="Pagamento Confirmado - CERRADØ INTERBOX 2025"
-        description="Sua inscrição audiovisual foi confirmada com sucesso! Bem-vindo ao time da CERRADØ INTERBOX 2025."
+        title="Pagamento Confirmado - INTERBØX 2025"
+        description="Sua inscrição audiovisual foi confirmada com sucesso! Bem-vindo ao time INTERBØX 2025."
         image="/images/og-interbox.png"
         type="website"
       />
@@ -87,7 +87,7 @@ export default function AudiovisualSuccessPage() {
 
               <p className="text-gray-600 mb-8 text-lg">
                 Sua inscrição audiovisual foi processada com sucesso.
-                Bem-vindo ao time da <span className="font-bold text-pink-600">CERRADØ INTERBOX 2025</span>!
+                Bem-vindo ao time da <span className="font-bold text-pink-600">INTERBØX 2025</span>!
               </p>
 
               {/* Detalhes do pagamento */}

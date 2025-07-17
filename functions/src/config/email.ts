@@ -228,7 +228,7 @@ export const emailTemplates = {
   // Template para boas-vindas
   boasVindas: (data: any) => {
     const content = `
-      <h2 style="color: #ec4899; margin-top: 0;">🎉 Bem-vindo ao Interbox 2025!</h2>
+      <h2 style="color: #ec4899; margin-top: 0;">🎉 Bem-vindo ao INTERBØX 2025!</h2>
       
       <p>Olá <strong>${data.userName}</strong>,</p>
       
@@ -249,7 +249,7 @@ export const emailTemplates = {
       <a href="https://interbox2025.com" class="button">Acessar o App</a>
     `;
 
-    return emailTemplates.base(content, "Bem-vindo ao Interbox 2025");
+    return emailTemplates.base(content, "Bem-vindo ao INTERBØX 2025");
   },
 };
 

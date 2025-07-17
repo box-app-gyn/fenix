@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, useParams, Navigate } from 'rea
 import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useMobile } from './hooks/useMobile';
+import { usePWA } from './hooks/usePWA';
+import { useOfflineGamification } from './utils/offlineGamification';
 import LoginPage from './pages/Login';
 import Home from './pages/index';
 import Header from './components/Header';
@@ -43,9 +45,130 @@ import { useRoleRedirect } from './hooks/useRoleRedirect';
 // Componente interno que usa o hook dentro do contexto do Router
 function AppContent() {
   useRoleRedirect();
+  
+  // PWA hooks
+  const {
+    isOnline,
+    cacheCriticalData,
+    syncInBackground,
+    syncAnalytics,
+    requestNotificationPermission,
+    trackEvent,
+  } = usePWA();
+  
+  const {
+    syncOfflineActions,
+    hasPendingActions,
+    getOfflineStats,
+  } = useOfflineGamification();
+
+  const [offlineStats, setOfflineStats] = useState({
+    pendingActions: 0,
+    pendingGamification: 0,
+    lastSync: null as number | null,
+  });
+
+  // Inicialização PWA
+  useEffect(() => {
+    const initializePWA = async () => {
+      try {
+        // Cachear dados críticos
+        await cacheCriticalData();
+        
+        // Solicitar permissão de notificação
+        if (Notification.permission === 'default') {
+          setTimeout(async () => {
+            await requestNotificationPermission();
+          }, 5000); // 5 segundos após carregamento
+        }
+        
+        // Track inicialização
+        trackEvent('app_initialized', {
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          online: navigator.onLine,
+        });
+        
+        console.log('🚀 PWA inicializada com sucesso!');
+      } catch (error) {
+        console.error('❌ Erro ao inicializar PWA:', error);
+      }
+    };
+
+    initializePWA();
+  }, [cacheCriticalData, requestNotificationPermission, trackEvent]);
+
+  // Monitorar mudanças de conectividade
+  useEffect(() => {
+    const handleOnline = async () => {
+      console.log('🌐 Conexão restaurada - sincronizando dados...');
+      
+      try {
+        // Verificar se há ações offline pendentes
+        const hasPending = await hasPendingActions();
+        if (hasPending) {
+          console.log('🔄 Sincronizando ações offline...');
+          await syncOfflineActions();
+          await syncInBackground();
+          await syncAnalytics();
+        }
+        
+        // Atualizar estatísticas
+        const stats = await getOfflineStats();
+        setOfflineStats(stats);
+        
+        trackEvent('connection_restored', {
+          timestamp: Date.now(),
+          pendingActions: stats.pendingActions,
+          pendingGamification: stats.pendingGamification,
+        });
+      } catch (error) {
+        console.error('❌ Erro ao sincronizar dados:', error);
+      }
+    };
+
+    if (isOnline) {
+      handleOnline();
+    }
+  }, [isOnline, syncOfflineActions, syncInBackground, syncAnalytics, hasPendingActions, getOfflineStats, trackEvent]);
+
+  // Verificar estatísticas offline periodicamente
+  useEffect(() => {
+    const checkOfflineStats = async () => {
+      try {
+        const stats = await getOfflineStats();
+        setOfflineStats(stats);
+      } catch (error) {
+        console.error('❌ Erro ao verificar estatísticas offline:', error);
+      }
+    };
+
+    checkOfflineStats();
+    const interval = setInterval(checkOfflineStats, 30000); // 30s
+    
+    return () => clearInterval(interval);
+  }, [getOfflineStats]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Indicador de status offline */}
+      {!isOnline && (
+        <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 px-4 z-50">
+          <span className="text-sm font-medium">
+            📡 Modo offline - {offlineStats.pendingActions} ações pendentes
+          </span>
+        </div>
+      )}
+
+      {/* Indicador de ações offline pendentes */}
+      {isOnline && offlineStats.pendingActions > 0 && (
+        <div className="fixed top-0 left-0 right-0 bg-blue-500 text-white text-center py-2 px-4 z-50">
+          <span className="text-sm font-medium">
+            🔄 Sincronizando {offlineStats.pendingActions} ações offline...
+          </span>
+        </div>
+      )}
+
       <Header />
       <main className="flex-1">
         <Routes>
@@ -69,8 +192,6 @@ function AppContent() {
               <Hub />
             </ProtectedRoute>
           } />
-
-
 
           <Route path="/leaderboard" element={
             <ProtectedRoute>
@@ -249,121 +370,105 @@ function App() {
     }
   }, [user]);
 
+  // Verificar se precisa fazer upload da CNH (apenas para os 2 primeiros admins)
+  useEffect(() => {
+    if (user && user.role === 'admin') {
+      const adminCNHUploaded = localStorage.getItem('adminCNHUploaded');
+      if (!adminCNHUploaded) {
+        setShowCNHUpload(true);
+      }
+    }
+  }, [user]);
+
   const handleVideoComplete = () => {
+    console.log('🎬 Video Intro - Completo');
+    
     // Marcar que viu o vídeo hoje
     const today = new Date().toDateString();
     localStorage.setItem('lastVideoDate', today);
-    console.log('✅ Video Intro Completed:', { user: user?.email, date: today });
+    
     setShowVideoIntro(false);
   };
 
-  // Verificar se está tentando acessar um dashboard administrativo ou formulário audiovisual
-  const isAdminRoute = window.location.pathname === '/admin'
-                      || window.location.pathname === '/dev'
-                      || window.location.pathname === '/marketing'
-                      || window.location.pathname === '/admin-painel'
-                      || window.location.pathname === '/dashboard-evento'
-                      || window.location.pathname === '/audiovisual/form';
-
-  // Se não é mobile nem tablet, mostrar aviso de desktop
-  if (!isMobile && !isTablet) {
-    if (window.location.pathname === '/audiovisual/form') {
-      // Para formulário audiovisual, mostrar versão específica
-      return <DesktopWarning isAudiovisualForm={true} />;
-    } else if (isAdminRoute) {
-      // Para rotas administrativas, mostrar versão que permite acesso
-      return <DesktopWarning allowAdminAccess={true} />;
-    } else {
-      // Para outras rotas, mostrar aviso de acesso mobile exclusivo
-      return <DesktopWarning allowAdminAccess={false} />;
-    }
-  }
+  const handleCNHUploadComplete = () => {
+    console.log('📄 CNH Upload - Completo');
+    localStorage.setItem('adminCNHUploaded', 'true');
+    setShowCNHUpload(false);
+  };
 
   if (loading) {
-    console.log('⏳ App.tsx - Mostrando LoadingScreen');
-    return <LoadingScreen message="Conectando com Firebase..." />;
+    return <LoadingScreen />;
   }
 
-  // Verificar se admin precisa fazer upload de CNH
-  if (user && user.adminVerification?.required && !showCNHUpload) {
-    setShowCNHUpload(true);
-  }
-
-  // Mostrar upload de CNH se necessário
-  if (user && showCNHUpload && user.adminVerification?.required) {
-    return (
-      <CNHUpload
-        userId={user.uid}
-        onComplete={() => {
-          setShowCNHUpload(false);
-          // Recarregar dados do usuário
-          window.location.reload();
-        }}
-      />
-    );
-  }
-
-  // Mostrar vídeo de intro apenas para usuários logados no primeiro acesso do dia
-  if (user && showVideoIntro) {
-    return <VideoIntro onComplete={handleVideoComplete} />;
-  }
-
-  // Se não está logado, redirecionar para login
+  // Se não está logado, mostrar página de login
   if (!user) {
     return (
-      <>
+      <FirebaseErrorBoundary>
         <Router>
-          <Routes>
-            {/* Redirecionar tudo para login se não estiver logado */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/home" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/hub" element={<Navigate to="/login" replace />} />
-            <Route path="/leaderboard" element={<Navigate to="/login" replace />} />
-            <Route path="/sobre" element={<Navigate to="/login" replace />} />
-            <Route path="/admin" element={<Navigate to="/login" replace />} />
-            <Route path="/admin-painel" element={<Navigate to="/login" replace />} />
-            <Route path="/dashboard-evento" element={<Navigate to="/login" replace />} />
-            <Route path="/dev" element={<Navigate to="/login" replace />} />
-            <Route path="/marketing" element={<Navigate to="/login" replace />} />
-            <Route path="/audiovisual" element={<Navigate to="/login" replace />} />
-            <Route path="/links" element={<Navigate to="/login" replace />} />
-            <Route path="/l/:shortCode" element={<LinkRedirectWrapper />} />
-            <Route path="/selecao-cadastro" element={<Navigate to="/login" replace />} />
-            <Route path="/cadastro-atleta" element={<Navigate to="/login" replace />} />
-            <Route path="/cadastro-jurado" element={<Navigate to="/login" replace />} />
-            <Route path="/cadastro-midialouca" element={<Navigate to="/login" replace />} />
-            <Route path="/cadastro-curioso" element={<Navigate to="/login" replace />} />
-            <Route path="/setup-profile" element={<Navigate to="/login" replace />} />
-            <Route path="/perfil" element={<Navigate to="/login" replace />} />
-            <Route path="/cluster" element={<Navigate to="/login" replace />} />
-
-            {/* Fallback para login */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
+          <div className="min-h-screen bg-gray-50">
+            <Routes>
+              <Route path="/" element={<LoginPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/audiovisual" element={<Audiovisual />} />
+              <Route path="/audiovisual/form" element={<AudiovisualForm />} />
+              <Route path="/audiovisual/success" element={<AudiovisualSuccess />} />
+              <Route path="/l/:shortCode" element={<LinkRedirectWrapper />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+            <CookieBanner />
+          </div>
         </Router>
-        <CacheDebug />
-        <CookieBanner />
-      </>
+      </FirebaseErrorBoundary>
     );
   }
 
-  // O hook useRoleRedirect agora controla o fluxo de redirecionamento
-  // Não precisamos mais da lógica hardcoded aqui
+  // Se está logado mas não tem perfil completo, mostrar setup
+  if (user && !user.profileComplete) {
+    return (
+      <FirebaseErrorBoundary>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <Routes>
+              <Route path="/setup-profile" element={<SetupProfile />} />
+              <Route path="*" element={<Navigate to="/setup-profile" replace />} />
+            </Routes>
+          </div>
+        </Router>
+      </FirebaseErrorBoundary>
+    );
+  }
 
+  // App principal com todas as funcionalidades
   return (
     <FirebaseErrorBoundary>
       <Router>
-        <AppContent />
+        <div className="min-h-screen bg-gray-50">
+          {/* Video Intro */}
+          {showVideoIntro && (
+            <VideoIntro onComplete={handleVideoComplete} />
+          )}
+
+          {/* CNH Upload para admins */}
+          {showCNHUpload && (
+            <CNHUpload onComplete={handleCNHUploadComplete} userId={user?.uid || ''} />
+          )}
+
+          {/* Desktop Warning */}
+          {!isMobile && !isTablet && (
+            <DesktopWarning />
+          )}
+
+          {/* App Content */}
+          <AppContent />
+        </div>
       </Router>
     </FirebaseErrorBoundary>
   );
 }
 
-// Wrapper para LinkRedirect que extrai o shortCode dos parâmetros da URL
 function LinkRedirectWrapper() {
   const { shortCode } = useParams();
-  return shortCode ? <LinkRedirect shortCode={shortCode} /> : null;
+  return <LinkRedirect shortCode={shortCode || ''} />;
 }
 
 export default App;

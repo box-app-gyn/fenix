@@ -225,6 +225,7 @@ https://cerradointerbox.com.br/l/instagram
 - **Acessibilidade**: Contraste e navegação por teclado
 
 ### Estados Visuais
+
 - **Loading**: Spinners e skeletons
 - **Sucesso**: Feedback verde com animações
 - **Erro**: Mensagens claras em vermelho

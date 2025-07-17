@@ -206,16 +206,16 @@ class EmailService {
             let subject = 'Interbox 2025';
             switch (templateName) {
                 case 'pedido':
-                    subject = 'Pedido Confirmado - Interbox 2025';
+                    subject = 'Pedido Confirmado - INTERBØX 2025';
                     break;
                 case 'audiovisual':
-                    subject = 'Status da Inscrição - Interbox 2025';
+                    subject = 'Status da Inscrição - INTERBØX 2025';
                     break;
-                case 'admin':
-                    subject = 'Notificação - Interbox 2025';
+                case 'admin': 
+                    subject = 'Notificação - INTERBØX 2025';
                     break;
                 case 'boasVindas':
-                    subject = 'Bem-vindo ao Interbox 2025';
+                    subject = 'Bem-vindo ao INTERBØX 2025';
                     break;
             }
             // Enviar email

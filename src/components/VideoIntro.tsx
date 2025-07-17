@@ -131,11 +131,8 @@ export default function VideoIntro({ onComplete }: VideoIntroProps) {
                   className="text-center"
                 >
                   <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-                    Interbox 2025
+                    $BOX
                   </h1>
-                  <p className="text-xl text-gray-300">
-                    Bem-vindo à experiência completa
-                  </p>
                 </motion.div>
               </motion.div>
             )}

@@ -73,7 +73,7 @@ firebase functions:config:set sendgrid.from="noreply@interbox2025.com"
 
 ### 4. Boas-vindas (`boasVindas`)
 
-- **Assunto**: "Bem-vindo ao Interbox 2025"
+- **Assunto**: "Bem-vindo ao INTERBØX 2025"
 - **Uso**: Email de boas-vindas para novos usuários
 - **Dados**: userName
 
@@ -102,7 +102,7 @@ await enviaEmailBoasVindas({
   userName: "Nome do Usuário",
   tipo: "admin",
   dadosAdicionais: {
-    message: "Bem-vindo ao Interbox 2025!"
+    message: "Bem-vindo ao INTERBØX 2025!"
   }
 });
 ```

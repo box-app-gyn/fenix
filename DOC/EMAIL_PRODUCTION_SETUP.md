@@ -112,12 +112,12 @@ firebase functions:log --only webhookFlowPay
 
 ### 3. **Email de Boas-vindas**
 - **Trigger:** Novo usuário se registra
-- **Assunto:** "Bem-vindo ao Interbox 2025"
+- **Assunto:** "Bem-vindo ao INTERBØX 2025"
 - **Conteúdo:** Boas-vindas, próximos passos, recursos
 
 ### 4. **Notificações Administrativas**
 - **Trigger:** Eventos importantes do sistema
-- **Assunto:** "Notificação - Interbox 2025"
+- **Assunto:** "Notificação -  INTERBØX 2025"
 - **Conteúdo:** Alertas, atualizações, informações importantes
 
 ## 🎨 Personalização de Templates

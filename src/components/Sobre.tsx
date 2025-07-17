@@ -1,60 +1,38 @@
 
-import { motion } from 'framer-motion'
-import { AudiovisualInvite } from './CallToAction'
+import { motion } from "framer-motion";
 
-const Sobre: React.FC = () => {
+export default function Sobre() {
   return (
-    <>
-      <section id="sobre" className="bg-white text-gray-900 py-20 px-6 md:px-16">
-        <div className="max-w-6xl mx-auto text-center">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight"
-          >
-            Você não escolheu competir. Você foi convocado.
-          </motion.h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-pink-500 to-cyan-400 mx-auto mb-8 rounded-full" />
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="text-xl md:text-2xl text-cyan-600 font-semibold mb-6"
-          >
-            CERRADØ 𝗜𝗡𝗧𝗘𝗥𝗕𝗢𝗫 é um ecossistema vivo.
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            viewport={{ once: true }}
-            className="text-lg md:text-xl text-gray-700 max-w-3xl mx-auto mb-12"
-          >
-            Mais que competição, ecosistema de pessoas em comunidade, propósito e pertencimento.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            viewport={{ once: true }}
-            className="mt-16"
-          >
-            <p className="text-lg md:text-xl text-gray-800 font-medium mb-6">
-              Pré-temporada iniciada digitalmente.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      <AudiovisualInvite />
-    </>
-  )
+    <section
+      id="sobre"
+      className="relative py-20 px-6 md:px-16 text-white"
+      style={{
+        backgroundImage: "url(/images/bg_1.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backdropFilter: "blur(4px)",
+      }}
+    >
+      <div className="max-w-3xl mx-auto text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-4xl md:text-5xl font-bold mb-6"
+        >
+          Sobre o Interbox
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="text-lg md:text-xl mb-4"
+        >
+          Mais que competição, ecossistema de pessoas em comunidade, propósito e pertencimento.
+        </motion.p>
+      </div>
+    </section>
+  );
 }
-
-export default Sobre

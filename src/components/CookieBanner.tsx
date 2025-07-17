@@ -35,17 +35,16 @@ export default function CookieBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-black/95 text-white p-4 z-50 border-t border-gray-700">
-      <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg mb-2">🍪 Política de Cookies</h3>
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 max-w-xl w-[95vw] 
+                  bg-black/70 backdrop-blur-md rounded-xl shadow-2xl border border-white/10 p-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex-1 text-center sm:text-left">
+          <h3 className="font-semibold text-lg mb-1">🍪 Política de Cookies</h3>
           <p className="text-sm text-gray-300">
-            Utilizamos cookies para melhorar sua experiência, analisar o tráfego do site e personalizar conteúdo.
-            Ao continuar navegando, você concorda com nossa política de cookies.
+            Usamos cookies para melhorar sua experiência. Ao continuar, você concorda com nossa política.
           </p>
         </div>
-
-        <div className="flex gap-3 flex-shrink-0">
+        <div className="flex gap-2 mt-3 sm:mt-0">
           <button
             onClick={handleDecline}
             className="px-4 py-2 text-sm border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"

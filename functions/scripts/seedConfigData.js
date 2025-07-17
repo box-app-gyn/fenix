@@ -15,6 +15,14 @@ async function seedConfigData() {
   try {
     console.log("🌱 Iniciando seed dos dados de configuração...");
 
+    // Verificar se o documento já existe
+    const configDoc = await db.collection("config").doc("tempo_real").get();
+    
+    if (configDoc.exists) {
+      console.log("⚠️ Documento config/tempo_real já existe. Atualizando estrutura...");
+      return await updateExistingConfig();
+    }
+
     // Dados iniciais para config/tempo_real
     const tempoRealData = {
       // 📊 ESTATÍSTICAS GERAIS
@@ -99,6 +107,49 @@ async function seedConfigData() {
           achievements: true,
         },
       },
+
+      // 🎯 Dados específicos do evento (compatível com componente TempoReal)
+      ingressos: {
+        status: 'em_breve',
+        dataAbertura: '2025-07-13T00:00:00-03:00',
+        loteAtual: 1,
+        vagasRestantes: 500,
+        precoAtual: 394.95,
+        precoProximoLote: 444.95,
+        dataProximoLote: '2025-07-25',
+        categoriaAtiva: 'Scale',
+        vagasCategoria: 80,
+        totalTimes: 0,
+        limiteLote: 120,
+      },
+
+      indicacoes: {
+        total: 0,
+        hoje: 0,
+      },
+
+      fotografos: {
+        total: 0,
+        aprovados: 0,
+      },
+
+      // 🎯 Sistema de Tokens $BOX (compatível com componente TempoReal)
+      token: {
+        box: {
+          total: 0,
+          media: 0,
+          holders: 0,
+          marketCap: 0,
+        },
+      },
+
+      // 🎯 Controle de exibição na home
+      mostrarNaHome: {
+        ingressos: true,
+        token: true,
+        indicacoes: false,
+        fotografos: false,
+      },
       
       // 🕒 TIMESTAMPS
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -113,11 +164,98 @@ async function seedConfigData() {
     console.log("🎯 Tokens $BOX configurados");
     console.log("🏆 Sistema de ranking inicializado");
     console.log("📈 Métricas em tempo real ativas");
+    console.log("🎫 Dados do evento configurados");
     
     return { success: true, message: "Configuração inicializada com sucesso" };
     
   } catch (error) {
     console.error("❌ Erro ao criar dados de configuração:", error);
+    throw error;
+  }
+}
+
+/**
+ * Atualizar configuração existente com novos campos
+ */
+async function updateExistingConfig() {
+  try {
+    console.log("🔄 Atualizando configuração existente...");
+    
+    const currentData = (await db.collection("config").doc("tempo_real").get()).data();
+    
+    // Adicionar campos que podem estar faltando
+    const updates = {
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    };
+
+    // Adicionar campos de ingressos se não existirem
+    if (!currentData.ingressos) {
+      updates.ingressos = {
+        status: 'em_breve',
+        dataAbertura: '2025-07-13T00:00:00-03:00',
+        loteAtual: 1,
+        vagasRestantes: 500,
+        precoAtual: 394.95,
+        precoProximoLote: 444.95,
+        dataProximoLote: '2025-07-25',
+        categoriaAtiva: 'Scale',
+        vagasCategoria: 80,
+        totalTimes: 0,
+        limiteLote: 120,
+      };
+    }
+
+    // Adicionar campos de indicacoes se não existirem
+    if (!currentData.indicacoes) {
+      updates.indicacoes = {
+        total: 0,
+        hoje: 0,
+      };
+    }
+
+    // Adicionar campos de fotografos se não existirem
+    if (!currentData.fotografos) {
+      updates.fotografos = {
+        total: 0,
+        aprovados: 0,
+      };
+    }
+
+    // Adicionar campos de token se não existirem
+    if (!currentData.token) {
+      updates.token = {
+        box: {
+          total: 0,
+          media: 0,
+          holders: 0,
+          marketCap: 0,
+        },
+      };
+    }
+
+    // Adicionar campos de mostrarNaHome se não existirem
+    if (!currentData.mostrarNaHome) {
+      updates.mostrarNaHome = {
+        ingressos: true,
+        token: true,
+        indicacoes: false,
+        fotografos: false,
+      };
+    }
+
+    // Aplicar atualizações
+    if (Object.keys(updates).length > 1) { // Mais que apenas updatedAt
+      await db.collection("config").doc("tempo_real").update(updates);
+      console.log("✅ Configuração atualizada com sucesso!");
+      console.log("📊 Campos adicionados:", Object.keys(updates).filter(key => key !== 'updatedAt'));
+    } else {
+      console.log("✅ Configuração já está atualizada!");
+    }
+    
+    return { success: true, message: "Configuração atualizada com sucesso" };
+    
+  } catch (error) {
+    console.error("❌ Erro ao atualizar configuração:", error);
     throw error;
   }
 }
@@ -136,32 +274,65 @@ async function checkConfigExists() {
 }
 
 /**
- * Função principal para executar o seed
+ * Função para sincronizar dados de outras coleções
  */
-async function main() {
+async function syncDataFromCollections() {
   try {
-    const exists = await checkConfigExists();
+    console.log("🔄 Sincronizando dados de outras coleções...");
+
+    // Sincronizar dados de usuários
+    const usersSnapshot = await db.collection("users").get();
+    const totalUsers = usersSnapshot.size;
     
-    if (exists) {
-      console.log("⚠️  Configuração já existe. Sobrescrevendo...");
-    }
+    // Sincronizar dados de times
+    const teamsSnapshot = await db.collection("teams").get();
+    const totalTimes = teamsSnapshot.size;
     
-    await seedConfigData();
-    console.log("🎉 Seed concluído com sucesso!");
+    // Sincronizar dados de audiovisual
+    const audiovisualSnapshot = await db.collection("audiovisual").get();
+    const totalFotografos = audiovisualSnapshot.size;
+    const aprovadosFotografos = audiovisualSnapshot.docs.filter(doc => 
+      doc.data().status === 'aprovado'
+    ).length;
+
+    // Atualizar dados sincronizados
+    await db.collection("config").doc("tempo_real").update({
+      "stats.totalUsers": totalUsers,
+      "ingressos.totalTimes": totalTimes,
+      "fotografos.total": totalFotografos,
+      "fotografos.aprovados": aprovadosFotografos,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log("✅ Dados sincronizados com sucesso!");
+    console.log(`- Usuários: ${totalUsers}`);
+    console.log(`- Times: ${totalTimes}`);
+    console.log(`- Fotógrafos: ${totalFotografos} (${aprovadosFotografos} aprovados)`);
     
+    return true;
   } catch (error) {
-    console.error("💥 Erro no seed:", error);
-    process.exit(1);
+    console.error("❌ Erro ao sincronizar dados:", error);
+    return false;
   }
 }
 
 // Executar se chamado diretamente
 if (require.main === module) {
-  main();
+  seedConfigData()
+    .then(() => syncDataFromCollections())
+    .then(() => {
+      console.log("🎉 Processo de seed concluído!");
+      process.exit(0);
+    })
+    .catch((error) => {
+      console.error("💥 Erro no processo:", error);
+      process.exit(1);
+    });
 }
 
 module.exports = {
   seedConfigData,
+  updateExistingConfig,
   checkConfigExists,
-  main,
+  syncDataFromCollections,
 }; 
