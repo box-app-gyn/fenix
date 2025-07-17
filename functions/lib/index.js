@@ -18,6 +18,9 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 var __importStar = (this && this.__importStar) || (function () {
     var ownKeys = function(o) {
         ownKeys = Object.getOwnPropertyNames || function (o) {
@@ -37,11 +40,11 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validaAudiovisual = exports.criarInscricaoTime = exports.testFunction = void 0;
-// Importar apenas funções essenciais para teste
-// export * from './teams';
-// export * from './pedidos';
-// export * from './audiovisual';
-// export * from './audiovisual-inscricao';
+// Importar funções existentes
+__exportStar(require("./teams"), exports);
+__exportStar(require("./pedidos"), exports);
+__exportStar(require("./audiovisual"), exports);
+__exportStar(require("./audiovisual-inscricao"), exports);
 // Dashboard API - Removida para simplificar
 // ============================================================================
 // FUNÇÕES LEGADAS (mantidas para compatibilidade)

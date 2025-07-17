@@ -38,15 +38,17 @@ async function checkExistingAudiovisual(email: string): Promise<boolean> {
   return !existing.empty;
 }
 
-export const criarInscricaoAudiovisual = functions.https.onCall(async (data: AudiovisualInscricaoData, context) => {
+export const criarInscricaoAudiovisual = functions.https.onCall(async (request, context) => {
+  const data = request.data as AudiovisualInscricaoData;
+  
   const contextData = {
     functionName: "criarInscricaoAudiovisual",
-    userId: context.auth?.uid,
+    userId: context?.auth?.uid,
   };
 
   try {
     // Verificar autenticação
-    if (!context.auth) {
+    if (!context?.auth) {
       console.log("Tentativa de inscrição não autenticada", contextData);
       throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
     }

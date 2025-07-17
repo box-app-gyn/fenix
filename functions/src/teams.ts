@@ -1,176 +1,231 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-
 const db = admin.firestore();
 
-interface TeamInvite {
-  teamId: string;
-  userId: string;
-  status: "pending" | "accepted" | "rejected";
-  createdAt: admin.firestore.Timestamp;
-}
-
-export const enviarConviteTime = functions.https.onCall(async (data: { teamId: string; userId: string }, context) => {
+export const enviarConviteTime = functions.https.onCall(async (request, context) => {
+  const data = request.data as { teamId: string; userId: string };
+  
   const contextData = {
     functionName: "enviarConviteTime",
-    userId: context.auth?.uid,
+    userId: context?.auth?.uid,
   };
 
   try {
-    if (!context.auth) {
+    // Verificar autenticação
+    if (!context?.auth) {
+      console.log("Tentativa de convite não autenticada", contextData);
       throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
     }
 
     const { teamId, userId } = data;
 
-    // Verificar se o usuário atual é dono do time
-    const teamDoc = await db.collection("teams").doc(teamId).get();
+    // Verificar se o time existe e se o usuário é o dono
+    const teamDoc = await db.collection("times").doc(teamId).get();
     if (!teamDoc.exists || teamDoc.data()?.ownerId !== context.auth.uid) {
-      throw new functions.https.HttpsError("permission-denied", "Apenas o dono do time pode enviar convites");
+      throw new functions.https.HttpsError("permission-denied", "Não autorizado");
     }
 
-    // Verificar se já existe convite
+    // Verificar se o usuário já é membro
+    const teamData = teamDoc.data();
+    if (teamData?.members?.includes(userId)) {
+      throw new functions.https.HttpsError("already-exists", "Usuário já é membro do time");
+    }
+
+    // Verificar se já existe convite pendente
     const existingInvite = await db
-        .collection("team_invites")
-        .where("teamId", "==", teamId)
-        .where("userId", "==", userId)
-        .where("status", "==", "pending")
-        .limit(1)
-        .get();
+      .collection("convites_times")
+      .where("teamId", "==", teamId)
+      .where("userId", "==", userId)
+      .where("status", "==", "pending")
+      .limit(1)
+      .get();
 
     if (!existingInvite.empty) {
-      throw new functions.https.HttpsError("already-exists", "Convite já enviado para este usuário");
+      throw new functions.https.HttpsError("already-exists", "Convite já enviado");
     }
 
     // Criar convite
-    await db.collection("team_invites").add({
+    const conviteRef = await db.collection("convites_times").add({
       teamId,
       userId,
       status: "pending",
-      createdAt: admin.firestore.Timestamp.now(),
       enviadoPor: context.auth.uid,
+      enviadoEm: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    console.log("Convite de time enviado", { teamId, userId }, contextData);
-    return { success: true };
+    console.log("Convite de time enviado", {
+      conviteId: conviteRef.id,
+      teamId,
+      userId,
+      contextData,
+    });
+
+    return {
+      success: true,
+      conviteId: conviteRef.id,
+    };
   } catch (error: any) {
-    console.error("Erro ao enviar convite de time", { error: error.message }, contextData);
+    console.error("Erro ao enviar convite de time", {
+      error: error.message,
+      contextData,
+    });
     throw error;
   }
 });
 
-export const responderConviteTime = functions.https.onCall(async (data: { inviteId: string; resposta: "accept" | "reject" }, context) => {
+export const responderConviteTime = functions.https.onCall(async (request, context) => {
+  const data = request.data as { inviteId: string; resposta: "accept" | "reject" };
+  
   const contextData = {
     functionName: "responderConviteTime",
-    userId: context.auth?.uid,
+    userId: context?.auth?.uid,
   };
 
   try {
-    if (!context.auth) {
+    // Verificar autenticação
+    if (!context?.auth) {
+      console.log("Tentativa de resposta não autenticada", contextData);
       throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
     }
 
     const { inviteId, resposta } = data;
 
     // Buscar convite
-    const inviteDoc = await db.collection("team_invites").doc(inviteId).get();
+    const inviteDoc = await db.collection("convites_times").doc(inviteId).get();
     if (!inviteDoc.exists || inviteDoc.data()?.userId !== context.auth.uid) {
       throw new functions.https.HttpsError("not-found", "Convite não encontrado");
     }
 
-    const inviteData = inviteDoc.data() as TeamInvite;
+    const inviteData = inviteDoc.data();
 
     // Atualizar status do convite
-    await db.collection("team_invites").doc(inviteId).update({
+    await inviteDoc.ref.update({
       status: resposta === "accept" ? "accepted" : "rejected",
-      respondedAt: admin.firestore.Timestamp.now(),
+      respondidoEm: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // Se aceito, adicionar usuário ao time
+    // Se aceitou, adicionar ao time
     if (resposta === "accept") {
-      await db.collection("teams").doc(inviteData.teamId).update({
+      await db.collection("times").doc(inviteData.teamId).update({
         members: admin.firestore.FieldValue.arrayUnion(context.auth.uid),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
 
-    console.log("Convite de time respondido", { inviteId, resposta }, contextData);
-    return { success: true };
+    console.log("Convite de time respondido", {
+      inviteId,
+      resposta,
+      contextData,
+    });
+
+    return {
+      success: true,
+      resposta,
+    };
   } catch (error: any) {
-    console.error("Erro ao responder convite de time", { error: error.message }, contextData);
+    console.error("Erro ao responder convite de time", {
+      error: error.message,
+      contextData,
+    });
     throw error;
   }
 });
 
-export const listarConvitesUsuario = functions.https.onCall(async (data: {}, context) => {
+export const listarConvitesTime = functions.https.onCall(async (request, context) => {
   const contextData = {
-    functionName: "listarConvitesUsuario",
-    userId: context.auth?.uid,
+    functionName: "listarConvitesTime",
+    userId: context?.auth?.uid,
   };
 
   try {
-    if (!context.auth) {
+    // Verificar autenticação
+    if (!context?.auth) {
+      console.log("Tentativa de listagem não autenticada", contextData);
       throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
     }
 
-    const invitesSnapshot = await db
-        .collection("team_invites")
-        .where("userId", "==", context.auth.uid)
-        .where("status", "==", "pending")
-        .orderBy("createdAt", "desc")
-        .get();
+    // Buscar convites do usuário
+    const convitesSnapshot = await db
+      .collection("convites_times")
+      .where("userId", "==", context.auth.uid)
+      .where("status", "==", "pending")
+      .get();
 
-    const invites = invitesSnapshot.docs.map((doc) => ({
+    const convites = convitesSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    return { invites };
+    console.log("Convites de time listados", {
+      count: convites.length,
+      contextData,
+    });
+
+    return {
+      success: true,
+      convites,
+    };
   } catch (error: any) {
-    console.error("Erro ao listar convites do usuário", { error: error.message }, contextData);
+    console.error("Erro ao listar convites de time", {
+      error: error.message,
+      contextData,
+    });
     throw error;
   }
 });
 
-export const cancelarConviteTime = functions.https.onCall(async (data: { inviteId: string }, context) => {
+export const cancelarConviteTime = functions.https.onCall(async (request, context) => {
+  const data = request.data as { inviteId: string };
+  
   const contextData = {
     functionName: "cancelarConviteTime",
-    userId: context.auth?.uid,
+    userId: context?.auth?.uid,
   };
 
   try {
-    if (!context.auth) {
+    // Verificar autenticação
+    if (!context?.auth) {
+      console.log("Tentativa de cancelamento não autenticada", contextData);
       throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
     }
 
     const { inviteId } = data;
 
     // Buscar convite
-    const inviteDoc = await db.collection("team_invites").doc(inviteId).get();
+    const inviteDoc = await db.collection("convites_times").doc(inviteId).get();
     if (!inviteDoc.exists) {
       throw new functions.https.HttpsError("not-found", "Convite não encontrado");
     }
 
-    const inviteData = inviteDoc.data() as TeamInvite;
+    const inviteData = inviteDoc.data();
 
-    // Verificar se o usuário atual é dono do time
-    const teamDoc = await db.collection("teams").doc(inviteData.teamId).get();
+    // Verificar se o usuário é o dono do time
+    const teamDoc = await db.collection("times").doc(inviteData.teamId).get();
     if (!teamDoc.exists || teamDoc.data()?.ownerId !== context.auth.uid) {
-      throw new functions.https.HttpsError("permission-denied", "Apenas o dono do time pode cancelar convites");
+      throw new functions.https.HttpsError("permission-denied", "Não autorizado");
     }
 
     // Cancelar convite
-    await db.collection("team_invites").doc(inviteId).update({
+    await inviteDoc.ref.update({
       status: "cancelled",
-      cancelledAt: admin.firestore.Timestamp.now(),
       cancelledBy: context.auth.uid,
+      cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    console.log("Convite de time cancelado", { inviteId }, contextData);
-    return { success: true };
+    console.log("Convite de time cancelado", {
+      inviteId,
+      contextData,
+    });
+
+    return {
+      success: true,
+    };
   } catch (error: any) {
-    console.error("Erro ao cancelar convite de time", { error: error.message }, contextData);
+    console.error("Erro ao cancelar convite de time", {
+      error: error.message,
+      contextData,
+    });
     throw error;
   }
 });

@@ -1,7 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-
 const db = admin.firestore();
 
 interface CriarInscricaoTimeData {
@@ -9,36 +8,38 @@ interface CriarInscricaoTimeData {
   timeData: {
     nome: string;
     categoria: string;
-    lote: number;
     integrantes: string[];
   };
 }
 
-export const criarInscricaoTime = functions.https.onCall(async (data: CriarInscricaoTimeData, context) => {
+export const criarInscricaoTime = functions.https.onCall(async (request, context) => {
+  const data = request.data as CriarInscricaoTimeData;
+  
   const contextData = {
     functionName: "criarInscricaoTime",
-    userId: context.auth?.uid,
+    userId: context?.auth?.uid,
   };
 
   try {
     // Verificar autenticação
-    if (!context.auth) {
-      console.log("Tentativa de inscrição não autenticada", {}, contextData);
+    if (!context?.auth) {
+      console.log("Tentativa de inscrição não autenticada", contextData);
       throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
     }
 
     const { userId, timeData } = data;
 
-    // Verificar se o usuário é o dono da inscrição
+    // Verificar se o usuário está tentando criar inscrição para outro usuário
     if (context.auth.uid !== userId) {
-      console.log("Tentativa de inscrição por usuário não autorizado", { userId }, contextData);
-      throw new functions.https.HttpsError("permission-denied", "Usuário não autorizado");
+      throw new functions.https.HttpsError("permission-denied", "Não autorizado");
     }
 
     // Criar inscrição do time
-    const inscricaoRef = await db.collection("inscricoes_times").add({
-      userId,
-      ...timeData,
+    const inscricaoRef = await db.collection("times").add({
+      userId: context.auth.uid,
+      nome: timeData.nome,
+      categoria: timeData.categoria,
+      integrantes: timeData.integrantes,
       status: "pending",
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -46,8 +47,9 @@ export const criarInscricaoTime = functions.https.onCall(async (data: CriarInscr
 
     console.log("Inscrição de time criada", {
       inscricaoId: inscricaoRef.id,
-      categoria: timeData.categoria,
-    }, contextData);
+      nome: timeData.nome,
+      contextData,
+    });
 
     return {
       success: true,
@@ -56,8 +58,8 @@ export const criarInscricaoTime = functions.https.onCall(async (data: CriarInscr
   } catch (error: any) {
     console.error("Erro ao criar inscrição de time", {
       error: error.message,
-      userId: data.userId,
-    }, contextData);
+      contextData,
+    });
     throw error;
   }
 });

@@ -1,3 +1,7 @@
+export * from './teams';
+export * from './pedidos';
+export * from './audiovisual';
+export * from './audiovisual-inscricao';
 export declare const testFunction: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
     success: boolean;
     message: string;

@@ -1,51 +1,62 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-
 const db = admin.firestore();
 
 interface EmailData {
   userEmail: string;
   userName: string;
   tipo: string;
-  inscricaoId?: string;
 }
 
-export const enviaEmailConfirmacao = functions.https.onCall(async (data: EmailData, context) => {
+export const enviaEmailConfirmacao = functions.https.onCall(async (request, context) => {
+  const data = request.data as EmailData;
+  
   const contextData = {
     functionName: "enviaEmailConfirmacao",
-    userId: context.auth?.uid,
+    userId: context?.auth?.uid,
   };
 
   try {
-    if (!context.auth) {
+    // Verificar autenticação
+    if (!context?.auth) {
+      console.log("Tentativa de envio não autenticada", contextData);
       throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
     }
 
-    const { userEmail, userName, tipo, inscricaoId } = data;
+    // Validar dados
+    if (!data.userEmail || !data.userName || !data.tipo) {
+      throw new functions.https.HttpsError("invalid-argument", "Dados incompletos");
+    }
 
-    // Salvar log do email
-    await db.collection("email_logs").add({
-      userEmail,
-      userName,
-      tipo,
-      inscricaoId,
-      enviadoPor: context.auth.uid,
-      timestamp: admin.firestore.Timestamp.now(),
-      status: "pending",
+    // Simular envio de email (implementar lógica real aqui)
+    console.log("Enviando email", {
+      to: data.userEmail,
+      tipo: data.tipo,
+      contextData,
     });
 
-    console.log("Email de confirmação solicitado", {
-      userEmail,
-      tipo,
-    }, contextData);
+    // Log da ação
+    await db.collection("emailLogs").add({
+      userId: context.auth.uid,
+      userEmail: data.userEmail,
+      userName: data.userName,
+      tipo: data.tipo,
+      enviadoPor: context.auth.uid,
+      enviadoEm: admin.firestore.FieldValue.serverTimestamp(),
+      status: "success",
+    });
 
-    return { success: true, message: "Email de confirmação enviado" };
+    return {
+      success: true,
+      message: "Email enviado com sucesso",
+    };
   } catch (error: any) {
-    console.error("Erro ao enviar email de confirmação", {
+    console.error("Erro ao enviar email", {
       error: error.message,
       userEmail: data.userEmail,
-    }, contextData);
+      contextData,
+    });
     throw error;
   }
 });

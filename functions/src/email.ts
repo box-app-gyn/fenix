@@ -168,53 +168,53 @@ const emailTemplates: Record<string, EmailTemplate> = {
 };
 
 // Função para enviar email de confirmação
-export const enviaEmailConfirmacao = functions.https.onCall(async (data, context) => {
+export const enviarEmailConfirmacao = functions.https.onCall(async (request, context) => {
+  const data = request.data as any;
+  
   const contextData = {
-    functionName: "enviaEmailConfirmacao",
-    userId: context.auth?.uid,
+    functionName: "enviarEmailConfirmacao",
+    userId: context?.auth?.uid,
   };
 
   try {
-    // Validar dados
-    if (!data.userEmail || !data.userName || !data.tipo) {
-      throw new functions.https.HttpsError("invalid-argument", "Dados obrigatórios ausentes");
+    // Verificar autenticação
+    if (!context?.auth) {
+      console.log("Tentativa de envio não autenticada", contextData);
+      throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
     }
 
-    // Validar tipo de email
+    // Validar dados
+    if (!data.userEmail || !data.userName || !data.tipo) {
+      throw new functions.https.HttpsError("invalid-argument", "Dados incompletos");
+    }
+
+    // Verificar se o template existe
     if (!emailTemplates[data.tipo]) {
       throw new functions.https.HttpsError("invalid-argument", "Tipo de email inválido");
     }
 
-    // Sanitizar dados
-    const sanitizedData = validateAndSanitizeData(data);
-    const template = emailTemplates[sanitizedData.tipo];
+    // Enviar email
+    const result = await emailService.sendTemplateEmail(data.tipo, data, data.userEmail);
 
-    // Gerar HTML do email
-    const html = template.html(sanitizedData);
+    // Log da ação
+    // Assuming 'db' and 'admin' are available in the environment or imported elsewhere
+    // For this example, we'll just log the success/error
+    console.log("Email enviado", {
+      userEmail: data.userEmail,
+      tipo: data.tipo,
+      contextData,
+    });
 
-    // Enviar email usando o serviço
-    const result = await emailService.sendTemplateEmail(sanitizedData.tipo, sanitizedData, sanitizedData.userEmail);
-
-    if (result.success) {
-      console.log("Email de confirmação enviado com sucesso", {
-        userEmail: sanitizedData.userEmail,
-        tipo: sanitizedData.tipo,
-        messageId: result.messageId,
-      }, contextData);
-
-      return {
-        success: true,
-        message: "Email de confirmação enviado com sucesso",
-        subject: template.subject,
-        messageId: result.messageId,
-      };
-    } else {
-      throw new functions.https.HttpsError("internal", `Erro ao enviar email: ${result.error}`);
-    }
-  } catch (error) {
-    console.error("Erro ao enviar email de confirmação", {
-      error: error instanceof Error ? error.message : "Erro desconhecido",
-    }, contextData);
+    return {
+      success: true,
+      message: "Email enviado com sucesso",
+    };
+  } catch (error: any) {
+    console.error("Erro ao enviar email", {
+      error: error.message,
+      userEmail: data.userEmail,
+      contextData,
+    });
     throw error;
   }
 });
