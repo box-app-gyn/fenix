@@ -5,6 +5,7 @@ import Footer from '../../components/Footer';
 // import Image from 'next/image';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import SEOHead from '../../components/SEOHead';
+import OptimizedImage from '../../components/OptimizedImage.tsx';
 import {
   AudiovisualTipo,
   sanitizeAudiovisualData,
@@ -232,7 +233,7 @@ export default function AudiovisualFormPage() {
           <div className="max-w-2xl mx-auto relative z-10">
             {/* Header do formulário */}
             <div className="text-center mb-8">
-              <img
+              <OptimizedImage
                 src="/logos/nome_hrz.webp"
                 alt="CERRADØ 𝗜𝗡𝗧𝗘𝗥𝗕𝗢𝗫 Logo"
                 width={320}

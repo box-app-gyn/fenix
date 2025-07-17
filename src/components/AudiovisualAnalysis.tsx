@@ -1,6 +1,7 @@
 
 
 import { useAnalytics } from '../hooks/useAnalytics';
+import OptimizedImage from './OptimizedImage.tsx';
 
 export default function AudiovisualAnalysis() {
   const { trackCTA } = useAnalytics();
@@ -50,7 +51,7 @@ export default function AudiovisualAnalysis() {
           className="relative inline-block transform transition-all duration-300 hover:scale-105 hover:rotate-1 group"
           style={{ cursor: 'pointer' }}
         >
-          <img
+          <OptimizedImage
             src="/images/pngtree-light-gray-old-paper.webp"
             alt="Fita decorativa"
             className="h-16 w-auto object-contain"

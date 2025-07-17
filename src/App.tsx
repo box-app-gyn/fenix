@@ -43,6 +43,7 @@ import DesktopWarning from './components/DesktopWarning';
 import ProtectedRoute from './components/ProtectedRoute';
 import CNHUpload from './components/CNHUpload';
 import { useRoleRedirect } from './hooks/useRoleRedirect';
+import { preloadImages } from './utils/clearImageCache';
 
 // Componente interno que usa o hook dentro do contexto do Router
 function AppContent() {
@@ -74,6 +75,9 @@ function AppContent() {
   useEffect(() => {
     const initializePWA = async () => {
       try {
+        // Preload das imagens WebP
+        preloadImages();
+        
         // Cachear dados críticos
         await cacheCriticalData();
         

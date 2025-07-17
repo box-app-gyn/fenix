@@ -14,9 +14,13 @@ export default defineConfig(({ mode }) => ({
       },
       includeAssets: [
         'favicon.ico',
-        'logos/logo_circulo.png',
-        'images/bg_rounded.png',
-        'images/twolines.png',
+        'logos/logo_circulo.webp',
+        'images/bg_rounded.webp',
+        'images/twolines.webp',
+        'images/bg_main.webp',
+        'images/pngtree-light-gray-old-paper.webp',
+        'logos/oficial_logo.webp',
+        'logos/nome_hrz.webp',
       ],
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB

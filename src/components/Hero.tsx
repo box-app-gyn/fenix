@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import GamifiedCTA from './GamifiedCTA.tsx'
+import OptimizedImage from './OptimizedImage.tsx'
 import { useEffect, useRef, useState } from 'react'
 import { useAnalytics } from '../hooks/useAnalytics'
 
@@ -92,7 +93,7 @@ export default function Hero() {
             }}
             className="rounded-full"
           >
-            <img
+            <OptimizedImage
               src="/logos/oficial_logo.webp"
               alt="Logo Oficial"
               width={560}
