@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { doc, onSnapshot, collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -160,7 +160,7 @@ const DashboardEvento: React.FC = () => {
             📊 Dashboard do Evento
           </h1>
           <p className="text-gray-600">
-            Dados completos em tempo real do Interbox 2025
+            Dados completos em tempo real do INTERBØX 2025
           </p>
         </motion.div>
 

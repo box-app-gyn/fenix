@@ -11,12 +11,11 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const { user: authUser } = useAuth()
 
-  // Verificar se usuário tem acesso ao dashboard
+  // Verificar se usuário tem acesso ao dashboard (apenas admin, dev, marketing)
   const hasDashboardAccess = authUser && (
     authUser.role === 'admin'
-    || authUser.role === 'jurado'
-    || authUser.role === 'midia'
-    || authUser.role === 'fotografo'
+    || authUser.role === 'dev'
+    || authUser.role === 'marketing'
   )
 
   useEffect(() => {
@@ -124,9 +123,9 @@ export default function Header() {
             {/* Menu Desktop */}
             <nav className="hidden md:flex items-center space-x-8">
               <a href="/home" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Home</a>
-              <a href="/hub" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Hub</a>
-
-              <a href="/leaderboard" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Leaderboard</a>
+              {(authUser?.role === 'atleta' || authUser?.role === 'jurado') && (
+                <a href="/hub" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Hub</a>
+              )}
               <a href="/audiovisual" className="text-pink-400 hover:text-pink-300 transition-all duration-300 font-medium text-sm">Audiovisual</a>
               {user && (
                 <>
@@ -212,21 +211,15 @@ export default function Header() {
                   >
                     Home
                   </a>
-                  <a
-                    href="/hub"
-                    className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Hub
-                  </a>
-
-                  <a
-                    href="/leaderboard"
-                    className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Leaderboard
-                  </a>
+                  {(authUser?.role === 'atleta' || authUser?.role === 'jurado') && (
+                    <a
+                      href="/hub"
+                      className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Hub
+                    </a>
+                  )}
                   <a
                     href="/audiovisual"
                     className="text-pink-400 hover:text-pink-300 transition-all duration-300 font-medium text-lg py-2"

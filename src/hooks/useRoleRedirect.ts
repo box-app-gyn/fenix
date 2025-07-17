@@ -99,9 +99,22 @@ export const useRoleRedirect = () => {
           }
         }
 
-        // Se já tá completo, vai para Home
-        console.log('✅ useRoleRedirect: Perfil completo, redirecionando para home');
-        navigate('/home');
+        // Se já tá completo, não redirecionar se estiver em uma página válida
+        console.log('✅ useRoleRedirect: Perfil completo, verificando se precisa redirecionar');
+        
+        // Lista de páginas válidas que não precisam de redirecionamento
+        const validPages = [
+          '/home', '/hub', '/perfil', '/audiovisual', '/audiovisual/form', 
+          '/sobre', '/leaderboard', '/links', '/cluster', '/admin', '/dev', 
+          '/marketing', '/admin-painel', '/dashboard-evento'
+        ];
+        
+        if (!validPages.includes(location.pathname)) {
+          console.log('🔄 useRoleRedirect: Página inválida, redirecionando para home');
+          navigate('/home');
+        } else {
+          console.log('✅ useRoleRedirect: Página válida, mantendo na página atual');
+        }
       } catch (error) {
         console.error('❌ useRoleRedirect: Erro ao verificar perfil:', error);
         // Em caso de erro, vai para seleção de categoria

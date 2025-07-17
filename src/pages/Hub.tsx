@@ -1,11 +1,21 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
+import { useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 export default function Hub() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Verificar se usuário tem acesso ao Hub (apenas atletas e jurados)
+  useEffect(() => {
+    if (user && user.role && !['atleta', 'jurado'].includes(user.role)) {
+      // Redirecionar para home se não for atleta ou jurado
+      navigate('/home');
+    }
+  }, [user, navigate]);
 
   const hubItems = [
     {
@@ -14,6 +24,7 @@ export default function Hub() {
       path: '/tempo-real',
       color: 'from-blue-500 to-cyan-500',
       icon: '📊',
+      available: true,
     },
     {
       title: '🏆 Leaderboard',
@@ -21,6 +32,8 @@ export default function Hub() {
       path: '/leaderboard',
       color: 'from-yellow-500 to-orange-500',
       icon: '🏆',
+      available: false,
+      comingSoon: 'Disponível no dia da competição',
     },
     {
       title: '🎬 Audiovisual',
@@ -28,13 +41,8 @@ export default function Hub() {
       path: '/audiovisual',
       color: 'from-purple-500 to-pink-500',
       icon: '🎬',
-    },
-    {
-      title: '🔗 Encurtador de Links',
-      description: 'Crie links curtos e acompanhe estatísticas',
-      path: '/links',
-      color: 'from-green-500 to-emerald-500',
-      icon: '🔗',
+      available: false,
+      comingSoon: 'Disponível em 2 meses',
     },
     {
       title: '👤 Perfil',
@@ -42,6 +50,7 @@ export default function Hub() {
       path: '/perfil',
       color: 'from-indigo-500 to-blue-500',
       icon: '👤',
+      available: true,
     },
     {
       title: 'ℹ️ Sobre',
@@ -49,6 +58,7 @@ export default function Hub() {
       path: '/sobre',
       color: 'from-gray-500 to-slate-500',
       icon: 'ℹ️',
+      available: true,
     },
   ];
 
@@ -116,11 +126,34 @@ export default function Hub() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: item.available ? 1.02 : 1 }}
+                whileTap={{ scale: item.available ? 0.98 : 1 }}
               >
-                <Link to={item.path}>
-                  <div className={`bg-gradient-to-br ${item.color} rounded-2xl shadow-lg p-6 h-full cursor-pointer transition-all duration-300 hover:shadow-xl border border-white/10`}>
+                {item.available ? (
+                  <Link to={item.path}>
+                    <div className={`bg-gradient-to-br ${item.color} rounded-2xl shadow-lg p-6 h-full cursor-pointer transition-all duration-300 hover:shadow-xl border border-white/10`}>
+                      <div className="flex items-center space-x-4">
+                        <div className="text-4xl">{item.icon}</div>
+                        <div className="flex-1">
+                          <h2 className="text-xl font-bold text-white mb-2">
+                            {item.title}
+                          </h2>
+                          <p className="text-white/90 text-sm">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-4 flex justify-end">
+                        <div className="bg-white/20 rounded-full p-2">
+                          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className={`bg-gradient-to-br ${item.color} rounded-2xl shadow-lg p-6 h-full border border-white/10 opacity-60`}>
                     <div className="flex items-center space-x-4">
                       <div className="text-4xl">{item.icon}</div>
                       <div className="flex-1">
@@ -130,17 +163,22 @@ export default function Hub() {
                         <p className="text-white/90 text-sm">
                           {item.description}
                         </p>
+                        <div className="mt-2">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/20 text-white">
+                            ⏳ {item.comingSoon}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="mt-4 flex justify-end">
-                      <div className="bg-white/20 rounded-full p-2">
-                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <div className="bg-white/10 rounded-full p-2">
+                        <svg className="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
                     </div>
                   </div>
-                </Link>
+                )}
               </motion.div>
             ))}
           </div>

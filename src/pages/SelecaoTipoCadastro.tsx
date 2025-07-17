@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -11,43 +11,48 @@ import Footer from '../components/Footer';
 const TIPOS_CADASTRO = [
   {
     id: 'atleta',
-    titulo: '🏃‍♂️ Atleta',
+    titulo: 'Atleta',
     descricao: 'Quero competir no Interbox 2025',
-    cor: 'from-green-500 to-green-600',
-    hover: 'hover:from-green-600 hover:to-green-700',
-    emoji: '🏃‍♂️',
+    icon: '🏃‍♂️',
+    accentColor: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    borderColor: 'border-blue-200',
   },
   {
     id: 'jurado',
-    titulo: '⚖️ Jurado',
+    titulo: 'Jurado',
     descricao: 'Quero ser jurado do evento',
-    cor: 'from-yellow-500 to-yellow-600',
-    hover: 'hover:from-yellow-600 hover:to-yellow-700',
-    emoji: '⚖️',
+    icon: '⚖️',
+    accentColor: 'text-orange-600',
+    bgColor: 'bg-orange-50',
+    borderColor: 'border-orange-200',
   },
   {
     id: 'midia',
-    titulo: '📸 Mídia',
+    titulo: 'Mídia',
     descricao: 'Quero cobrir o evento',
-    cor: 'from-purple-500 to-purple-600',
-    hover: 'hover:from-purple-600 hover:to-purple-700',
-    emoji: '📸',
+    icon: '📸',
+    accentColor: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    borderColor: 'border-purple-200',
   },
   {
     id: 'espectador',
-    titulo: '👥 Espectador',
+    titulo: 'Espectador',
     descricao: 'Quero apenas assistir',
-    cor: 'from-gray-500 to-gray-600',
-    hover: 'hover:from-gray-600 hover:to-gray-700',
-    emoji: '👥',
+    icon: '👥',
+    accentColor: 'text-green-600',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
   },
   {
     id: 'publico',
-    titulo: '👤 Público Geral',
+    titulo: 'Público Geral',
     descricao: 'Outro tipo de participação',
-    cor: 'from-blue-500 to-blue-600',
-    hover: 'hover:from-blue-600 hover:to-blue-700',
-    emoji: '👤',
+    icon: '👤',
+    accentColor: 'text-gray-600',
+    bgColor: 'bg-gray-50',
+    borderColor: 'border-gray-200',
   },
 ];
 
@@ -90,11 +95,10 @@ export default function SelecaoTipoCadastro() {
         profileComplete: true,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        // Gamificação - Primeira conquista
         gamification: {
           tokens: {
             box: {
-              balance: 50, // +50 ₿ por cadastro
+              balance: 50,
               totalEarned: 50,
               totalSpent: 0,
               lastTransaction: serverTimestamp(),
@@ -119,15 +123,13 @@ export default function SelecaoTipoCadastro() {
         },
       });
 
-      // Trigger confetti
       confetti({
-        particleCount: 100,
-        spread: 70,
+        particleCount: 50,
+        spread: 45,
         origin: { y: 0.6 },
-        colors: ['#fb05e4', '#00259f', '#10B981', '#F59E0B'],
+        colors: ['#007AFF', '#34C759', '#FF9500'],
       });
 
-      // Show success message with gamification
       setTimeout(() => {
         alert(`🎉 Cadastro realizado com sucesso! 
         
@@ -156,123 +158,97 @@ Bem-vindo ao Interbox 2025!`);
   const selectedTipo = TIPOS_CADASTRO.find((t) => t.id === selectedType);
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {/* Background com imagem principal */}
-      <div
-        className="flex-1 relative"
-        style={{
-          backgroundImage: 'url(/images/bg_main.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
-        {/* Overlay gradiente */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/60 to-black/80"></div>
-
-        {/* Conteúdo principal */}
-        <div className="relative z-10 max-w-4xl mx-auto px-4 py-20">
-          <AnimatePresence mode="wait">
-            {!showForm ? (
-              <motion.div
-                key="selection"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.8 }}
-                className="text-center mb-12"
-              >
-                <h1 className="text-4xl font-bold text-white mb-4">
-                  🎯 Como você quer participar?
+      <div className="max-w-2xl mx-auto px-4 py-8">
+        <AnimatePresence mode="wait">
+          {!showForm ? (
+            <motion.div
+              key="selection"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  Como você quer participar?
                 </h1>
-                <p className="text-xl text-gray-300">
-                  Escolha o tipo de cadastro que melhor representa você no Interbox 2025
+                <p className="text-gray-600 text-lg">
+                  Escolha o tipo de cadastro que melhor representa você
                 </p>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="form"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.8 }}
-                className="text-center mb-12"
-              >
-                <h1 className="text-4xl font-bold text-white mb-4">
-                  {selectedTipo?.emoji} {selectedTipo?.titulo.split(' ').slice(1).join(' ')}
-                </h1>
-                <p className="text-xl text-gray-300">
-                  Complete seus dados para finalizar o cadastro
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
 
-          <AnimatePresence mode="wait">
-            {!showForm ? (
-              <motion.div
-                key="types"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              >
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                 {TIPOS_CADASTRO.map((tipo, index) => (
                   <motion.div
                     key={tipo.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: index * 0.1 }}
-                    className="group cursor-pointer"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className={`
+                      cursor-pointer transition-all duration-200
+                      ${index !== TIPOS_CADASTRO.length - 1 ? 'border-b border-gray-100' : ''}
+                      hover:bg-gray-50 active:bg-gray-100
+                    `}
                     onClick={() => handleTypeSelect(tipo.id)}
                   >
-                    <div className={`
-                      bg-gradient-to-br ${tipo.cor} ${tipo.hover}
-                      rounded-xl p-6 h-full
-                      transform transition-all duration-300
-                      group-hover:scale-105 group-hover:shadow-2xl
-                      border-2 border-transparent group-hover:border-white/20
-                    `}>
-                      <div className="text-center">
-                        <div className="text-4xl mb-4">{tipo.titulo.split(' ')[0]}</div>
-                        <h3 className="text-xl font-bold text-white mb-2">
-                          {tipo.titulo.split(' ').slice(1).join(' ')}
-                        </h3>
-                        <p className="text-white/90 text-sm">
-                          {tipo.descricao}
-                        </p>
-                      </div>
-
-                      <div className="mt-6 text-center">
-                        <div className="inline-flex items-center text-white/80 group-hover:text-white transition-colors">
-                          <span className="text-sm">Selecionar</span>
-                          <svg className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
+                    <div className="px-6 py-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="text-2xl">{tipo.icon}</div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-lg">
+                            {tipo.titulo}
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            {tipo.descricao}
+                          </p>
                         </div>
+                      </div>
+                      <div className="text-gray-400">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </div>
                     </div>
                   </motion.div>
                 ))}
-              </motion.div>
-            ) : (
-              <motion.div
-                key="form-content"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5 }}
-                className="max-w-2xl mx-auto"
-              >
-                <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-8 border border-white/20">
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              <div className="text-center mb-8">
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="inline-flex items-center text-blue-600 hover:text-blue-700 transition-colors mb-4"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Voltar
+                </button>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  {selectedTipo?.icon} {selectedTipo?.titulo}
+                </h1>
+                <p className="text-gray-600 text-lg">
+                  Complete seus dados para finalizar o cadastro
+                </p>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Nome Completo *
+                          Nome Completo
                         </label>
                         <input
                           type="text"
@@ -280,13 +256,13 @@ Bem-vindo ao Interbox 2025!`);
                           value={formData.nome}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50"
                         />
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Email *
+                          Email
                         </label>
                         <input
                           type="email"
@@ -294,7 +270,7 @@ Bem-vindo ao Interbox 2025!`);
                           value={formData.email}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50"
                         />
                       </div>
 
@@ -307,7 +283,7 @@ Bem-vindo ao Interbox 2025!`);
                           name="telefone"
                           value={formData.telefone}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50"
                         />
                       </div>
 
@@ -320,7 +296,7 @@ Bem-vindo ao Interbox 2025!`);
                           name="whatsapp"
                           value={formData.whatsapp}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50"
                         />
                       </div>
 
@@ -333,13 +309,13 @@ Bem-vindo ao Interbox 2025!`);
                           name="box"
                           value={formData.box}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50"
                         />
                       </div>
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Cidade *
+                          Cidade
                         </label>
                         <input
                           type="text"
@@ -347,7 +323,7 @@ Bem-vindo ao Interbox 2025!`);
                           value={formData.cidade}
                           onChange={handleChange}
                           required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50"
                         />
                       </div>
                     </div>
@@ -361,33 +337,26 @@ Bem-vindo ao Interbox 2025!`);
                         value={formData.mensagem}
                         onChange={handleChange}
                         rows={4}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-colors"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 resize-none"
                         placeholder="Conte um pouco sobre sua motivação para participar do evento..."
                       />
                     </div>
+                  </div>
 
-                    <div className="flex justify-end space-x-4">
-                      <button
-                        type="button"
-                        onClick={() => setShowForm(false)}
-                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
-                      >
-                        Voltar
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={loading}
-                        className="px-6 py-2 bg-gradient-to-r from-pink-600 to-blue-600 text-white rounded-md hover:from-pink-700 hover:to-blue-700 disabled:bg-gray-400 transition-all duration-300 font-medium"
-                      >
-                        {loading ? 'Cadastrando...' : 'Finalizar Cadastro'}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+                  <div className="pt-4">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full py-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 disabled:bg-gray-400 transition-all duration-200 text-lg"
+                    >
+                      {loading ? 'Cadastrando...' : 'Finalizar Cadastro'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <Footer />
