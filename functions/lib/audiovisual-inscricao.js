@@ -1,42 +1,8 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.criarInscricaoAudiovisual = void 0;
-const functions = __importStar(require("firebase-functions"));
-const admin = __importStar(require("firebase-admin"));
-const db = admin.firestore();
+const https_1 = require("firebase-functions/v2/https");
+const firebase_admin_1 = require("./firebase-admin");
 function validateAudiovisualData(data) {
     return !!(data.userEmail &&
         data.userName &&
@@ -46,39 +12,40 @@ function validateAudiovisualData(data) {
         data.telefone);
 }
 async function checkExistingAudiovisual(email) {
-    const existing = await db
+    const existing = await firebase_admin_1.db
         .collection("audiovisual")
         .where("userEmail", "==", email)
         .limit(1)
         .get();
     return !existing.empty;
 }
-exports.criarInscricaoAudiovisual = functions.https.onCall(async (data, context) => {
+exports.criarInscricaoAudiovisual = (0, https_1.onCall)(async (request) => {
     var _a;
+    const data = request.data;
     const contextData = {
         functionName: "criarInscricaoAudiovisual",
-        userId: (_a = context.auth) === null || _a === void 0 ? void 0 : _a.uid,
+        userId: (_a = request.auth) === null || _a === void 0 ? void 0 : _a.uid,
     };
     try {
         // Verificar autenticação
-        if (!context.auth) {
+        if (!request.auth) {
             console.log("Tentativa de inscrição não autenticada", contextData);
-            throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
+            throw new Error("Usuário não autenticado");
         }
         // Validar dados
         if (!validateAudiovisualData(data)) {
-            throw new functions.https.HttpsError("invalid-argument", "Dados incompletos");
+            throw new Error("Dados incompletos");
         }
         // Verificar se já existe inscrição
         const existing = await checkExistingAudiovisual(data.userEmail);
         if (existing) {
-            throw new functions.https.HttpsError("already-exists", "Já existe uma inscrição para este email");
+            throw new Error("Já existe uma inscrição para este email");
         }
         // Criar inscrição usando transação
-        const result = await db.runTransaction(async (transaction) => {
-            const inscricaoRef = db.collection("audiovisual").doc();
+        const result = await firebase_admin_1.db.runTransaction(async (transaction) => {
+            const inscricaoRef = firebase_admin_1.db.collection("audiovisual").doc();
             const inscricaoData = {
-                userId: context.auth.uid,
+                userId: request.auth.uid,
                 userEmail: data.userEmail,
                 userName: data.userName,
                 tipo: data.tipo,
@@ -86,8 +53,8 @@ exports.criarInscricaoAudiovisual = functions.https.onCall(async (data, context)
                 portfolio: data.portfolio,
                 telefone: data.telefone,
                 status: "pending",
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                createdAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
             };
             transaction.set(inscricaoRef, inscricaoData);
             return inscricaoRef.id;

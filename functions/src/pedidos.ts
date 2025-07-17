@@ -1,7 +1,5 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
-
-const db = admin.firestore();
+import { onCall } from "firebase-functions/v2/https";
+import { db, admin } from "./firebase-admin";
 
 interface CriarInscricaoTimeData {
   userId: string;
@@ -12,31 +10,31 @@ interface CriarInscricaoTimeData {
   };
 }
 
-export const criarInscricaoTime = functions.https.onCall(async (request, context) => {
+export const criarInscricaoTime = onCall(async (request) => {
   const data = request.data as CriarInscricaoTimeData;
   
   const contextData = {
     functionName: "criarInscricaoTime",
-    userId: context?.auth?.uid,
+    userId: request.auth?.uid,
   };
 
   try {
     // Verificar autenticação
-    if (!context?.auth) {
+    if (!request.auth) {
       console.log("Tentativa de inscrição não autenticada", contextData);
-      throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
+      throw new Error("Usuário não autenticado");
     }
 
     const { userId, timeData } = data;
 
     // Verificar se o usuário está tentando criar inscrição para outro usuário
-    if (context.auth.uid !== userId) {
-      throw new functions.https.HttpsError("permission-denied", "Não autorizado");
+    if (request.auth.uid !== userId) {
+      throw new Error("Não autorizado");
     }
 
     // Criar inscrição do time
     const inscricaoRef = await db.collection("times").add({
-      userId: context.auth.uid,
+      userId: request.auth.uid,
       nome: timeData.nome,
       categoria: timeData.categoria,
       integrantes: timeData.integrantes,

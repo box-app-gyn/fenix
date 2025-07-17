@@ -27,7 +27,7 @@ export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'under_review
 export type ConviteStatus = 'pendente' | 'aceito' | 'recusado' | 'cancelado' | 'expirado';
 
 // Tipos de audiovisual
-export type AudiovisualTipo = 'fotografo' | 'videomaker' | 'editor' | 'drone' | 'audio' | 'iluminacao';
+export type AudiovisualTipo = 'fotografo' | 'videomaker' | 'jornalista' | 'influencer' | 'youtuber' | 'outro';
 
 // Categorias de competição
 export type CategoriaCompeticao = 'Scale' | 'RX' | 'Elite';
@@ -315,6 +315,7 @@ export interface FirestoreAudiovisual {
   nome: string;
   telefone: string;
   tipo: AudiovisualTipo;
+  comentariosOutro?: string; // Campo para especificar quando tipo = 'outro'
   portfolio: {
     urls: string[];
     descricao: string;
@@ -1024,8 +1025,13 @@ export const validateAudiovisualData = (data: Partial<FirestoreAudiovisual>): st
 
   if (!data.tipo) {
     errors.push('Tipo de audiovisual é obrigatório');
-  } else if (!['fotografo', 'videomaker', 'editor', 'drone', 'audio', 'iluminacao'].includes(data.tipo)) {
+  } else if (!['fotografo', 'videomaker', 'jornalista', 'influencer', 'youtuber', 'outro'].includes(data.tipo)) {
     errors.push('Tipo de audiovisual inválido');
+  }
+
+  // Validação específica para tipo "outro"
+  if (data.tipo === 'outro' && !data.comentariosOutro?.trim()) {
+    errors.push('Comentários são obrigatórios quando seleciona "Outro"');
   }
 
   if (!data.portfolio?.urls?.length) {
@@ -1055,6 +1061,8 @@ export const sanitizeAudiovisualData = (data: any): any => {
     telefone: data.telefone?.replace(/\D/g, ''),
     cidade: data.cidade?.trim(),
     estado: data.estado?.trim(),
+    tipo: data.tipo,
+    comentariosOutro: data.comentariosOutro?.trim(), // ✅ Incluir campo de comentários
     experiencia: data.experiencia?.trim(),
     portfolio: data.portfolio?.trim(),
     equipamentos: data.equipamentos?.trim(),

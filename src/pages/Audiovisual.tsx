@@ -5,7 +5,7 @@ import AudiovisualAnalysis from '../components/AudiovisualAnalysis'
 import { useAnalytics } from '../hooks/useAnalytics'
 
 export default function Audiovisual() {
-  const { trackPage, trackCTA, trackScroll } = useAnalytics()
+  const { trackPage, trackScroll } = useAnalytics()
 
   useEffect(() => { trackPage('audiovisual') }, [trackPage])
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function Audiovisual() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [trackScroll])
 
-  const handleParticipateClick = () => trackCTA('QUERO PARTICIPAR', '/audiovisual')
+
 
   return (
     <>
@@ -38,10 +38,6 @@ export default function Audiovisual() {
 
           {/* Resto do conteúdo… */}
           <AudiovisualAnalysis />
-
-          <a href="/audiovisual/form" target="_blank"
-            onClick={handleParticipateClick}
-            className="...">Quero participar</a>
         </main>
         <Footer />
       </div>

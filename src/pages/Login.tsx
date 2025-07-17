@@ -1,5 +1,5 @@
+import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { useState } from 'react';
 import Footer from '../components/Footer';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth } from '../lib/firebase';

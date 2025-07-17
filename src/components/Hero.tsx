@@ -57,7 +57,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: 'url(/images/bg_main.png)',
+          backgroundImage: 'url(/images/bg_main.webp)',
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0a0a1a]/80" />
@@ -65,7 +65,7 @@ export default function Hero() {
       <div className="relative z-10">
         <motion.div
           ref={logoRef}
-          className="mx-auto mt-20 mb-8 w-90 h-90 flex items-center justify-center drop-shadow-neon-pink will-change-transform"
+          className="mx-auto mt-20 mb-8 w-90 h-90 flex items-center justify-center will-change-transform"
           style={{ transition: 'transform 0.2s cubic-bezier(.25,.46,.45,.94)' }}
           animate={{
             rotate: [0, 1, -1, 0],
@@ -93,7 +93,7 @@ export default function Hero() {
             className="rounded-full"
           >
             <img
-              src="/logos/oficial_logo.png"
+              src="/logos/oficial_logo.webp"
               alt="Logo Oficial"
               width={560}
               height={560}

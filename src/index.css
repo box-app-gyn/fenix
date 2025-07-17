@@ -179,6 +179,7 @@ html {
   outline: none !important;
   padding: 0 !important;
   margin: 0 !important;
+  color: white !important;
 }
 
 .hamburger-button:focus {
@@ -186,8 +187,41 @@ html {
   box-shadow: none !important;
 }
 
+.hamburger-button:hover {
+  color: #f472b6 !important; /* pink-400 */
+}
+
 .hamburger-line {
   background-color: currentColor !important;
   border-radius: 1px;
   transition: all 0.3s ease;
+}
+
+/* Garantir que o botão sair no menu mobile tenha cor correta */
+.menu-mobile-container button {
+  color: white !important;
+}
+
+.menu-mobile-container button:hover {
+  color: #f472b6 !important; /* pink-400 */
+}
+
+/* Garantir que botões no header tenham cores corretas */
+header button {
+  color: white !important;
+}
+
+header button:hover {
+  color: #f472b6 !important; /* pink-400 */
+}
+
+/* Sobrescrever estilos globais de botão para o header */
+header button {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  border-radius: 0 !important;
 }

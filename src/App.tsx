@@ -11,7 +11,8 @@ import Footer from './components/Footer';
 import { FirebaseErrorBoundary } from './components/FirebaseErrorBoundary';
 
 import GamifiedLeaderboard from './components/GamifiedLeaderboard';
-import Sobre from './components/Sobre';
+import SobrePage from './pages/Sobre';
+import Termos from './pages/Termos';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminPainel from './pages/AdminPainel';
 import DashboardEvento from './pages/DashboardEvento';
@@ -22,6 +23,7 @@ import AudiovisualForm from './pages/audiovisual/form';
 import AudiovisualSuccess from './pages/audiovisual/success';
 import LinkShortenerPage from './pages/LinkShortenerPage';
 import LinkRedirect from './components/LinkRedirect';
+import ReferralLanding from './pages/ReferralLanding';
 import ClusterPage from './pages/ClusterPage';
 import Perfil from './pages/Perfil';
 import CadastroAtleta from './pages/CadastroAtleta';
@@ -201,7 +203,13 @@ function AppContent() {
 
           <Route path="/sobre" element={
             <ProtectedRoute>
-              <Sobre />
+              <SobrePage />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/termos" element={
+            <ProtectedRoute>
+              <Termos />
             </ProtectedRoute>
           } />
 
@@ -413,6 +421,7 @@ function App() {
               <Route path="/audiovisual/form" element={<AudiovisualForm />} />
               <Route path="/audiovisual/success" element={<AudiovisualSuccess />} />
               <Route path="/l/:shortCode" element={<LinkRedirectWrapper />} />
+              <Route path="/ref/:referralCode" element={<ReferralLanding />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
             <CookieBanner />

@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions";
+import { onCall } from "firebase-functions/v2/https";
 
 import { emailService } from "./services/emailService";
 
@@ -168,29 +168,29 @@ const emailTemplates: Record<string, EmailTemplate> = {
 };
 
 // Função para enviar email de confirmação
-export const enviarEmailConfirmacao = functions.https.onCall(async (request, context) => {
+export const enviarEmailConfirmacao = onCall(async (request) => {
   const data = request.data as any;
   
   const contextData = {
     functionName: "enviarEmailConfirmacao",
-    userId: context?.auth?.uid,
+    userId: request.auth?.uid,
   };
 
   try {
     // Verificar autenticação
-    if (!context?.auth) {
+    if (!request.auth) {
       console.log("Tentativa de envio não autenticada", contextData);
-      throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
+      throw new Error("Usuário não autenticado");
     }
 
     // Validar dados
     if (!data.userEmail || !data.userName || !data.tipo) {
-      throw new functions.https.HttpsError("invalid-argument", "Dados incompletos");
+      throw new Error("Dados incompletos");
     }
 
     // Verificar se o template existe
     if (!emailTemplates[data.tipo]) {
-      throw new functions.https.HttpsError("invalid-argument", "Tipo de email inválido");
+      throw new Error("Tipo de email inválido");
     }
 
     // Enviar email

@@ -1,3 +1,5 @@
-import * as functions from "firebase-functions";
-export declare const criarInscricaoTime: functions.https.CallableFunction<any, any, unknown>;
+export declare const criarInscricaoTime: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    inscricaoId: string;
+}>, unknown>;
 //# sourceMappingURL=pedidos.d.ts.map

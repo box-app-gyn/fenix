@@ -1,10 +1,18 @@
-import * as functions from "firebase-functions";
-export declare const enviarConviteTime: functions.https.CallableFunction<any, any, unknown>;
-export declare const responderConviteTime: functions.https.CallableFunction<any, any, unknown>;
-export declare const listarConvitesUsuario: functions.https.CallableFunction<any, Promise<{
-    invites: {
+export declare const enviarConviteTime: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    conviteId: string;
+}>, unknown>;
+export declare const responderConviteTime: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    resposta: "accept" | "reject";
+}>, unknown>;
+export declare const listarConvitesTime: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    convites: {
         id: string;
     }[];
 }>, unknown>;
-export declare const cancelarConviteTime: functions.https.CallableFunction<any, any, unknown>;
+export declare const cancelarConviteTime: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+}>, unknown>;
 //# sourceMappingURL=teams.d.ts.map

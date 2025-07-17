@@ -13,49 +13,25 @@ var __createBinding = (this && this.__createBinding) || (Object.create ? (functi
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
 var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validaAudiovisual = exports.criarInscricaoTime = exports.testFunction = void 0;
-// Importar funções existentes
+const https_1 = require("firebase-functions/v2/https");
+const firebase_admin_1 = require("./firebase-admin");
+// ============================================================================
+// IMPORTAR FUNÇÕES EXISTENTES (após inicialização)
+// ============================================================================
 __exportStar(require("./teams"), exports);
 __exportStar(require("./pedidos"), exports);
 __exportStar(require("./audiovisual"), exports);
 __exportStar(require("./audiovisual-inscricao"), exports);
+__exportStar(require("./flowpay"), exports);
 // Dashboard API - Removida para simplificar
 // ============================================================================
 // FUNÇÕES LEGADAS (mantidas para compatibilidade)
 // ============================================================================
-const https_1 = require("firebase-functions/v2/https");
-const admin = __importStar(require("firebase-admin"));
-// Inicializar Firebase Admin se não estiver inicializado
-if (!admin.apps.length) {
-    admin.initializeApp();
-}
-const db = admin.firestore();
 // Função simples de teste
 exports.testFunction = (0, https_1.onCall)(async (request) => {
     try {
@@ -85,7 +61,7 @@ exports.criarInscricaoTime = (0, https_1.onCall)(async (request) => {
             throw new Error('Usuário não autorizado');
         }
         // Criar inscrição do time
-        const inscricaoRef = await db.collection('inscricoes_times').add(Object.assign(Object.assign({ userId }, timeData), { status: 'pending', createdAt: admin.firestore.FieldValue.serverTimestamp(), updatedAt: admin.firestore.FieldValue.serverTimestamp() }));
+        const inscricaoRef = await firebase_admin_1.db.collection('inscricoes_times').add(Object.assign(Object.assign({ userId }, timeData), { status: 'pending', createdAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(), updatedAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp() }));
         console.log('Inscrição de time criada:', {
             inscricaoId: inscricaoRef.id,
             categoria: timeData.categoria,
@@ -106,13 +82,13 @@ exports.validaAudiovisual = (0, https_1.onCall)(async (request) => {
         }
         const { audiovisualId, adminId, aprovado, motivoRejeicao } = request.data;
         // Verificar se é admin
-        const adminUser = await db.collection('users').doc(adminId).get();
+        const adminUser = await firebase_admin_1.db.collection('users').doc(adminId).get();
         if (!adminUser.exists ||
             (((_a = adminUser.data()) === null || _a === void 0 ? void 0 : _a.role) !== 'admin')) {
             throw new Error('Apenas admins podem validar profissionais audiovisuais');
         }
         // Buscar profissional audiovisual
-        const audiovisualRef = db.collection('audiovisual').doc(audiovisualId);
+        const audiovisualRef = firebase_admin_1.db.collection('audiovisual').doc(audiovisualId);
         const audiovisualDoc = await audiovisualRef.get();
         if (!audiovisualDoc.exists) {
             throw new Error('Profissional audiovisual não encontrado');
@@ -122,23 +98,23 @@ exports.validaAudiovisual = (0, https_1.onCall)(async (request) => {
         // Atualizar status
         const updateData = {
             status: aprovado ? 'approved' : 'rejected',
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
         };
         if (aprovado) {
             updateData.aprovadoPor = adminId;
-            updateData.aprovadoEm = admin.firestore.FieldValue.serverTimestamp();
+            updateData.aprovadoEm = firebase_admin_1.admin.firestore.FieldValue.serverTimestamp();
         }
         else {
             updateData.rejeitadoPor = adminId;
-            updateData.rejeitadoEm = admin.firestore.FieldValue.serverTimestamp();
+            updateData.rejeitadoEm = firebase_admin_1.admin.firestore.FieldValue.serverTimestamp();
             updateData.motivoRejeicao = motivoRejeicao || 'Não especificado';
         }
         await audiovisualRef.update(updateData);
         // Atualizar role do usuário se aprovado
         if (aprovado && audiovisualData && audiovisualData.userId) {
-            await db.collection('users').doc(audiovisualData.userId).update({
+            await firebase_admin_1.db.collection('users').doc(audiovisualData.userId).update({
                 role: tipo,
-                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
             });
         }
         console.log('Profissional audiovisual validado:', {

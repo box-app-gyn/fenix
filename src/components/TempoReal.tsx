@@ -293,24 +293,20 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
     let loteAtual = 1;
     let precoAtual = data.ingressos.precoAtual || 394.95; // Valor do Firestore ou padrão
     let precoProximoLote = data.ingressos.precoProximoLote || 444.95; // Valor do Firestore ou padrão
-    let limiteLote = data.ingressos.limiteLote || 120;
     
     // 🏆 Usar valores oficiais do VALORES-EVENTO.md como fallback
     if (now >= DATAS_LOTES.lote2.inicio) {
       loteAtual = 2;
       precoAtual = DATAS_LOTES.lote2.precoScale;
       precoProximoLote = DATAS_LOTES.lote3.precoScale;
-      limiteLote = DATAS_LOTES.lote2.limite;
     } else if (now >= DATAS_LOTES.lote3.inicio) {
       loteAtual = 3;
       precoAtual = DATAS_LOTES.lote3.precoScale;
       precoProximoLote = DATAS_LOTES.lote3.precoScale; // Último lote
-      limiteLote = DATAS_LOTES.lote3.limite;
     }
     
     const economia = precoProximoLote - precoAtual;
     const vagasRestantes = Math.max(0, (data.ingressos.vagasCategoria || 80) - (data.ingressos.totalTimes || 0));
-    const totalTimes = data.ingressos.totalTimes || 0;
 
     switch (status) {
     case 'em_breve':

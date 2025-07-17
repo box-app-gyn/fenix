@@ -18,6 +18,7 @@ interface AudiovisualFormData {
   cidade: string;
   estado: string;
   tipo: AudiovisualTipo;
+  comentariosOutro?: string; // Campo obrigatório quando tipo = 'outro'
   experiencia: string;
   portfolio: string;
   equipamentos: string;
@@ -38,6 +39,12 @@ const validateForm = (data: AudiovisualFormData): string[] => {
   if (!data.cidade.trim()) errors.push('Cidade é obrigatória');
   if (!data.estado.trim()) errors.push('Estado é obrigatório');
   if (!data.tipo) errors.push('Área de atuação é obrigatória');
+  
+  // Validação específica para tipo "outro"
+  if (data.tipo === 'outro' && !data.comentariosOutro?.trim()) {
+    errors.push('Comentários são obrigatórios quando seleciona "Outro"');
+  }
+  
   if (!data.experiencia.trim()) errors.push('Experiência é obrigatória');
   if (!data.portfolio.trim()) errors.push('Portfólio é obrigatório');
   if (!data.equipamentos.trim()) errors.push('Equipamentos são obrigatórios');
@@ -57,6 +64,7 @@ const initialFormData: AudiovisualFormData = {
   cidade: '',
   estado: '',
   tipo: 'fotografo',
+  comentariosOutro: '',
   experiencia: '',
   portfolio: '',
   equipamentos: '',
@@ -70,10 +78,10 @@ const initialFormData: AudiovisualFormData = {
 const AREA_ATUACAO_OPTIONS: { value: AudiovisualTipo; label: string; description: string }[] = [
   { value: 'fotografo', label: 'Fotógrafo', description: 'Fotografia de eventos esportivos' },
   { value: 'videomaker', label: 'Videomaker', description: 'Produção de vídeos e filmagens' },
-  { value: 'editor', label: 'Editor', description: 'Edição de vídeos e fotos' },
-  { value: 'drone', label: 'Piloto de Drone', description: 'Filmagens aéreas com drone' },
-  { value: 'audio', label: 'Técnico de Áudio', description: 'Captação e edição de áudio' },
-  { value: 'iluminacao', label: 'Técnico de Iluminação', description: 'Iluminação para filmagens' },
+  { value: 'jornalista', label: 'Jornalista', description: 'Cobertura jornalística do evento' },
+  { value: 'influencer', label: 'Influencer', description: 'Criação de conteúdo para redes sociais' },
+  { value: 'youtuber', label: 'Youtuber', description: 'Criação de conteúdo para YouTube' },
+  { value: 'outro', label: 'Outro', description: 'Outra área de atuação' },
 ];
 
 // Estados brasileiros
@@ -142,6 +150,7 @@ export default function AudiovisualFormPage() {
         userName: sanitizedData.nome,
         telefone: sanitizedData.telefone,
         tipo: sanitizedData.tipo,
+        comentariosOutro: sanitizedData.comentariosOutro || '', // ✅ Incluir campo de comentários
         experiencia: sanitizedData.experiencia,
         portfolio: sanitizedData.portfolio,
         equipamentos: sanitizedData.equipamentos,
@@ -224,7 +233,7 @@ export default function AudiovisualFormPage() {
             {/* Header do formulário */}
             <div className="text-center mb-8">
               <img
-                src="/logos/nome_hrz.png"
+                src="/logos/nome_hrz.webp"
                 alt="CERRADØ 𝗜𝗡𝗧𝗘𝗥𝗕𝗢𝗫 Logo"
                 width={320}
                 height={90}
@@ -237,17 +246,11 @@ export default function AudiovisualFormPage() {
                 }}
               />
               <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 tracking-tight glitch-text">
-                Formulário de Candidatura
+                Formulário Creators e Audiovisual
               </h2>
               <p className="text-gray-600 mb-2">
-                Preencha seus dados para participar do time audiovisual da CERRADØ 𝗜𝗡𝗧𝗘𝗥𝗕𝗢𝗫.
+                Preencha seus dados para participar do time audiovisual da INTERBOX 2025.
               </p>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
-                <p className="text-yellow-800 font-semibold mb-1">💰 Taxa de Inscrição</p>
-                <p className="text-yellow-700 text-sm">
-                  Taxa única de <span className="font-bold">R$ 29,90</span> para processar sua candidatura
-                </p>
-              </div>
             </div>
 
             {/* Modal de Pagamento */}
@@ -302,7 +305,6 @@ export default function AudiovisualFormPage() {
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                     <p className="text-blue-800 font-semibold mb-2">📋 Próximos Passos</p>
                     <ul className="text-blue-700 text-sm space-y-1 text-left">
-                      <li>• Complete o pagamento de R$ 29,90</li>
                       <li>• Aguarde a confirmação por email</li>
                       <li>• Entraremos em contato em breve</li>
                     </ul>
@@ -311,7 +313,7 @@ export default function AudiovisualFormPage() {
                     href="/hub"
                     className="inline-block bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:ring-4 focus:ring-pink-200 transition-all duration-200"
                   >
-                    Voltar ao Hub
+                    Voltar para página inicial
                   </a>
                 </div>
               ) : (
@@ -447,6 +449,25 @@ export default function AudiovisualFormPage() {
                         ))}
                       </select>
                     </div>
+
+                    {/* Campo de comentários para "Outro" */}
+                    {formData.tipo === 'outro' && (
+                      <div>
+                        <label htmlFor="comentariosOutro" className="block text-sm font-medium text-gray-700 mb-1">
+                          Especifique sua área de atuação *
+                        </label>
+                        <textarea
+                          id="comentariosOutro"
+                          name="comentariosOutro"
+                          value={formData.comentariosOutro}
+                          onChange={handleChange}
+                          rows={3}
+                          required
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                          placeholder="Descreva detalhadamente sua área de atuação e como pode contribuir para o evento..."
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Experiência e portfólio */}

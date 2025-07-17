@@ -1,7 +1,5 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
-
-const db = admin.firestore();
+import { onCall } from "firebase-functions/v2/https";
+import { db, admin } from "./firebase-admin";
 
 interface EmailData {
   userEmail: string;
@@ -9,24 +7,24 @@ interface EmailData {
   tipo: string;
 }
 
-export const enviaEmailConfirmacao = functions.https.onCall(async (request, context) => {
+export const enviaEmailConfirmacao = onCall(async (request) => {
   const data = request.data as EmailData;
   
   const contextData = {
     functionName: "enviaEmailConfirmacao",
-    userId: context?.auth?.uid,
+    userId: request.auth?.uid,
   };
 
   try {
     // Verificar autenticação
-    if (!context?.auth) {
+    if (!request.auth) {
       console.log("Tentativa de envio não autenticada", contextData);
-      throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
+      throw new Error("Usuário não autenticado");
     }
 
     // Validar dados
     if (!data.userEmail || !data.userName || !data.tipo) {
-      throw new functions.https.HttpsError("invalid-argument", "Dados incompletos");
+      throw new Error("Dados incompletos");
     }
 
     // Simular envio de email (implementar lógica real aqui)
@@ -38,11 +36,11 @@ export const enviaEmailConfirmacao = functions.https.onCall(async (request, cont
 
     // Log da ação
     await db.collection("emailLogs").add({
-      userId: context.auth.uid,
+      userId: request.auth.uid,
       userEmail: data.userEmail,
       userName: data.userName,
       tipo: data.tipo,
-      enviadoPor: context.auth.uid,
+      enviadoPor: request.auth.uid,
       enviadoEm: admin.firestore.FieldValue.serverTimestamp(),
       status: "success",
     });

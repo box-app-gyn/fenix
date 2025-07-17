@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import QRCode from 'qrcode';
 
 interface DesktopWarningProps {
   allowAdminAccess?: boolean;
@@ -6,6 +8,31 @@ interface DesktopWarningProps {
 }
 
 export default function DesktopWarning({ allowAdminAccess = false, isAudiovisualForm = false }: DesktopWarningProps) {
+  const qrCodeRef = useRef<HTMLCanvasElement>(null);
+
+  // Gerar QR code para a URL atual
+  useEffect(() => {
+    const generateQRCode = async () => {
+      if (qrCodeRef.current) {
+        try {
+          const currentUrl = window.location.href;
+          await QRCode.toCanvas(qrCodeRef.current, currentUrl, {
+            width: 200,
+            margin: 2,
+            color: {
+              dark: '#000000',
+              light: '#FFFFFF'
+            }
+          });
+        } catch (error) {
+          console.error('Erro ao gerar QR code:', error);
+        }
+      }
+    };
+
+    generateQRCode();
+  }, []);
+
   // Se for formulário audiovisual, mostrar versão específica
   if (isAudiovisualForm) {
     return (
@@ -228,8 +255,18 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
 
             <div className="bg-blue-50 rounded-lg p-4">
               <h3 className="font-semibold text-blue-800 mb-2">🔗 Como acessar:</h3>
-              <p className="text-sm text-blue-700">
+              <p className="text-sm text-blue-700 mb-3">
                 Abra este link no seu smartphone ou escaneie o QR code abaixo
+              </p>
+              <div className="flex justify-center">
+                <canvas
+                  ref={qrCodeRef}
+                  className="border-2 border-gray-300 rounded-lg shadow-sm"
+                  style={{ width: '150px', height: '150px' }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Escaneie com a câmera do seu smartphone
               </p>
             </div>
 

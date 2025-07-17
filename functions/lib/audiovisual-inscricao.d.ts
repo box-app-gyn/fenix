@@ -1,3 +1,5 @@
-import * as functions from "firebase-functions";
-export declare const criarInscricaoAudiovisual: functions.https.CallableFunction<any, any, unknown>;
+export declare const criarInscricaoAudiovisual: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    inscricaoId: string;
+}>, unknown>;
 //# sourceMappingURL=audiovisual-inscricao.d.ts.map

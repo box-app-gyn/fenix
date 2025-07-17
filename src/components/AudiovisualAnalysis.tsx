@@ -1,6 +1,11 @@
 
 
+import { useAnalytics } from '../hooks/useAnalytics';
+
 export default function AudiovisualAnalysis() {
+  const { trackCTA } = useAnalytics();
+
+  const handleParticipateClick = () => trackCTA('QUERO PARTICIPAR', '/audiovisual');
   return (
     <div className="max-w-4xl mx-auto text-center text-white py-16">
       <h1 className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
@@ -28,11 +33,36 @@ export default function AudiovisualAnalysis() {
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-pink-600 to-purple-600 p-8 rounded-lg">
+      <div className="bg-gradient-to-r from-pink-600 to-purple-600 p-8 rounded-lg mb-8">
         <h2 className="text-2xl font-bold mb-4">Quer fazer parte?</h2>
         <p className="text-lg mb-6">
           Candidate-se para nossa equipe audiovisual e seja parte de algo histórico
         </p>
+      </div>
+
+      {/* Botão com fita rosa */}
+      <div className="relative inline-block group">
+        {/* Fita rosa como botão */}
+        <a 
+          href="/audiovisual/form" 
+          target="_blank"
+          onClick={handleParticipateClick}
+          className="relative inline-block transform transition-all duration-300 hover:scale-105 hover:rotate-1 group"
+          style={{ cursor: 'pointer' }}
+        >
+          <img
+            src="/images/pngtree-light-gray-old-paper.webp"
+            alt="Fita decorativa"
+            className="h-16 w-auto object-contain"
+          />
+          
+          {/* Texto sobre a fita */}
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <span className="text-2xl font-bold text-white">
+              Quero participar
+            </span>
+          </div>
+        </a>
       </div>
     </div>
   )

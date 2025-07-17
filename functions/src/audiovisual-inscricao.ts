@@ -1,7 +1,5 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
-
-const db = admin.firestore();
+import { onCall } from "firebase-functions/v2/https";
+import { db, admin } from "./firebase-admin";
 
 interface AudiovisualInscricaoData {
   userEmail: string;
@@ -38,30 +36,30 @@ async function checkExistingAudiovisual(email: string): Promise<boolean> {
   return !existing.empty;
 }
 
-export const criarInscricaoAudiovisual = functions.https.onCall(async (request, context) => {
+export const criarInscricaoAudiovisual = onCall(async (request) => {
   const data = request.data as AudiovisualInscricaoData;
   
   const contextData = {
     functionName: "criarInscricaoAudiovisual",
-    userId: context?.auth?.uid,
+    userId: request.auth?.uid,
   };
 
   try {
     // Verificar autenticação
-    if (!context?.auth) {
+    if (!request.auth) {
       console.log("Tentativa de inscrição não autenticada", contextData);
-      throw new functions.https.HttpsError("unauthenticated", "Usuário não autenticado");
+      throw new Error("Usuário não autenticado");
     }
 
     // Validar dados
     if (!validateAudiovisualData(data)) {
-      throw new functions.https.HttpsError("invalid-argument", "Dados incompletos");
+      throw new Error("Dados incompletos");
     }
 
     // Verificar se já existe inscrição
     const existing = await checkExistingAudiovisual(data.userEmail);
     if (existing) {
-      throw new functions.https.HttpsError("already-exists", "Já existe uma inscrição para este email");
+      throw new Error("Já existe uma inscrição para este email");
     }
 
     // Criar inscrição usando transação
@@ -69,7 +67,7 @@ export const criarInscricaoAudiovisual = functions.https.onCall(async (request, 
       const inscricaoRef = db.collection("audiovisual").doc();
 
       const inscricaoData = {
-        userId: context.auth!.uid,
+        userId: request.auth!.uid,
         userEmail: data.userEmail,
         userName: data.userName,
         tipo: data.tipo,

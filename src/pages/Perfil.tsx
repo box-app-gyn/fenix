@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import UserGamificationCards from '../components/UserGamificationCards';
 
 const CATEGORIAS = [
   { value: 'atleta', label: 'Atleta', icon: '🏃‍♂️' },
@@ -497,6 +498,9 @@ export default function Perfil() {
                   {userData?.gamification?.tokens?.box && (
                     <TokensCard tokens={userData.gamification.tokens} />
                   )}
+
+                  {/* Cards de Gamificação */}
+                  <UserGamificationCards />
 
                   {/* Informações adicionais */}
                   <div className="space-y-3 pt-6 border-t border-white/20">

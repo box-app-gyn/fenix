@@ -112,4 +112,28 @@
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
   }
+  
+  /* Correções para menu hambúrguer e botões do header */
+  .hamburger-button {
+    color: white !important;
+  }
+  
+  .hamburger-button:hover {
+    color: #f472b6 !important;
+  }
+  
+  .hamburger-line {
+    background-color: currentColor !important;
+  }
+  
+  /* Garantir que botões no header tenham cores corretas */
+  header button {
+    color: white !important;
+    background-color: transparent !important;
+    border: none !important;
+  }
+  
+  header button:hover {
+    color: #f472b6 !important;
+  }
 }

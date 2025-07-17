@@ -1,9 +1,11 @@
 import Header from '../components/Header'
 import Hero from '../components/Hero'
-import Sobre from '../components/Sobre'
 import Comunidade from '../components/Comunidade'
 import TempoReal from '../components/TempoReal'
+import HomeGamification from '../components/HomeGamification'
+import ReferralLinkGenerator from '../components/ReferralLinkGenerator'
 import CallToAction from '../components/CallToAction'
+import Parceiros from '../components/Parceiros'
 import Footer from '../components/Footer'
 
 function LinhaDelicada() {
@@ -40,11 +42,15 @@ export default function Home() {
         <Header />
         <Hero />
         <LinhaDelicada />
-        <Sobre />
-        <LinhaDelicada />
         <Comunidade />
         <LinhaDelicada />
         <TempoReal isPublic={true} />
+        <LinhaDelicada />
+        <HomeGamification />
+        <LinhaDelicada />
+        <ReferralLinkGenerator />
+        <LinhaDelicada />
+        <Parceiros />
         <LinhaDelicada />
         <CallToAction />
         <Footer />

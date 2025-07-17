@@ -1,3 +1,6 @@
-import * as functions from "firebase-functions";
-export declare const validaAudiovisual: functions.https.CallableFunction<any, any, unknown>;
+export declare const validaAudiovisual: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    audiovisualId: string;
+    aprovado: boolean;
+}>, unknown>;
 //# sourceMappingURL=audiovisual.d.ts.map

@@ -123,6 +123,7 @@ export default function Header() {
             {/* Menu Desktop */}
             <nav className="hidden md:flex items-center space-x-8">
               <a href="/home" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Home</a>
+              <a href="/sobre" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Sobre</a>
               {(authUser?.role === 'atleta' || authUser?.role === 'jurado') && (
                 <a href="/hub" className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-sm">Hub</a>
               )}
@@ -210,6 +211,13 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Home
+                  </a>
+                  <a
+                    href="/sobre"
+                    className="text-white hover:text-pink-400 transition-all duration-300 font-medium text-lg py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Sobre
                   </a>
                   {(authUser?.role === 'atleta' || authUser?.role === 'jurado') && (
                     <a

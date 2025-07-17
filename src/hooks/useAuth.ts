@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithRedirect, signOut, User as FirebaseUser, getRedirectResult } from 'firebase/auth';
 import { auth, provider, db } from '../lib/firebase';
-import { doc, getDoc, setDoc, serverTimestamp, updateDoc, increment, addDoc, collection } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, updateDoc, increment, addDoc, collection, getDocs, query, where, arrayUnion } from 'firebase/firestore';
 import { GAMIFICATION_TOKENS } from '../types/firestore';
 
 interface User extends FirebaseUser {
@@ -120,6 +120,21 @@ export function useAuth() {
 
             if (!snapshot.exists()) {
               console.log('🆕 Criando novo usuário no Firestore...');
+
+              // Processar referência se existir
+              let referredByUid = null;
+              const referralCode = localStorage.getItem('referralCode');
+              if (referralCode) {
+                // Buscar usuário que indicou pelo código
+                const refQuery = await getDocs(
+                  query(collection(db, 'users'), where('gamification.referralCode', '==', referralCode))
+                );
+                if (!refQuery.empty) {
+                  const refUser = refQuery.docs[0];
+                  referredByUid = refUser.id;
+                }
+              }
+
               await setDoc(ref, {
                 uid: firebaseUser.uid,
                 displayName: firebaseUser.displayName || '',
@@ -136,7 +151,49 @@ export function useAuth() {
                 profileComplete: false,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
+                gamification: {
+                  tokens: {
+                    box: {
+                      balance: 0,
+                      totalEarned: 0,
+                      totalSpent: 0,
+                      lastTransaction: serverTimestamp(),
+                    },
+                  },
+                  level: 'iniciante',
+                  totalActions: 0,
+                  lastActionAt: serverTimestamp(),
+                  achievements: [],
+                  rewards: [],
+                  streakDays: 0,
+                  lastLoginStreak: serverTimestamp(),
+                  referralCode: `REF${firebaseUser.uid.slice(-6).toUpperCase()}`,
+                  referrals: [],
+                  referralTokens: 0,
+                  weeklyTokens: 0,
+                  monthlyTokens: 0,
+                  yearlyTokens: 0,
+                  bestStreak: 0,
+                  badges: [],
+                  challenges: [],
+                  ...(referredByUid ? { referredBy: referredByUid } : {}),
+                },
               });
+
+              // Se houve referência, atualizar o usuário que indicou
+              if (referredByUid) {
+                await updateDoc(doc(db, 'users', referredByUid), {
+                  'gamification.referrals': arrayUnion(firebaseUser.uid),
+                  'gamification.referralTokens': increment(50),
+                  'gamification.tokens.box.balance': increment(50),
+                  'gamification.tokens.box.totalEarned': increment(50),
+                  'gamification.totalActions': increment(1),
+                  'gamification.lastActionAt': serverTimestamp(),
+                  updatedAt: serverTimestamp(),
+                });
+                // Limpar referralCode do localStorage
+                localStorage.removeItem('referralCode');
+              }
 
               // Buscar dados novamente após criar
               const newSnapshot = await getDoc(ref);

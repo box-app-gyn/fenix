@@ -1,29 +1,5 @@
 // Utilitários para Google Analytics e Cookies
 
-// Declaração de tipo para gtag
-declare global {
-  interface Window {
-    gtag: (
-      command: 'config' | 'event' | 'set',
-      targetId: string,
-      config?: {
-        cookie_domain?: string
-        cookie_flags?: string
-        anonymize_ip?: boolean
-        allow_google_signals?: boolean
-        allow_ad_personalization_signals?: boolean
-        page_title?: string
-        page_location?: string
-        event_category?: string
-        event_label?: string
-        value?: number
-        send_page_view?: boolean
-        [key: string]: any
-      }
-    ) => void
-  }
-}
-
 export const initializeAnalytics = (measurementId: string) => {
   try {
     // Verificar se estamos em um ambiente válido

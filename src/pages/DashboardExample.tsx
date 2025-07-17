@@ -36,22 +36,22 @@ const DashboardExample: React.FC = () => {
   // ============================================================================
 
   // Estatísticas com auto-refresh a cada 30 segundos
-  const { stats: autoStats, refetch: refetchStats } = useDashboardStats(true, 30000);
+  const { stats: autoStats } = useDashboardStats(true, 30000);
 
   // Usuários com filtros
-  const { users: filteredUsers, refetch: refetchUsers } = useUsersData({
+  const { users: filteredUsers } = useUsersData({
     limit: 10,
     role: 'user'
   });
 
   // Times com filtros
-  const { teams: filteredTeams, refetch: refetchTeams } = useTeamsData({
+  const { teams: filteredTeams } = useTeamsData({
     limit: 10,
     status: 'confirmado'
   });
 
   // Audiovisual com filtros
-  const { audiovisual: filteredAudiovisual, refetch: refetchAudiovisual } = useAudiovisualData({
+  const { audiovisual: filteredAudiovisual } = useAudiovisualData({
     limit: 10,
     status: 'aprovado'
   });

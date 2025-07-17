@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db } from '../lib/firebase'; 
 import { useAuth } from '../hooks/useAuth';
 
 export default function CadastroMidia() {
@@ -17,6 +17,7 @@ export default function CadastroMidia() {
     cidade: '',
     mensagem: '',
     tipoMidia: '',
+    comentariosOutro: '',
     portfolio: '',
     equipamentos: '',
   });
@@ -24,6 +25,12 @@ export default function CadastroMidia() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    // Validação para campo "outro"
+    if (formData.tipoMidia === 'outro' && !formData.comentariosOutro.trim()) {
+      alert('Por favor, especifique o tipo quando selecionar "Outro".');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -66,8 +73,8 @@ export default function CadastroMidia() {
           className="bg-white rounded-lg shadow-xl p-8"
         >
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">📸 Cadastro de Mídia</h1>
-            <p className="text-gray-600">Complete seu perfil para cobrir o Interbox 2025</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">📸 Cadastro Creators e Audiovisual</h1>
+            <p className="text-gray-600">Complete seu perfil para cobrir o INTERBOX 2025</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -156,7 +163,7 @@ export default function CadastroMidia() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tipo de Mídia *
+                Tipo de Creator ou Audiovisual *
               </label>
               <select
                 name="tipoMidia"
@@ -170,10 +177,27 @@ export default function CadastroMidia() {
                 <option value="videomaker">Videomaker</option>
                 <option value="jornalista">Jornalista</option>
                 <option value="influencer">Influencer</option>
-                <option value="blogger">Blogger</option>
+                <option value="youtuber">YouTuber</option>
                 <option value="outro">Outro</option>
               </select>
             </div>
+
+            {formData.tipoMidia === 'outro' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Especifique o tipo *
+                </label>
+                <input
+                  type="text"
+                  name="comentariosOutro"
+                  value={formData.comentariosOutro}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  placeholder="Ex: Podcaster, Streamer, Editor de vídeo..."
+                />
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

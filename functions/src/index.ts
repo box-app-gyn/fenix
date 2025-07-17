@@ -2,27 +2,24 @@
 // FIREBASE FUNCTIONS - INDEX
 // ============================================================================
 
-// Importar funções existentes
+import { onCall } from 'firebase-functions/v2/https';
+import { db, admin } from './firebase-admin';
+
+// ============================================================================
+// IMPORTAR FUNÇÕES EXISTENTES (após inicialização)
+// ============================================================================
+
 export * from './teams';
 export * from './pedidos';
 export * from './audiovisual';
 export * from './audiovisual-inscricao';
+export * from './flowpay';
 
 // Dashboard API - Removida para simplificar
 
 // ============================================================================
 // FUNÇÕES LEGADAS (mantidas para compatibilidade)
 // ============================================================================
-
-import { onCall } from 'firebase-functions/v2/https';
-import * as admin from 'firebase-admin';
-
-// Inicializar Firebase Admin se não estiver inicializado
-if (!admin.apps.length) {
-  admin.initializeApp();
-}
-
-const db = admin.firestore();
 
 // Função simples de teste
 export const testFunction = onCall(async (request) => {

@@ -1,0 +1,1086 @@
+{
+  "users": [
+    {
+      "id": "0CUa10B2KjcPEYfWq2KOQnsByKj1",
+      "data": {
+        "nome": "dfgsdfg",
+        "email": "gsdgs@gmail.com",
+        "telefone": "sdgfsd",
+        "whatsapp": "fgsdfg",
+        "box": "sdsdfg",
+        "categoria": "atleta",
+        "cidade": "sdgsdfg",
+        "mensagem": "sdfgsdg",
+        "uid": "0CUa10B2KjcPEYfWq2KOQnsByKj1",
+        "displayName": "dfgsdfg",
+        "role": "atleta",
+        "photoURL": null,
+        "isActive": true,
+        "profileComplete": true,
+        "gamification": {
+          "level": "iniciante",
+          "totalActions": 1,
+          "achievements": [
+            "setup_profile_completo"
+          ],
+          "rewards": [],
+          "streakDays": 1,
+          "referralCode": "REFSBYKJ1",
+          "referrals": [],
+          "referralTokens": 0,
+          "weeklyTokens": 50,
+          "monthlyTokens": 50,
+          "yearlyTokens": 50,
+          "bestStreak": 1,
+          "badges": [
+            "setup_profile_completo"
+          ],
+          "challenges": [],
+          "lastActionAt": {
+            "_seconds": 1752751516,
+            "_nanoseconds": 315000000
+          },
+          "tokens": {
+            "box": {
+              "balance": 50,
+              "totalEarned": 50,
+              "totalSpent": 0,
+              "lastTransaction": {
+                "_seconds": 1752751516,
+                "_nanoseconds": 315000000
+              }
+            }
+          },
+          "lastLoginStreak": {
+            "_seconds": 1752751516,
+            "_nanoseconds": 315000000
+          }
+        },
+        "createdAt": {
+          "_seconds": 1752751516,
+          "_nanoseconds": 315000000
+        },
+        "updatedAt": {
+          "_seconds": 1752751516,
+          "_nanoseconds": 315000000
+        }
+      }
+    },
+    {
+      "id": "1eEkuMBG70MWaVRyophx9pe8SN13",
+      "data": {
+        "uid": "1eEkuMBG70MWaVRyophx9pe8SN13",
+        "email": "test-1751171976808@example.com",
+        "displayName": "Test User",
+        "photoURL": "",
+        "role": "publico",
+        "isActive": true,
+        "createdAt": {
+          "_seconds": 1751171979,
+          "_nanoseconds": 76000000
+        },
+        "updatedAt": {
+          "_seconds": 1751171979,
+          "_nanoseconds": 76000000
+        }
+      }
+    },
+    {
+      "id": "3HTsHAWxz9h2Qsn4ErAltRjO0Tz2",
+      "data": {
+        "uid": "3HTsHAWxz9h2Qsn4ErAltRjO0Tz2",
+        "email": "alexandre.punkcf@gmail.com",
+        "role": "publico",
+        "isActive": true,
+        "cidade": "Goiânia",
+        "box": "Punk CrossFit",
+        "whatsapp": "62993942729",
+        "telefone": "",
+        "categoria": "atleta",
+        "mensagem": "",
+        "gamification": {
+          "points": 10,
+          "level": "iniciante",
+          "totalActions": 1,
+          "lastActionAt": {
+            "_seconds": 1752353102,
+            "_nanoseconds": 653000000
+          },
+          "achievements": [
+            "first_blood"
+          ],
+          "rewards": [],
+          "streakDays": 1,
+          "lastLoginStreak": {
+            "_seconds": 1752353102,
+            "_nanoseconds": 653000000
+          },
+          "referralCode": "REF3HTSHAWX",
+          "referrals": [],
+          "referralPoints": 0
+        },
+        "createdAt": {
+          "_seconds": 1752353104,
+          "_nanoseconds": 233000000
+        },
+        "photoURL": null,
+        "displayName": null,
+        "status": "active",
+        "updatedAt": {
+          "_seconds": 1752353104,
+          "_nanoseconds": 233000000
+        }
+      }
+    },
+    {
+      "id": "B9iLh94MhQOfi8EOP8eaR5hOQe43",
+      "data": {
+        "nome": "FlowOFF Marketing na Blockchain",
+        "email": "nettomello@flowoff.com.br",
+        "telefone": "62983231110",
+        "whatsapp": "62983231110",
+        "box": "Avanti",
+        "categoria": "midia",
+        "cidade": "Goiania",
+        "mensagem": "bora moer",
+        "uid": "B9iLh94MhQOfi8EOP8eaR5hOQe43",
+        "displayName": "FlowOFF Marketing na Blockchain",
+        "role": "midia",
+        "isActive": true,
+        "profileComplete": true,
+        "createdAt": {
+          "_seconds": 1752606349,
+          "_nanoseconds": 591000000
+        },
+        "updatedAt": {
+          "_seconds": 1752606349,
+          "_nanoseconds": 591000000
+        }
+      }
+    },
+    {
+      "id": "KAldxyqNeNapysskFbBLsR9ep2n1",
+      "data": {
+        "uid": "KAldxyqNeNapysskFbBLsR9ep2n1",
+        "email": "avanticrossfit@gmail.com",
+        "displayName": "Rodrigo Bittencourt",
+        "photoURL": "",
+        "isActive": true,
+        "createdAt": {
+          "_seconds": 1751252838,
+          "_nanoseconds": 616000000
+        },
+        "role": "admin",
+        "mfaEnabled": false,
+        "updatedAt": {
+          "_seconds": 1751254173,
+          "_nanoseconds": 420000000
+        }
+      }
+    },
+    {
+      "id": "NH6myS1FjCQrXm7Lwok0CGALr9B3",
+      "data": {
+        "uid": "NH6myS1FjCQrXm7Lwok0CGALr9B3",
+        "email": "nettomello@hotmail.com",
+        "role": "publico",
+        "isActive": true,
+        "cidade": "Goiania",
+        "box": "AVANTI",
+        "whatsapp": "62983231110",
+        "telefone": "",
+        "categoria": "midia",
+        "mensagem": "",
+        "gamification": {
+          "points": 10,
+          "level": "iniciante",
+          "totalActions": 1,
+          "lastActionAt": {
+            "_seconds": 1752353587,
+            "_nanoseconds": 154000000
+          },
+          "achievements": [
+            "first_blood"
+          ],
+          "rewards": [],
+          "streakDays": 1,
+          "lastLoginStreak": {
+            "_seconds": 1752353587,
+            "_nanoseconds": 154000000
+          },
+          "referralCode": "REFNH6MYS1F",
+          "referrals": [],
+          "referralPoints": 0
+        },
+        "createdAt": {
+          "_seconds": 1752353587,
+          "_nanoseconds": 12000000
+        },
+        "photoURL": null,
+        "displayName": null,
+        "status": "active",
+        "userType": "atleta",
+        "updatedAt": {
+          "_seconds": 1752353605,
+          "_nanoseconds": 618000000
+        }
+      }
+    },
+    {
+      "id": "NZRS4iGiQWOVwiFPbp7zkO60aRe2",
+      "data": {
+        "nome": "Netto",
+        "email": "nettomello@hotmail.com",
+        "telefone": "62983231110",
+        "whatsapp": "62983231110",
+        "box": "Neo",
+        "cidade": "Goiania",
+        "mensagem": "Quero filmar",
+        "uid": "NZRS4iGiQWOVwiFPbp7zkO60aRe2",
+        "displayName": "Netto",
+        "categoria": "midia",
+        "role": "midia",
+        "isActive": true,
+        "profileComplete": true,
+        "createdAt": {
+          "_seconds": 1752709487,
+          "_nanoseconds": 405000000
+        },
+        "gamification": {
+          "level": "iniciante",
+          "achievements": [
+            "primeiro_cadastro"
+          ],
+          "rewards": [],
+          "referralCode": "REF60ARE2",
+          "referrals": [],
+          "referralTokens": 0,
+          "badges": [
+            "primeiro_cadastro"
+          ],
+          "challenges": [],
+          "streakDays": 2,
+          "yearlyTokens": 55,
+          "bestStreak": 2,
+          "lastActionAt": {
+            "_seconds": 1752724181,
+            "_nanoseconds": 514000000
+          },
+          "weeklyTokens": 55,
+          "monthlyTokens": 55,
+          "tokens": {
+            "box": {
+              "totalSpent": 0,
+              "totalEarned": 55,
+              "balance": 55,
+              "lastTransaction": {
+                "_seconds": 1752724181,
+                "_nanoseconds": 514000000
+              }
+            }
+          },
+          "totalActions": 2,
+          "lastLoginStreak": {
+            "_seconds": 1752724181,
+            "_nanoseconds": 514000000
+          }
+        },
+        "updatedAt": {
+          "_seconds": 1752724181,
+          "_nanoseconds": 514000000
+        }
+      }
+    },
+    {
+      "id": "PPOMyBcMaHRAA7NQR3JVXQ95pB02",
+      "data": {
+        "uid": "PPOMyBcMaHRAA7NQR3JVXQ95pB02",
+        "displayName": "New Box",
+        "email": "newbox.mktbrasil@gmail.com",
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocKL_6GgeNhSuz2XVrMWCa45Qsrtk4KsmSQJStev2WbS4KWrWw=s96-c",
+        "telefone": null,
+        "whatsapp": null,
+        "box": "",
+        "categoria": "publico",
+        "cidade": "",
+        "mensagem": "",
+        "role": "publico",
+        "isActive": true,
+        "profileComplete": false,
+        "createdAt": {
+          "_seconds": 1752605823,
+          "_nanoseconds": 393000000
+        },
+        "updatedAt": {
+          "_seconds": 1752605823,
+          "_nanoseconds": 393000000
+        }
+      }
+    },
+    {
+      "id": "Ro7NbBq40zahPUqjsdby",
+      "data": {
+        "email": "admin@interbox.com",
+        "displayName": "Admin Interbox",
+        "role": "admin",
+        "isActive": true,
+        "createdAt": {
+          "_seconds": 1751065495,
+          "_nanoseconds": 325000000
+        },
+        "updatedAt": {
+          "_seconds": 1751065491,
+          "_nanoseconds": 947000000
+        }
+      }
+    },
+    {
+      "id": "admin-cerrado",
+      "data": {
+        "email": "admin@cerrado.com",
+        "displayName": "Admin Cerrado",
+        "isActive": true,
+        "createdAt": {
+          "_seconds": 1751085333,
+          "_nanoseconds": 799000000
+        },
+        "updatedAt": {
+          "_seconds": 1751085333,
+          "_nanoseconds": 799000000
+        },
+        "role": "'admin', 'marketing' , 'dev'"
+      }
+    },
+    {
+      "id": "exemplo-usuario",
+      "data": {
+        "uid": "exemplo-uid-123",
+        "email": "usuario@exemplo.com",
+        "displayName": "João Silva",
+        "role": "publico",
+        "isActive": true,
+        "cidade": "São Paulo",
+        "whatsapp": 11999999999,
+        "telefone": 11999999999,
+        "mensagem": "Quero participar do evento!",
+        "createdAt": {
+          "_seconds": 1751614705,
+          "_nanoseconds": 264000000
+        },
+        "updatedAt": {
+          "_seconds": 1751614721,
+          "_nanoseconds": 548000000
+        },
+        "photoURL": "URL da foto do perfil",
+        "box": "Nome da academia/box",
+        "categoria": "'atleta' | 'judge' | 'espectador' | 'midia'"
+      }
+    },
+    {
+      "id": "gNaWKMipqGexwsM2I3r18VCo3SR2",
+      "data": {
+        "uid": "gNaWKMipqGexwsM2I3r18VCo3SR2",
+        "email": "gopersonal82@gmail.com",
+        "photoURL": "",
+        "role": "admin",
+        "isActive": true,
+        "mfaEnabled": false,
+        "createdAt": {
+          "_seconds": 1751091373,
+          "_nanoseconds": 461000000
+        },
+        "displayName": "Guilherme Souza",
+        "userType": "atleta",
+        "updatedAt": {
+          "_seconds": 1752352113,
+          "_nanoseconds": 305000000
+        }
+      }
+    },
+    {
+      "id": "k2oekEkw7AU11mG3NurO1QjLfFn2",
+      "data": {
+        "nome": "FlowPay",
+        "email": "marketingcriptocash@gmail.com",
+        "telefone": "62983231110",
+        "whatsapp": "62983231110",
+        "box": "cripto Box",
+        "categoria": "publico",
+        "cidade": "Goiânia",
+        "mensagem": "Bora",
+        "uid": "k2oekEkw7AU11mG3NurO1QjLfFn2",
+        "displayName": "FlowPay",
+        "role": "publico",
+        "photoURL": null,
+        "isActive": true,
+        "profileComplete": true,
+        "gamification": {
+          "level": "iniciante",
+          "totalActions": 1,
+          "achievements": [
+            "setup_profile_completo"
+          ],
+          "rewards": [],
+          "streakDays": 1,
+          "referralCode": "REFJLFFN2",
+          "referrals": [],
+          "referralTokens": 0,
+          "weeklyTokens": 50,
+          "monthlyTokens": 50,
+          "yearlyTokens": 50,
+          "bestStreak": 1,
+          "badges": [
+            "setup_profile_completo"
+          ],
+          "challenges": [],
+          "lastActionAt": {
+            "_seconds": 1752755103,
+            "_nanoseconds": 185000000
+          },
+          "tokens": {
+            "box": {
+              "balance": 50,
+              "totalEarned": 50,
+              "totalSpent": 0,
+              "lastTransaction": {
+                "_seconds": 1752755103,
+                "_nanoseconds": 185000000
+              }
+            }
+          },
+          "lastLoginStreak": {
+            "_seconds": 1752755103,
+            "_nanoseconds": 185000000
+          }
+        },
+        "createdAt": {
+          "_seconds": 1752755103,
+          "_nanoseconds": 185000000
+        },
+        "updatedAt": {
+          "_seconds": 1752755103,
+          "_nanoseconds": 185000000
+        }
+      }
+    },
+    {
+      "id": "k6A5e2gURIWS7BhcNQxrtPCSmih2",
+      "data": {
+        "nome": "Lara Ribeiro",
+        "email": "melloribeiro.lara@gmail.com",
+        "telefone": "62982004365",
+        "whatsapp": "62982004365",
+        "box": "Socorro Deus ",
+        "categoria": "publico",
+        "cidade": "Goiânia",
+        "mensagem": "Encantamento e excelência, gerindo sua marca com responsabilidade e inovação. ",
+        "uid": "k6A5e2gURIWS7BhcNQxrtPCSmih2",
+        "displayName": "Lara Ribeiro",
+        "role": "publico",
+        "photoURL": "https://firebasestorage.googleapis.com/v0/b/interbox-app-8d400.firebasestorage.app/o/users%2Fk6A5e2gURIWS7BhcNQxrtPCSmih2%2Fprofile-photo?alt=media&token=7dac9dd9-2800-483c-8a4a-8f56c96ffb6e",
+        "isActive": true,
+        "profileComplete": true,
+        "gamification": {
+          "level": "iniciante",
+          "totalActions": 1,
+          "achievements": [
+            "setup_profile_completo",
+            "foto_perfil"
+          ],
+          "rewards": [],
+          "streakDays": 1,
+          "referralCode": "REFCSMIH2",
+          "referrals": [],
+          "referralTokens": 0,
+          "weeklyTokens": 60,
+          "monthlyTokens": 60,
+          "yearlyTokens": 60,
+          "bestStreak": 1,
+          "badges": [
+            "setup_profile_completo",
+            "foto_perfil"
+          ],
+          "challenges": [],
+          "lastActionAt": {
+            "_seconds": 1752761911,
+            "_nanoseconds": 570000000
+          },
+          "tokens": {
+            "box": {
+              "balance": 60,
+              "totalEarned": 60,
+              "totalSpent": 0,
+              "lastTransaction": {
+                "_seconds": 1752761911,
+                "_nanoseconds": 570000000
+              }
+            }
+          },
+          "lastLoginStreak": {
+            "_seconds": 1752761911,
+            "_nanoseconds": 570000000
+          }
+        },
+        "createdAt": {
+          "_seconds": 1752761911,
+          "_nanoseconds": 570000000
+        },
+        "updatedAt": {
+          "_seconds": 1752761911,
+          "_nanoseconds": 570000000
+        }
+      }
+    },
+    {
+      "id": "pQbYtUdIoXfMeWv7TrcL5BSWQVm2",
+      "data": {
+        "uid": "pQbYtUdIoXfMeWv7TrcL5BSWQVm2",
+        "displayName": "Julia Mendes",
+        "email": "juliatattoo62@gmail.com",
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocKzdj2Te9TjmNHdtIYcaqqUyIHD6_Kizkb42XpKEwd_VJm81Q=s96-c",
+        "role": "publico",
+        "isActive": true,
+        "cidade": "Goiania",
+        "box": "Gt63",
+        "whatsapp": "62982062883",
+        "telefone": "62982062883",
+        "categoria": "espectador",
+        "mensagem": "",
+        "createdAt": {
+          "_seconds": 1752313765,
+          "_nanoseconds": 388000000
+        },
+        "gamification": {
+          "points": 0,
+          "level": 1,
+          "experience": 0,
+          "achievements": [],
+          "rewards": [],
+          "totalActions": 0,
+          "streak": 0,
+          "lastStreakDate": null,
+          "rank": "Novato",
+          "badges": [],
+          "challenges": [],
+          "leaderboardPosition": null,
+          "weeklyPoints": 0,
+          "monthlyPoints": 0,
+          "totalPointsEarned": 0,
+          "gamificationEnabled": true,
+          "preferences": {
+            "notifications": true,
+            "sound": true,
+            "animations": true
+          },
+          "lastActivity": {
+            "_seconds": 1752319105,
+            "_nanoseconds": 734000000
+          }
+        },
+        "updatedAt": {
+          "_seconds": 1752319105,
+          "_nanoseconds": 734000000
+        }
+      }
+    },
+    {
+      "id": "ti2glhAKD2Wf1iLBAkf53kgIYsy1",
+      "data": {
+        "nome": "Netto",
+        "email": "nettomello@hotmail.com",
+        "telefone": "62983231110",
+        "whatsapp": "62983231110",
+        "box": "Avant",
+        "categoria": "publico",
+        "cidade": "Goiania",
+        "mensagem": "",
+        "uid": "ti2glhAKD2Wf1iLBAkf53kgIYsy1",
+        "displayName": "Netto",
+        "role": "publico",
+        "isActive": true,
+        "profileComplete": true,
+        "createdAt": {
+          "_seconds": 1752606854,
+          "_nanoseconds": 402000000
+        },
+        "photoURL": "https://firebasestorage.googleapis.com/v0/b/interbox-app-8d400.firebasestorage.app/o/users%2Fti2glhAKD2Wf1iLBAkf53kgIYsy1%2Fprofile-photo?alt=media&token=159fc0a6-edbe-4f39-81bb-68a2634fdc85",
+        "updatedAt": {
+          "_seconds": 1752606902,
+          "_nanoseconds": 48000000
+        }
+      }
+    },
+    {
+      "id": "umVyWhsEPISHf2ZYCvutA7xpWsq1",
+      "data": {
+        "uid": "umVyWhsEPISHf2ZYCvutA7xpWsq1",
+        "email": "test-1751171218404@example.com",
+        "displayName": "Test User",
+        "photoURL": "",
+        "role": "publico",
+        "isActive": true,
+        "createdAt": {
+          "_seconds": 1751171222,
+          "_nanoseconds": 965000000
+        },
+        "updatedAt": {
+          "_seconds": 1751171222,
+          "_nanoseconds": 965000000
+        }
+      }
+    },
+    {
+      "id": "w5gjZhXQEUMVyfOaxsRXhaqdl4M2",
+      "data": {
+        "uid": "w5gjZhXQEUMVyfOaxsRXhaqdl4M2",
+        "displayName": "FlowOFF Gestão de Redes",
+        "email": "atendimento@flowoff.com.br",
+        "photoURL": "https://lh3.googleusercontent.com/a-/ALV-UjW3LRDvXezFKLMYEgMN4Rt_XNSt07XNXai7bhI42UlHlPQuR19f3fuyBbPgMNZVce_mPPOHexjQ3J3i5EVsH0JPHsTyfIgtOCrUrah2sMjlusBOk8noa68ZIbPhjYWjaP79srpxw4_jhVW_dHlBpVE6GM98R_sAjE_fS_Hy5oXZOqLlpBDHNW_6xQ4-b9bhwi6H7fPXerlx9LqCyduXyLNPGAoANfEMR7YLUkAYQ1SnZJV50CxfoOzcY9tejXrY5CyzWAyTl5wi7XvT-7dOBl_qDnOZcfRaeOJzfQOYWMoTDcfGBnV31IXjrypn0O3KWn60P_6h6-5V8RebG3xLg5W9wlmuJHahA-TI9-zU9WHjVdTjk6xzgFDEf5KkO-OPcobsD3-M5TBgDMlq59bcO2-QVsOghLlzYo7B6nOHJ3XAKwjOVSSMgijTFj-TdMLvvi7GUaTx4DaKlC_mr4zsrMsw046e5J0gIKipvxM43npJIjB2aNK8nwkV_YDffJan41DWMN_kdCWtgS1pnZ2N22020kwYNn7gApRsXoDGHjACcZRKsq29RajyJROWJuMD0e6x7w-aJQQ89JEWiKx-VA-OBoHBcY-0mr78jiQOEhvkyOOGW-DBCICcGC4aMRehej0M9mtHFX2w2rGzjeGKPmINYCrVdqptGCB6aL-cT9CXG8kZ5gfyv0hkOa9iyGpTDUVeeaqfT41ox-TLTL2hoA2fLV2mfg_Q9D15s9aS-B-5VjdrlKzIM1dxD6HhDO2AHdHUjWSr468a87hRfEKPn2SCad73crqetm5tUMVDzxalz1Sb6CCZqF-uiqnOY_8luF9Ogj4ofJ6WF08gS-6UW1z5bUe4zXISAH0vsS424YUgXd3Vdxi69BNYsz_YwYj9-nwofm3UTIjj6J6MKyfOtXf42uD116PQa5GYmAZV4PAouZCo6WmC86QJfZ7qt0Ua6-cVSlZMzcfDLWyrFJ633wg-sy3CXIZp=s96-c",
+        "telefone": null,
+        "whatsapp": null,
+        "box": "",
+        "categoria": "publico",
+        "cidade": "",
+        "mensagem": "",
+        "role": "publico",
+        "isActive": true,
+        "profileComplete": false,
+        "createdAt": {
+          "_seconds": 1752604863,
+          "_nanoseconds": 559000000
+        },
+        "updatedAt": {
+          "_seconds": 1752604863,
+          "_nanoseconds": 559000000
+        }
+      }
+    },
+    {
+      "id": "xX67HIIBMbXCNQc0bdRrm9eqBAc2",
+      "data": {
+        "uid": "xX67HIIBMbXCNQc0bdRrm9eqBAc2",
+        "displayName": "Mar Cash",
+        "email": "marketingcriptocash@gmail.com",
+        "photoURL": "https://lh3.googleusercontent.com/a/ACg8ocK1Qs8KZhXMTYz_QYz0Kt1lx90n-6eTrJPvqgHaGTOSUaU_JQ=s96-c",
+        "telefone": null,
+        "whatsapp": null,
+        "box": "",
+        "categoria": "publico",
+        "cidade": "",
+        "mensagem": "",
+        "role": "publico",
+        "isActive": true,
+        "profileComplete": false,
+        "createdAt": {
+          "_seconds": 1752601855,
+          "_nanoseconds": 422000000
+        },
+        "updatedAt": {
+          "_seconds": 1752601855,
+          "_nanoseconds": 422000000
+        }
+      }
+    },
+    {
+      "id": "yKeMBiLIAQSvenhOh97aqMzeFAr1",
+      "data": {
+        "uid": "yKeMBiLIAQSvenhOh97aqMzeFAr1",
+        "email": "nettoaeb1@gmail.com",
+        "role": "admin",
+        "isActive": true,
+        "mfaEnabled": false,
+        "createdAt": {
+          "_seconds": 1751091374,
+          "_nanoseconds": 321000000
+        },
+        "area": "",
+        "phoneNumber": "62983231110",
+        "displayName": "MELLØ",
+        "bio": "NEØ",
+        "experience": "",
+        "photoURL": "https://firebasestorage.googleapis.com/v0/b/interbox-app-8d400.firebasestorage.app/o/avatars%2FyKeMBiLIAQSvenhOh97aqMzeFAr1?alt=media&token=20b06f52-51a8-4233-92a7-e33dd8acafb8",
+        "gamification": {
+          "points": 0,
+          "level": 1,
+          "experience": 0,
+          "achievements": [],
+          "rewards": [],
+          "totalActions": 0,
+          "streak": 0,
+          "lastStreakDate": null,
+          "rank": "Novato",
+          "badges": [],
+          "challenges": [],
+          "leaderboardPosition": null,
+          "weeklyPoints": 0,
+          "monthlyPoints": 0,
+          "totalPointsEarned": 0,
+          "gamificationEnabled": true,
+          "preferences": {
+            "notifications": true,
+            "sound": true,
+            "animations": true
+          },
+          "lastActivity": {
+            "_seconds": 1752319105,
+            "_nanoseconds": 818000000
+          }
+        },
+        "updatedAt": {
+          "_seconds": 1752319105,
+          "_nanoseconds": 818000000
+        },
+        "emailVerified": true,
+        "userType": "atleta",
+        "lastLoginAt": {
+          "_seconds": 1752329946,
+          "_nanoseconds": 264000000
+        }
+      }
+    }
+  ],
+  "teams": [
+    {
+      "id": "uVFR1oL5NsX2MeIGbstt",
+      "data": {
+        "id": "time_001",
+        "nome": "Time Interbox",
+        "captainId": "user_captain_id",
+        "box": "'CrossFit Interbox'",
+        "cidade": "'São Paulo'",
+        "estado": "'SP'",
+        "kitEspecial": true,
+        "checkInOnline": false,
+        "termosAceitos": false,
+        "termosAceitosEm": null,
+        "flowpayOrderId": null,
+        "pixCode": null,
+        "pixExpiration": null,
+        "cardPayment": null,
+        "createdAt": {
+          "_seconds": 1752277048,
+          "_nanoseconds": 163000000
+        },
+        "statusPagamento": "pending",
+        "lote": "lote1",
+        "categoria": "Iniciante",
+        "valorTotal": 394.95,
+        "quantidade": 4,
+        "status": "pending",
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 254000000
+        },
+        "atletas": [
+          "email"
+        ]
+      }
+    }
+  ],
+  "times": [],
+  "convites_times": [],
+  "categorias": [
+    {
+      "id": "Amador",
+      "data": {
+        "disponivelLote1": true,
+        "createdAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 860000000
+        },
+        "ordem": 4,
+        "contaParaKitEspecial": true,
+        "nome": "Amador",
+        "id": "Amador",
+        "ativa": true,
+        "descricao": "Amador",
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 860000000
+        }
+      }
+    },
+    {
+      "id": "Iniciante",
+      "data": {
+        "id": "Iniciante",
+        "nome": "Iniciante",
+        "ativa": true,
+        "disponivelLote1": true,
+        "contaParaKitEspecial": true,
+        "createdAt": {
+          "_seconds": 1752287775,
+          "_nanoseconds": 0
+        },
+        "ordem": 6,
+        "descricao": "Iniciante",
+        "updatedAt": {
+          "_seconds": 1752287775,
+          "_nanoseconds": 0
+        }
+      }
+    },
+    {
+      "id": "Master 145+",
+      "data": {
+        "id": "Master 145+",
+        "ativa": true,
+        "disponivelLote1": true,
+        "contaParaKitEspecial": true,
+        "createdAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 788000000
+        },
+        "ordem": 3,
+        "nome": "Master 145+",
+        "descricao": "Master 145+",
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 788000000
+        }
+      }
+    },
+    {
+      "id": "RX",
+      "data": {
+        "ID": "'RX',",
+        "disponivelLote1": false,
+        "createdAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 627000000
+        },
+        "ordem": 1,
+        "contaParaKitEspecial": false,
+        "nome": "RX",
+        "id": "RX",
+        "ativa": true,
+        "descricao": "RX",
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 627000000
+        }
+      }
+    },
+    {
+      "id": "Scale",
+      "data": {
+        "ativa": true,
+        "disponivelLote1": true,
+        "contaParaKitEspecial": true,
+        "createdAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 931000000
+        },
+        "ordem": 5,
+        "nome": "Scale",
+        "id": "Scale",
+        "descricao": "Scale",
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 931000000
+        }
+      }
+    },
+    {
+      "id": "Scaled",
+      "data": {
+        "ativa": true,
+        "disponivelLote1": true,
+        "contaParaKitEspecial": true,
+        "createdAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 708000000
+        },
+        "ordem": 2,
+        "nome": "Scaled",
+        "id": "Scaled",
+        "descricao": "Scaled",
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 708000000
+        }
+      }
+    }
+  ],
+  "lotes": [
+    {
+      "id": "lote2",
+      "data": {
+        "id": "lote2",
+        "nome": "Lote 2",
+        "ativo": false,
+        "dataInicio": {
+          "_seconds": 1753401600,
+          "_nanoseconds": 0
+        },
+        "dataFim": {
+          "_seconds": 1755302400,
+          "_nanoseconds": 0
+        },
+        "limiteTimes": 180,
+        "valores": {
+          "RX": 49495,
+          "Master 145+": 39495,
+          "Amador": 39495,
+          "Scale": 39495,
+          "Iniciante": 39495
+        },
+        "createdAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 478000000
+        },
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 478000000
+        }
+      }
+    },
+    {
+      "id": "lote3",
+      "data": {
+        "id": "lote3",
+        "nome": "Lote 3",
+        "ativo": false,
+        "dataInicio": {
+          "_seconds": 1755388800,
+          "_nanoseconds": 0
+        },
+        "dataFim": {
+          "_seconds": 1759190400,
+          "_nanoseconds": 0
+        },
+        "limiteTimes": 180,
+        "valores": {
+          "RX": 49495,
+          "Master 145+": 39495,
+          "Amador": 39495,
+          "Scale": 39495,
+          "Iniciante": 39495
+        },
+        "createdAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 545000000
+        },
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 545000000
+        }
+      }
+    },
+    {
+      "id": "lotes",
+      "data": {
+        "id": "'lote1',",
+        "nome": "'Lote 1',",
+        "ativo": true,
+        "limiteTimes": 100,
+        "limiteKitEspecial": 50,
+        "dataInicio": {
+          "_seconds": 1752408066,
+          "_nanoseconds": 242000000
+        },
+        "dataFim": {
+          "_seconds": 1753401889,
+          "_nanoseconds": 453000000
+        },
+        "createdAt": {
+          "_seconds": 1752278876,
+          "_nanoseconds": 911000000
+        },
+        "valores": {
+          "Amador": 39495,
+          "Iniciante": 39495,
+          "Master 145+": 39495,
+          "RX": 49495,
+          "Scaled": 39495
+        }
+      }
+    }
+  ],
+  "sistema": [
+    {
+      "id": "SiY3O8vl33cpuM21LQLx",
+      "data": {
+        "id": "main",
+        "inscricoesAbertas": true,
+        "timesInscritos": 0,
+        "timesAprovados": 0,
+        "proximoNumeroTime": 1,
+        "checkInAberto": false,
+        "checkInAbreEm": {
+          "_seconds": 1752277196,
+          "_nanoseconds": 890000000
+        },
+        "dataEvento": {
+          "_seconds": 1761300086,
+          "_nanoseconds": 592000000
+        },
+        "localEvento": "'Goiânia Arena - Goiânia, GO' ",
+        "limiteLote1": 50,
+        "limiteTotal": 180,
+        "createdAt": {
+          "_seconds": 1752277320,
+          "_nanoseconds": 416000000
+        },
+        "loteAtual": "lote1",
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 175000000
+        }
+      }
+    }
+  ],
+  "estatisticas": [
+    {
+      "id": "evento",
+      "data": {
+        "estatisticasPorCategoria": {
+          "RX": {
+            "times": 0,
+            "atletas": 0
+          },
+          "Scaled": {
+            "times": 0,
+            "atletas": 0
+          },
+          "Master 145+": {
+            "times": 0,
+            "atletas": 0
+          },
+          "Amador": {
+            "times": 0,
+            "atletas": 0
+          },
+          "Scale": {
+            "times": 0,
+            "atletas": 0
+          },
+          "Iniciante": {
+            "times": 0,
+            "atletas": 0
+          }
+        },
+        "estatisticasPorLote": {
+          "lote1": {
+            "times": 0,
+            "valor": 0,
+            "kitEspecial": 0
+          },
+          "lote2": {
+            "times": 0,
+            "valor": 0
+          },
+          "lote3": {
+            "times": 0,
+            "valor": 0
+          }
+        },
+        "estatisticasPorEstado": {},
+        "updatedAt": {
+          "_seconds": 1752287774,
+          "_nanoseconds": 402000000
+        }
+      }
+    }
+  ]
+}

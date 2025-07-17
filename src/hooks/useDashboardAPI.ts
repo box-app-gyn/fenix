@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { collection, getDocs, query, where, orderBy, limit, onSnapshot, doc } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, limit, doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from './useAuth';
 
@@ -111,7 +111,7 @@ export function useDashboardAPI() {
         getDocs(collection(db, 'teams')),
         getDocs(collection(db, 'audiovisual')),
         getDocs(collection(db, 'pedidos')),
-        doc(db, 'config', 'tempo_real').get()
+        getDoc(doc(db, 'config', 'tempo_real'))
       ]);
 
       // Calcular estatísticas de usuários
@@ -123,7 +123,7 @@ export function useDashboardAPI() {
       let newToday = 0;
       const byRole: Record<string, number> = {};
 
-      usersSnapshot.forEach(doc => {
+      usersSnapshot.forEach((doc: any) => {
         const userData = doc.data();
         totalUsers++;
         
@@ -142,7 +142,7 @@ export function useDashboardAPI() {
       let pendingTeams = 0;
       const byCategory: Record<string, number> = {};
 
-      teamsSnapshot.forEach(doc => {
+      teamsSnapshot.forEach((doc: any) => {
         const teamData = doc.data();
         totalTeams++;
         
@@ -158,7 +158,7 @@ export function useDashboardAPI() {
       let approvedAudiovisual = 0;
       let pendingAudiovisual = 0;
 
-      audiovisualSnapshot.forEach(doc => {
+      audiovisualSnapshot.forEach((doc: any) => {
         const audiovisualData = doc.data();
         totalAudiovisual++;
         
@@ -170,7 +170,7 @@ export function useDashboardAPI() {
       let totalRevenue = 0;
       let totalOrders = 0;
 
-      ordersSnapshot.forEach(doc => {
+      ordersSnapshot.forEach((doc: any) => {
         const orderData = doc.data();
         totalOrders++;
         
