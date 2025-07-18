@@ -153,20 +153,20 @@ export class StorageManager {
   }
 
   // Definir valor no storage
-  public set<T>(key: string, _value: T): boolean {
+  public set<T>(key: string, value: T): boolean {
     try {
       if (!this.isStorageAvailable()) {
         return false;
       }
 
-      const serialized = JSON.stringify(_value);
+      const serialized = JSON.stringify(value);
       this.storage.setItem(key, serialized);
 
       // Atualizar cache
-      this.cache.set(key, _value);
+      this.cache.set(key, value);
 
       // Notificar listeners
-      this.notifyListeners(key, _value);
+      this.notifyListeners(key, value);
 
       return true;
     } catch (error) {
@@ -254,7 +254,7 @@ export class StorageManager {
   }
 
   // Adicionar listener para mudanças
-  public addListener(key: string, callback: (_value: any) => void): () => void {
+  public addListener(key: string, callback: (value: any) => void): () => void {
     if (!this.listeners.has(key)) {
       this.listeners.set(key, new Set());
     }

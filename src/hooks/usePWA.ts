@@ -332,7 +332,7 @@ export const usePWA = () => {
     }
   }, []);
 
-  const sendNotification = useCallback(async (title: string, options?: NotificationOptions) => {
+  const sendNotification = useCallback(async (title: string, options?: any) => {
     if (!('Notification' in window) || Notification.permission !== 'granted') {
       return false;
     }

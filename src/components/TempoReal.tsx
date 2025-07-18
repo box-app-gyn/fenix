@@ -306,7 +306,7 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
     }
     
     const economia = precoProximoLote - precoAtual;
-    const vagasRestantes = Math.max(0, (data.ingressos.vagasCategoria || 80) - (data.ingressos.totalTimes || 0));
+    const vagasRestantes = Math.max(0, (data.ingressos.vagasCategoria || 5) - (data.ingressos.totalTimes || 0));
 
     switch (status) {
     case 'em_breve':
@@ -431,7 +431,7 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
             ⚡ O Cerrado já está em movimento
           </h2>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            Veja quem já começou a jornada rumo ao Interbox 2025.
+             já começou a jornada rumo ao Interbox 2025.
             {!isIngressosDisponiveis() && ' Fique pronto — a pré-venda abre em poucos dias.'}
           </p>
         </motion.div>
@@ -458,7 +458,7 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
           <div className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-xl p-8 border border-pink-500/30">
             <h3 className="text-xl font-bold text-white mb-4">
               {isIngressosDisponiveis()
-                ? `🎯 Scale - Lote ${getIngressosText().title.includes('Lote 1') ? '1' : getIngressosText().title.includes('Lote 2') ? '2' : '3'} - R$ ${getIngressosText().subtitle.replace('R$ ', '')}`
+                ? `Lote ${getIngressosText().title.includes('Lote 1') ? '1' : getIngressosText().title.includes('Lote 2') ? '2' : '3'} - R$ ${getIngressosText().subtitle.replace('R$ ', '')}`
                 : '⏰ Prepare-se para a abertura'
               }
             </h3>

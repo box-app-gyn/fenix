@@ -119,8 +119,14 @@ export default function ReferralLinkGenerator() {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="bg-gradient-to-br from-pink-500/20 to-purple-500/20 backdrop-blur-sm rounded-2xl p-6 border border-pink-500/30"
+      className="relative bg-gradient-to-br from-pink-500/20 to-purple-500/20 backdrop-blur-sm rounded-2xl p-6 border border-pink-500/30 overflow-hidden"
     >
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10"
+        style={{ backgroundImage: 'url(/images/bg_1.png)' }}
+      />
+      <div className="relative z-10">
       <div className="text-center space-y-6">
         {/* Header */}
         <div>
@@ -212,6 +218,7 @@ export default function ReferralLinkGenerator() {
             <div>• Bônus especial para top referenciadores</div>
           </div>
         </div>
+      </div>
       </div>
     </motion.div>
   );
