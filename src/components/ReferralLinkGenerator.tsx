@@ -125,7 +125,7 @@ export default function ReferralLinkGenerator() {
         {/* Header */}
         <div>
           <h3 className="text-2xl font-bold text-white mb-2">
-            🎯 Seu Link de Referência
+            🎯 LINK PARA INSCRIÇÃO
           </h3>
           <p className="text-gray-300 text-sm">
             Compartilhe e ganhe tokens $BOX por cada novo usuário

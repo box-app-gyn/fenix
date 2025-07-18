@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.webhookOpenPix = exports.criarCheckoutFlowPay = void 0;
+exports.openpixWebhook = exports.criarCheckoutFlowPay = void 0;
 const https_1 = require("firebase-functions/v2/https");
+const https_2 = require("firebase-functions/v1/https");
 const firebase_admin_1 = require("./firebase-admin");
 // ============================================================================
 // VALIDAÇÕES
@@ -244,40 +245,63 @@ exports.criarCheckoutFlowPay = (0, https_1.onCall)(async (request) => {
 /**
  * Webhook para processar retornos da OpenPix
  */
-exports.webhookOpenPix = (0, https_1.onRequest)(async (request, response) => {
-    // Configurar CORS para permitir requisições da OpenPix
+exports.openpixWebhook = (0, https_2.onRequest)(async (request, response) => {
+    // Configuração CORS simples e robusta
     response.set('Access-Control-Allow-Origin', '*');
-    response.set('Access-Control-Allow-Methods', 'GET, POST');
-    response.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-OpenPix-Signature');
+    response.set('Access-Control-Allow-Methods', '*');
+    response.set('Access-Control-Allow-Headers', '*');
+    // Log detalhado da requisição para debug
+    console.log("🔍 Webhook OpenPix - Detalhes da requisição:", {
+        method: request.method,
+        url: request.url,
+        headers: request.headers,
+        query: request.query,
+        body: request.body,
+        timestamp: new Date().toISOString()
+    });
     // Responder a requisições OPTIONS (preflight)
     if (request.method === 'OPTIONS') {
+        console.log("✅ OPTIONS request - retornando 200");
         response.status(200).send();
         return;
     }
-    // Verificar se é uma requisição POST
-    if (request.method !== 'POST') {
-        response.status(405).send({ error: 'Method not allowed' });
+    // Aceitar tanto GET quanto POST
+    let webhookData;
+    if (request.method === 'GET') {
+        // Para requisições GET, extrair dados dos query parameters
+        webhookData = Object.assign({ event: request.query.event, correlationID: request.query.correlationID, status: request.query.status, data_criacao: request.query.data_criacao, evento: request.query.evento }, request.query);
+    }
+    else if (request.method === 'POST') {
+        // Para requisições POST, usar o body
+        webhookData = request.body;
+    }
+    else {
+        // Para qualquer outro método, retornar 200 para não quebrar o webhook
+        response.status(200).send({ success: true, message: 'Method not supported but accepted' });
         return;
     }
-    const webhookData = request.body;
     const contextData = {
         functionName: "webhookOpenPix",
         correlationId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.correlationID,
     };
     try {
-        console.log("Webhook OpenPix recebido", {
+        console.log("🔍 Webhook OpenPix - Dados completos recebidos:", {
             event: webhookData === null || webhookData === void 0 ? void 0 : webhookData.event,
             correlationId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.correlationID,
+            correlationID: webhookData === null || webhookData === void 0 ? void 0 : webhookData.correlationID,
             status: webhookData === null || webhookData === void 0 ? void 0 : webhookData.status,
+            webhookData: webhookData,
             headers: request.headers,
             contextData,
         });
         // Processar evento baseado no tipo
         switch (webhookData.event) {
             case 'CHARGE_CONFIRMED':
+            case 'OPENPIX:CHARGE_COMPLETED':
                 await processPaymentSuccess(webhookData);
                 break;
             case 'CHARGE_EXPIRED':
+            case 'OPENPIX:CHARGE_EXPIRED':
                 await processPaymentExpired(webhookData);
                 break;
             default:

@@ -64,7 +64,7 @@ export default function Hero() {
       pngImg.onload = () => setBgImageLoaded(true)
       pngImg.src = '/images/bg_main.png'
     }
-    img.src = '/images/bg_main.webp'
+    img.src = '/images/bg_main.png'
   }, [])
 
   return (
@@ -72,7 +72,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500"
         style={{
-          backgroundImage: bgImageLoaded ? 'url(/images/bg_main.webp)' : 'url(/images/bg_main.png)',
+          backgroundImage: 'url(/images/bg_main.png)',
           opacity: bgImageLoaded ? 1 : 0.8,
         }}
       />
@@ -109,7 +109,7 @@ export default function Hero() {
             className="rounded-full"
           >
             <OptimizedImage
-              src="/logos/oficial_logo.webp"
+              src="/logos/oficial_logo.png"
               alt="Logo Oficial"
               width={560}
               height={560}

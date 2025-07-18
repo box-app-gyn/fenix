@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 /**
  * Script para testar o webhook FlowPay via HTTP
@@ -54,7 +54,7 @@ async function testWebhookHTTP() {
 
     // 2. URL do webhook (ajuste conforme necessário)
     const webhookUrl = "https://us-central1-interbox-app-8d400.cloudfunctions.net/webhookFlowPay";
-    
+
     console.log("\n🌐 Passo 2: Enviando webhook para:", webhookUrl);
 
     // 3. Fazer requisição POST para o webhook
@@ -90,7 +90,7 @@ async function testWebhookHTTP() {
 
     for (const eventType of eventTypes) {
       console.log(`\n📡 Testando evento: ${eventType}`);
-      
+
       const testData = {
         ...webhookData,
         event: eventType,
@@ -116,7 +116,6 @@ async function testWebhookHTTP() {
 
     console.log("\n🎉 Teste do webhook via HTTP concluído!");
     console.log("==================================================");
-
   } catch (error) {
     console.error("💥 Erro durante o teste:", error);
     console.error("📋 Stack trace:", error.stack);
@@ -132,16 +131,16 @@ async function testWebhookWithRealData() {
 
   try {
     // Solicitar dados do usuário
-    const readline = require('readline');
+    const readline = require("readline");
     const rl = readline.createInterface({
       input: process.stdin,
-      output: process.stdout
+      output: process.stdout,
     });
 
     const question = (query) => new Promise((resolve) => rl.question(query, resolve));
 
     console.log("📝 Insira os dados para o teste:");
-    
+
     const orderId = await question("Order ID: ");
     const customerName = await question("Nome do cliente: ");
     const customerEmail = await question("Email do cliente: ");
@@ -173,7 +172,7 @@ async function testWebhookWithRealData() {
     console.log("\n📋 Dados do webhook:", webhookData);
 
     const webhookUrl = "https://us-central1-interbox-app-8d400.cloudfunctions.net/webhookFlowPay";
-    
+
     const response = await fetch(webhookUrl, {
       method: "POST",
       headers: {
@@ -185,7 +184,6 @@ async function testWebhookWithRealData() {
 
     console.log("📊 Status:", response.status);
     console.log("📊 Resposta:", await response.text());
-
   } catch (error) {
     console.error("💥 Erro:", error);
   }
@@ -203,4 +201,4 @@ if (args.includes("--real")) {
 module.exports = {
   testWebhookHTTP,
   testWebhookWithRealData,
-}; 
+};

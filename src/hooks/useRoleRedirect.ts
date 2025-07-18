@@ -27,10 +27,11 @@ export const useRoleRedirect = () => {
         return;
       }
 
-      // Se estamos na página de login e já temos usuário, redirecionar baseado no perfil
+      // Se estamos na página de login e já temos usuário, redirecionar para /hub
       if (location.pathname === '/login') {
-        console.log('🔄 useRoleRedirect: Na página de login com usuário logado, verificando perfil...');
-        // Não retornar aqui, continuar para verificar o perfil e redirecionar
+        console.log('🔄 useRoleRedirect: Na página de login com usuário logado, redirecionando para /hub');
+        navigate('/hub', { replace: true });
+        return;
       }
 
       console.log('🎯 useRoleRedirect: Verificando perfil do usuário...', {
@@ -64,15 +65,16 @@ export const useRoleRedirect = () => {
         // Se não tem dados no Firestore, criar usuário básico
         if (!snap.exists()) {
           console.log('🆕 useRoleRedirect: Usuário não existe no Firestore, redirecionando para seleção');
-          navigate('/selecao-cadastro');
+          navigate('/selecao-cadastro', { replace: true });
           return;
         }
 
+        // Se não tem perfil completo, redirecionar para setup
         if (!data?.profileComplete) {
           // Se não tem categoria definida, vai para seleção
           if (!data?.categoria || data?.categoria === 'publico') {
             console.log('🎯 useRoleRedirect: Redirecionando para seleção de categoria');
-            navigate('/selecao-cadastro');
+            navigate('/selecao-cadastro', { replace: true });
             return;
           }
 
@@ -80,50 +82,58 @@ export const useRoleRedirect = () => {
           console.log('🎯 useRoleRedirect: Redirecionando para cadastro específico:', data?.categoria);
           switch (data?.categoria) {
           case 'atleta':
-            navigate('/cadastro-atleta');
+            navigate('/cadastro-atleta', { replace: true });
             return;
           case 'jurado':
           case 'judge':
-            navigate('/cadastro-jurado');
+            navigate('/cadastro-jurado', { replace: true });
             return;
           case 'midia':
-            navigate('/cadastro-midialouca');
+            navigate('/cadastro-midialouca', { replace: true });
             return;
           case 'espectador':
-            navigate('/cadastro-curioso');
+            navigate('/cadastro-curioso', { replace: true });
             return;
           default:
             console.log('⚠️ useRoleRedirect: Categoria desconhecida, indo para setup-profile');
-            navigate('/setup-profile');
+            navigate('/setup-profile', { replace: true });
             return;
           }
         }
 
-        // Se já tá completo, não redirecionar se estiver em uma página válida
+        // Se já tá completo, verificar se está em uma página válida
         console.log('✅ useRoleRedirect: Perfil completo, verificando se precisa redirecionar');
         
         // Lista de páginas válidas que não precisam de redirecionamento
         const validPages = [
           '/home', '/hub', '/perfil', '/audiovisual', '/audiovisual/form', 
           '/sobre', '/leaderboard', '/links', '/cluster', '/admin', '/dev', 
-          '/marketing', '/admin-painel', '/dashboard-evento'
+          '/marketing', '/admin-painel', '/dashboard-evento', '/termos'
         ];
         
+        // Se está na raiz, redirecionar para /hub
+        if (location.pathname === '/') {
+          console.log('🔄 useRoleRedirect: Na raiz, redirecionando para /hub');
+          navigate('/hub', { replace: true });
+          return;
+        }
+        
+        // Se não está em uma página válida, redirecionar para /hub
         if (!validPages.includes(location.pathname)) {
-          console.log('🔄 useRoleRedirect: Página inválida, redirecionando para home');
-          navigate('/home');
+          console.log('🔄 useRoleRedirect: Página inválida, redirecionando para /hub');
+          navigate('/hub', { replace: true });
         } else {
           console.log('✅ useRoleRedirect: Página válida, mantendo na página atual');
         }
       } catch (error) {
         console.error('❌ useRoleRedirect: Erro ao verificar perfil:', error);
-        // Em caso de erro, vai para seleção de categoria
-        navigate('/selecao-cadastro');
+        // Em caso de erro, vai para /hub
+        navigate('/hub', { replace: true });
       }
     };
 
-    // Só executar se não estiver carregando e se não estivermos na página de login
-    if (!loading && location.pathname !== '/login') {
+    // Só executar se não estiver carregando
+    if (!loading) {
       console.log('🚀 useRoleRedirect: Executando verificação...', {
         loading,
         currentPath: location.pathname,

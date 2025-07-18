@@ -1,9 +1,9 @@
-# 🎨 **Diretrizes de Branding - Interbox 2025**
+# 🎨 **Diretrizes de Branding - CERRADO INTERBØX 2025**
 
 ## 📋 **Visão Geral da Marca**
 
 ### **Missão**
-Criar o maior ecossistema de CrossFit e fitness do Brasil, conectando atletas, jurados, mídia e espectadores em uma experiência gamificada e inovadora.
+Criar o maior ecossistema fitness do Brasil, conectando atletas, jurados, mídia e espectadores em uma experiência gamificada e inovadora.
 
 ### **Valores**
 

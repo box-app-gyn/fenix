@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const { initializeApp } = require("firebase-admin/app");
-const { getFirestore } = require("firebase-admin/firestore");
+const {initializeApp} = require("firebase-admin/app");
+const {getFirestore} = require("firebase-admin/firestore");
 
 // Inicializar Firebase Admin
 const serviceAccount = require("../serviceAccountKey.json");
@@ -90,10 +90,10 @@ async function testWebhookFlowPay() {
 
     // Buscar checkout no Firestore
     const checkoutQuery = await db
-      .collection("audiovisual_checkouts")
-      .where("flowpayOrderId", "==", webhookData.id)
-      .limit(1)
-      .get();
+        .collection("audiovisual_checkouts")
+        .where("flowpayOrderId", "==", webhookData.id)
+        .limit(1)
+        .get();
 
     if (checkoutQuery.empty) {
       throw new Error("Checkout não encontrado");
@@ -179,7 +179,6 @@ async function testWebhookFlowPay() {
     console.log("📋 Inscrição ID:", inscricaoRef.id);
     console.log("💰 Valor pago:", webhookData.amount / 100, "BRL");
     console.log("📧 Email:", testCheckoutData.userEmail);
-
   } catch (error) {
     console.error("💥 Erro durante o teste:", error);
     console.error("📋 Stack trace:", error.stack);
@@ -212,7 +211,6 @@ async function testWebhookCancelled() {
     console.log("✅ Webhook de cancelamento simulado");
     console.log("📋 Order ID:", webhookData.id);
     console.log("❌ Status: Cancelled");
-
   } catch (error) {
     console.error("💥 Erro durante o teste de cancelamento:", error);
   }
@@ -244,7 +242,6 @@ async function testWebhookExpired() {
     console.log("✅ Webhook de expiração simulado");
     console.log("📋 Order ID:", webhookData.id);
     console.log("⏰ Status: Expired");
-
   } catch (error) {
     console.error("💥 Erro durante o teste de expiração:", error);
   }
@@ -265,4 +262,4 @@ module.exports = {
   testWebhookFlowPay,
   testWebhookCancelled,
   testWebhookExpired,
-}; 
+};

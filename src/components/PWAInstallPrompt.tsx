@@ -12,6 +12,7 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
     isInstallable,
     isInstalled,
     isStandalone,
+    deviceInfo,
     installApp,
     trackEvent,
   } = usePWA();
@@ -20,30 +21,6 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
   const [isInstalling, setIsInstalling] = useState(false);
   const [showBenefits, setShowBenefits] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
-
-  // Detectar dispositivo e navegador
-  const [deviceInfo, setDeviceInfo] = useState({
-    isMobile: false,
-    isIOS: false,
-    isAndroid: false,
-    isChrome: false,
-    isSafari: false,
-    isFirefox: false,
-    isEdge: false,
-  });
-
-  useEffect(() => {
-    const userAgent = navigator.userAgent.toLowerCase();
-    setDeviceInfo({
-      isMobile: /mobile|android|iphone|ipad|phone/i.test(userAgent),
-      isIOS: /iphone|ipad|ipod/i.test(userAgent),
-      isAndroid: /android/i.test(userAgent),
-      isChrome: /chrome/i.test(userAgent) && !/edge/i.test(userAgent),
-      isSafari: /safari/i.test(userAgent) && !/chrome/i.test(userAgent),
-      isFirefox: /firefox/i.test(userAgent),
-      isEdge: /edge/i.test(userAgent),
-    });
-  }, []);
 
   // Mostrar prompt após delay
   useEffect(() => {
@@ -259,123 +236,93 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <span className="text-green-500">✓</span>
-                <span>Sincronização automática</span>
+                <span>Atualizações automáticas</span>
               </div>
             </div>
+
+            {/* Instructions */}
+            {showInstructions && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-4 p-4 bg-gray-50 rounded-lg"
+              >
+                <h4 className="font-semibold text-gray-800 mb-2">{instructions.title}</h4>
+                <ol className="space-y-1 text-sm text-gray-600">
+                  {instructions.steps.map((step, index) => (
+                    <li key={index}>{step}</li>
+                  ))}
+                </ol>
+              </motion.div>
+            )}
           </div>
 
           {/* Actions */}
-          <div className="flex space-x-3">
-            <button
-              onClick={handleLater}
-              className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
-            >
-              Depois
-            </button>
-            <button
-              onClick={handleInstall}
-              disabled={isInstalling}
-              className="flex-1 px-4 py-2 bg-gradient-to-r from-pink-600 to-blue-600 text-white rounded-lg hover:from-pink-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 text-sm font-medium flex items-center justify-center space-x-2"
-            >
-              {isInstalling ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Instalando...</span>
-                </>
-              ) : (
-                <>
-                  <span>📱</span>
-                  <span>Instalar</span>
-                </>
-              )}
-            </button>
+          <div className="flex flex-col space-y-3">
+            {deviceInfo.isMobile && !deviceInfo.isChrome && !deviceInfo.isSafari ? (
+              // Dispositivos mobile sem suporte nativo
+              <button
+                onClick={() => setShowInstructions(!showInstructions)}
+                className="w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 text-sm font-medium"
+              >
+                {showInstructions ? 'Ocultar' : 'Ver'} Instruções
+              </button>
+            ) : (
+              // Dispositivos com suporte nativo
+              <button
+                onClick={handleInstall}
+                disabled={isInstalling}
+                className="w-full px-4 py-3 bg-gradient-to-r from-pink-600 to-blue-600 text-white rounded-lg hover:from-pink-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 text-sm font-medium flex items-center justify-center space-x-2"
+              >
+                {isInstalling ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Instalando...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>📱</span>
+                    <span>Instalar Agora</span>
+                  </>
+                )}
+              </button>
+            )}
+
+            <div className="flex space-x-3">
+              <button
+                onClick={handleLater}
+                className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+              >
+                Depois
+              </button>
+              <button
+                onClick={() => setShowBenefits(!showBenefits)}
+                className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+              >
+                {showBenefits ? 'Menos' : 'Mais'} Info
+              </button>
+            </div>
           </div>
 
-          {/* Instructions Button */}
-          <button
-            onClick={() => setShowInstructions(!showInstructions)}
-            className="w-full mt-3 text-center text-sm text-blue-600 hover:text-blue-700 transition-colors font-medium"
-          >
-            {showInstructions ? 'Ocultar instruções' : '📋 Como instalar manualmente?'}
-          </button>
-
-          {/* Instructions */}
-          <AnimatePresence>
-            {showInstructions && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-4 pt-4 border-t border-gray-200 overflow-hidden"
-              >
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-blue-800 mb-3 flex items-center">
-                    <span className="mr-2">📋</span>
-                    {instructions.title}
-                  </h4>
-                  <div className="space-y-2">
-                    {instructions.steps.map((step, index) => (
-                      <p key={index} className="text-sm text-blue-700 leading-relaxed">
-                        {step}
-                      </p>
-                    ))}
-                  </div>
-                  
-                  {/* Dica adicional */}
-                  <div className="mt-3 p-2 bg-blue-100 rounded border border-blue-300">
-                    <p className="text-xs text-blue-800">
-                      💡 <strong>Dica:</strong> Após a instalação, o app aparecerá na sua tela inicial ou menu de aplicativos!
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Learn More */}
-          <button
-            onClick={() => setShowBenefits(!showBenefits)}
-            className="w-full mt-3 text-center text-sm text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            {showBenefits ? 'Ocultar detalhes' : 'Ver mais benefícios'}
-          </button>
-
-          {/* Expanded Benefits */}
-          <AnimatePresence>
-            {showBenefits && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-4 pt-4 border-t border-gray-200 overflow-hidden"
-              >
-                <div className="space-y-3">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <h4 className="font-semibold text-blue-800 mb-1">🚀 Performance</h4>
-                    <p className="text-sm text-blue-700">
-                      Carregamento mais rápido e funcionamento offline
-                    </p>
-                  </div>
-                  
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                    <h4 className="font-semibold text-green-800 mb-1">💾 Economia de Dados</h4>
-                    <p className="text-sm text-green-700">
-                      Menos consumo de internet com cache inteligente
-                    </p>
-                  </div>
-                  
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                    <h4 className="font-semibold text-purple-800 mb-1">🔔 Notificações</h4>
-                    <p className="text-sm text-purple-700">
-                      Receba atualizações importantes em tempo real
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Additional Benefits */}
+          {showBenefits && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg"
+            >
+              <h4 className="font-semibold text-green-800 mb-2">🎯 Benefícios Exclusivos</h4>
+              <ul className="space-y-1 text-sm text-green-700">
+                <li>• Acesso prioritário a novos recursos</li>
+                <li>• Sincronização automática de dados</li>
+                <li>• Modo offline completo</li>
+                <li>• Notificações personalizadas</li>
+                <li>• Performance otimizada</li>
+              </ul>
+            </motion.div>
+          )}
         </div>
       </motion.div>
     </AnimatePresence>

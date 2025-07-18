@@ -1,37 +1,21 @@
-export * from './teams';
-export * from './pedidos';
-export * from './audiovisual';
-export * from './audiovisual-inscricao';
-export * from './flowpay';
-export declare const testFunction: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+import * as functions from 'firebase-functions';
+export declare const testFunction: functions.https.CallableFunction<any, Promise<{
     success: boolean;
     message: string;
-    userId: string;
+    userId: any;
 }>, unknown>;
-export declare const criarInscricaoTime: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+export declare const criarInscricaoTime: functions.https.CallableFunction<any, Promise<{
     success: boolean;
     inscricaoId: string;
 }>, unknown>;
-export declare const validaAudiovisual: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+export declare const validaAudiovisual: functions.https.CallableFunction<any, Promise<{
     success: boolean;
     audiovisualId: any;
     aprovado: any;
 }>, unknown>;
-declare const _default: {
-    testFunction: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
-        success: boolean;
-        message: string;
-        userId: string;
-    }>, unknown>;
-    criarInscricaoTime: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
-        success: boolean;
-        inscricaoId: string;
-    }>, unknown>;
-    validaAudiovisual: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
-        success: boolean;
-        audiovisualId: any;
-        aprovado: any;
-    }>, unknown>;
-};
-export default _default;
+export declare const openpixWebhook: functions.https.HttpsFunction;
+export declare const enviarEmailBoasVindas: functions.https.CallableFunction<any, Promise<{
+    success: boolean;
+    message: string;
+}>, unknown>;
 //# sourceMappingURL=index.d.ts.map

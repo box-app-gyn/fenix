@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 /**
  * Script para testar a API da FlowPay diretamente
@@ -132,7 +132,7 @@ async function testFlowPayAPI() {
       const shouldTestWebhook = process.argv.includes("--webhook");
       if (shouldTestWebhook) {
         console.log("\n📡 Enviando webhook para função...");
-        
+
         // Aqui você pode chamar a função webhookFlowPay diretamente
         // ou fazer uma requisição HTTP para o endpoint
         console.log("ℹ️ Para testar o webhook, chame a função webhookFlowPay com os dados acima");
@@ -143,7 +143,6 @@ async function testFlowPayAPI() {
       console.log("🔗 URL do checkout:", orderData.checkoutUrl);
       console.log("📋 Order ID para webhook:", orderData.id);
       console.log("💰 Valor para verificar:", orderData.amount / 100, "BRL");
-
     } else {
       const errorData = await orderResponse.json();
       console.error("❌ Erro ao criar pedido:", errorData);
@@ -153,7 +152,6 @@ async function testFlowPayAPI() {
 
     console.log("\n🎉 Teste da API FlowPay concluído!");
     console.log("==================================================");
-
   } catch (error) {
     console.error("💥 Erro durante o teste:", error);
     console.error("📋 Stack trace:", error.stack);
@@ -192,7 +190,6 @@ async function testConnectivity() {
     } else {
       console.log("❌ API não acessível");
     }
-
   } catch (error) {
     console.error("💥 Erro de conectividade:", error.message);
   }
@@ -210,4 +207,4 @@ if (args.includes("--connectivity")) {
 module.exports = {
   testFlowPayAPI,
   testConnectivity,
-}; 
+};

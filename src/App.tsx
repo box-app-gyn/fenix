@@ -20,6 +20,7 @@ import DevDashboard from './pages/DevDashboard';
 import MarketingDashboard from './pages/MarketingDashboard';
 import Audiovisual from './pages/Audiovisual';
 import AudiovisualForm from './pages/audiovisual/form';
+import AudiovisualPayment from './pages/audiovisual/payment';
 import AudiovisualSuccess from './pages/audiovisual/success';
 import LinkShortenerPage from './pages/LinkShortenerPage';
 import LinkRedirect from './components/LinkRedirect';
@@ -43,8 +44,7 @@ import DesktopWarning from './components/DesktopWarning';
 import ProtectedRoute from './components/ProtectedRoute';
 import CNHUpload from './components/CNHUpload';
 import { useRoleRedirect } from './hooks/useRoleRedirect';
-import { preloadImages } from './utils/clearImageCache';
-import ImageDebugger from './components/ImageDebugger';
+
 
 // Componente de layout principal que inclui Header, Footer e outros componentes
 function MainLayout() {
@@ -76,9 +76,6 @@ function MainLayout() {
   useEffect(() => {
     const initializePWA = async () => {
       try {
-        // Preload das imagens WebP
-        preloadImages();
-        
         // Cachear dados críticos
         await cacheCriticalData();
         
@@ -185,7 +182,7 @@ function MainLayout() {
       <PWAUpdatePrompt />
       <CacheDebug />
       <CookieBanner />
-      <ImageDebugger />
+
     </div>
   );
 }
@@ -264,56 +261,22 @@ function App() {
     return <LoadingScreen />;
   }
 
-  // Se não está logado, mostrar página de login
-  if (!user) {
-    const loginRouter = createBrowserRouter([
-      { path: "/", element: <LoginPage /> },
-      { path: "/login", element: <LoginPage /> },
-      { path: "/audiovisual", element: <Audiovisual /> },
-      { path: "/audiovisual/form", element: <AudiovisualForm /> },
-      { path: "/audiovisual/success", element: <AudiovisualSuccess /> },
-      { path: "/l/:shortCode", element: <LinkRedirectWrapper /> },
-      { path: "/ref/:referralCode", element: <ReferralLanding /> },
-      { path: "*", element: <Navigate to="/login" replace /> },
-    ], { 
-      future: {
-        v7_relativeSplatPath: true
-      }
-    });
-
-    return (
-      <FirebaseErrorBoundary>
-        <RouterProvider router={loginRouter} />
-        <CookieBanner />
-      </FirebaseErrorBoundary>
-    );
-  }
-
-  // Se está logado mas não tem perfil completo, mostrar setup
-  if (user && !user.profileComplete) {
-    const setupRouter = createBrowserRouter([
-      { path: "/setup-profile", element: <SetupProfile /> },
-      { path: "*", element: <Navigate to="/setup-profile" replace /> },
-    ], { 
-      future: {
-        v7_relativeSplatPath: true
-      }
-    });
-
-    return (
-      <FirebaseErrorBoundary>
-        <RouterProvider router={setupRouter} />
-      </FirebaseErrorBoundary>
-    );
-  }
-
-  // App principal com todas as funcionalidades
-  const mainRouter = createBrowserRouter([
+  // Router único com todas as rotas
+  const router = createBrowserRouter([
+    // Rotas públicas (acessíveis sem login)
+    { path: "/", element: <LoginPage /> },
+    { path: "/login", element: <LoginPage /> },
+    { path: "/audiovisual", element: <Audiovisual /> },
+    { path: "/audiovisual/form", element: <AudiovisualForm /> },
+    { path: "/audiovisual/success", element: <AudiovisualSuccess /> },
+    { path: "/l/:shortCode", element: <LinkRedirectWrapper /> },
+    { path: "/ref/:referralCode", element: <ReferralLanding /> },
+    
+    // Rotas protegidas (requerem login)
     {
       path: "/",
       element: <MainLayout />,
       children: [
-        { index: true, element: <ProtectedRoute><Navigate to="/home" replace /></ProtectedRoute> },
         { path: "home", element: <ProtectedRoute><Home /></ProtectedRoute> },
         { path: "hub", element: <ProtectedRoute><Hub /></ProtectedRoute> },
         { path: "leaderboard", element: <ProtectedRoute><GamifiedLeaderboard /></ProtectedRoute> },
@@ -326,6 +289,7 @@ function App() {
         { path: "marketing", element: <ProtectedRoute requireProfile={true} requireMarketing={true}><MarketingDashboard /></ProtectedRoute> },
         { path: "audiovisual", element: <ProtectedRoute><Audiovisual /></ProtectedRoute> },
         { path: "audiovisual/form", element: <ProtectedRoute><AudiovisualForm /></ProtectedRoute> },
+        { path: "audiovisual/payment", element: <ProtectedRoute><AudiovisualPayment /></ProtectedRoute> },
         { path: "interbox/audiovisual/confirmacao", element: <ProtectedRoute><AudiovisualSuccess /></ProtectedRoute> },
         { path: "links", element: <ProtectedRoute><LinkShortenerPage /></ProtectedRoute> },
         { path: "l/:shortCode", element: <ProtectedRoute><LinkRedirectWrapper /></ProtectedRoute> },
@@ -337,9 +301,14 @@ function App() {
         { path: "setup-profile", element: <ProtectedRoute><SetupProfile /></ProtectedRoute> },
         { path: "perfil", element: <ProtectedRoute><Perfil /></ProtectedRoute> },
         { path: "cluster", element: <ProtectedRoute><ClusterPage /></ProtectedRoute> },
-        { path: "*", element: <Navigate to="/home" replace /> },
       ]
-    }
+    },
+    
+    // Fallback - redirecionar para login se não logado, ou para hub se logado
+    { 
+      path: "*", 
+      element: user ? <Navigate to="/hub" replace /> : <Navigate to="/" replace /> 
+    },
   ], { 
     future: {
       v7_relativeSplatPath: true
@@ -348,7 +317,7 @@ function App() {
 
   return (
     <FirebaseErrorBoundary>
-      <RouterProvider router={mainRouter} />
+      <RouterProvider router={router} />
       {/* Video Intro */}
       {showVideoIntro && (
         <VideoIntro onComplete={handleVideoComplete} />

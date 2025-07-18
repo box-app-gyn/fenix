@@ -4,6 +4,10 @@ interface EmailData {
     tipo: "pedido" | "audiovisual" | "admin";
     dadosAdicionais?: Record<string, any>;
 }
+export declare const enviarEmailBoasVindas: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
+    success: boolean;
+    message: string;
+}>, unknown>;
 export declare const enviarEmailConfirmacao: import("firebase-functions/v2/https").CallableFunction<any, Promise<{
     success: boolean;
     message: string;

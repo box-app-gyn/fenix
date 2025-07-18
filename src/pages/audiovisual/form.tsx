@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getFunctions, httpsCallable } from 'firebase/functions';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 // import Image from 'next/image';
@@ -16,7 +16,7 @@ import {
 interface AudiovisualFormData {
   nome: string;
   email: string;
-  telefone: string;
+  whatsapp: string;
   cidade: string;
   estado: string;
   tipo: AudiovisualTipo;
@@ -37,7 +37,7 @@ const validateForm = (data: AudiovisualFormData): string[] => {
   if (!data.nome.trim()) errors.push('Nome é obrigatório');
   if (!data.email.trim()) errors.push('Email é obrigatório');
   if (!data.email.includes('@')) errors.push('Email inválido');
-  if (!data.telefone.trim()) errors.push('Telefone é obrigatório');
+  if (!data.whatsapp.trim()) errors.push('WhatsApp é obrigatório');
   if (!data.cidade.trim()) errors.push('Cidade é obrigatória');
   if (!data.estado.trim()) errors.push('Estado é obrigatório');
   if (!data.tipo) errors.push('Área de atuação é obrigatória');
@@ -62,7 +62,7 @@ const validateForm = (data: AudiovisualFormData): string[] => {
 const initialFormData: AudiovisualFormData = {
   nome: '',
   email: '',
-  telefone: '',
+  whatsapp: '',
   cidade: '',
   estado: '',
   tipo: 'fotografo',
@@ -96,14 +96,11 @@ const ESTADOS_BRASIL = [
 export default function AudiovisualFormPage() {
   const [formData, setFormData] = useState<AudiovisualFormData>(initialFormData);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [formErrors, setFormErrors] = useState<string[]>([]);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [checkoutData, setCheckoutData] = useState<any>(null);
   const { trackPage, trackFormSubmit, trackAudiovisual } = useAnalytics();
   const { user } = useAuth();
-  const functions = getFunctions();
+  const navigate = useNavigate();
 
   useEffect(() => {
     trackPage('audiovisual_form');
@@ -153,16 +150,21 @@ export default function AudiovisualFormPage() {
     }
 
     try {
+      // Verificar autenticação
+      if (!user) {
+        throw new Error('Usuário não autenticado. Por favor, faça login para continuar.');
+      }
+
       // Sanitizar dados
       const sanitizedData = sanitizeAudiovisualData(formData);
 
-      // Preparar dados para o checkout FlowPay
-      const checkoutPayload = {
-        userEmail: sanitizedData.email,
-        userName: sanitizedData.nome,
-        telefone: sanitizedData.telefone,
+      // Preparar dados para a página de pagamento
+      const paymentParams = new URLSearchParams({
+        email: sanitizedData.email,
+        nome: sanitizedData.nome,
+        whatsapp: sanitizedData.whatsapp || '',
         tipo: sanitizedData.tipo,
-        comentariosOutro: sanitizedData.comentariosOutro || '', // ✅ Incluir campo de comentários
+        comentariosOutro: sanitizedData.comentariosOutro || '',
         experiencia: sanitizedData.experiencia,
         portfolio: sanitizedData.portfolio,
         equipamentos: sanitizedData.equipamentos,
@@ -171,33 +173,15 @@ export default function AudiovisualFormPage() {
         motivacao: sanitizedData.motivacao,
         cidade: sanitizedData.cidade,
         estado: sanitizedData.estado,
-      };
+      });
 
-      // Verificar autenticação
-      if (!user) {
-        throw new Error('Usuário não autenticado. Por favor, faça login para continuar.');
-      }
+      // Analytics
+      trackFormSubmit('formulario_audiovisual_submitted');
+      trackAudiovisual('form_submitted', `${sanitizedData.tipo}_${sanitizedData.cidade}`);
 
-      // Criar checkout na FlowPay
-      const criarCheckoutFlowPay = httpsCallable(functions, 'criarCheckoutFlowPay');
-      const result = await criarCheckoutFlowPay(checkoutPayload);
-      const checkoutResult = result.data as any;
+      // Redirecionar para página de pagamento
+      navigate(`/audiovisual/payment?${paymentParams.toString()}`);
 
-      if (checkoutResult.success) {
-        setCheckoutData(checkoutResult);
-        setShowPaymentModal(true);
-
-        // Analytics
-        trackFormSubmit('formulario_audiovisual_checkout');
-        trackAudiovisual('checkout_created', `${sanitizedData.tipo}_${sanitizedData.cidade}`);
-        
-        // Se for simulado, mostrar mensagem especial
-        if (checkoutResult.isSimulated) {
-          console.log('✅ Checkout simulado criado - modo de desenvolvimento');
-        }
-      } else {
-        throw new Error('Erro ao criar checkout');
-      }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       const errorDetails = error instanceof Error ? error.stack : 'Sem detalhes';
@@ -214,11 +198,11 @@ export default function AudiovisualFormPage() {
           .toLowerCase()
           .substring(0, 50); // Limitar tamanho
         
-        trackAudiovisual('form_error', `erro_checkout_${sanitizedErrorMessage}`);
+        trackAudiovisual('form_error', `erro_formulario_${sanitizedErrorMessage}`);
       } catch (trackingError) {
         console.error('Erro ao fazer tracking:', trackingError);
         // Fallback para tracking básico
-        trackAudiovisual('form_error', 'erro_checkout_generico');
+        trackAudiovisual('form_error', 'erro_formulario_generico');
       }
       
       // Log adicional para debugging
@@ -231,30 +215,10 @@ export default function AudiovisualFormPage() {
     }
   };
 
-  const handlePaymentRedirect = () => {
-    if (checkoutData?.checkoutUrl) {
-      // Abrir checkout em nova aba
-      window.open(checkoutData.checkoutUrl, '_blank');
-
-      // Mostrar mensagem de sucesso
-      setSuccess(true);
-      setShowPaymentModal(false);
-
-      // Analytics
-      trackAudiovisual('checkout_redirected', 'flowpay');
-    }
-  };
-
-  const handlePaymentCancel = () => {
-    setShowPaymentModal(false);
-    setCheckoutData(null);
-  };
-
   const handleReset = () => {
     setFormData(initialFormData);
     setError('');
     setFormErrors([]);
-    setSuccess(false);
   };
 
   return (
@@ -270,7 +234,7 @@ export default function AudiovisualFormPage() {
 
         {/* Background com textura */}
         <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
-          <div className="w-full h-full bg-[url('/images/bg_grunge.webp')] bg-repeat opacity-20 mix-blend-multiply"></div>
+          <div className="w-full h-full bg-[url('/images/bg_grunge.png')] bg-repeat opacity-20 mix-blend-multiply"></div>
         </div>
 
         <main className="pt-24 pb-16 px-4">
@@ -278,7 +242,7 @@ export default function AudiovisualFormPage() {
             {/* Header do formulário */}
             <div className="text-center mb-8">
               <OptimizedImage
-                src="/logos/nome_hrz.webp"
+                src="/logos/nome_hrz.png"
                 alt="CERRADØ 𝗜𝗡𝗧𝗘𝗥𝗕𝗢𝗫 Logo"
                 width={320}
                 height={90}
@@ -298,387 +262,314 @@ export default function AudiovisualFormPage() {
               </p>
             </div>
 
-            {/* Modal de Pagamento */}
-            {showPaymentModal && checkoutData && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center">
-                  <div className="text-green-600 text-6xl mb-4">💳</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    {checkoutData.isSimulated ? 'Modo de Teste' : 'Finalizar Inscrição'}
-                  </h3>
-                  <p className="text-gray-600 mb-6">
-                    {checkoutData.isSimulated 
-                      ? 'Sua candidatura foi processada em modo de teste! Clique em "Continuar" para simular o pagamento.'
-                      : 'Sua candidatura foi processada com sucesso! Agora você será redirecionado para o pagamento seguro da FlowPay.'
-                    }
-                  </p>
-
-                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                    <p className="text-gray-800 font-semibold mb-2">Resumo do Pagamento</p>
-                    <div className="flex justify-between text-sm">
-                      <span>Taxa de Inscrição:</span>
-                      <span className="font-bold">R$ 29,90</span>
-                    </div>
-                    {checkoutData.isSimulated && (
-                      <div className="mt-2 p-2 bg-yellow-100 rounded border border-yellow-300">
-                        <p className="text-xs text-yellow-800">
-                          🧪 <strong>Modo de Teste:</strong> Pagamento simulado para desenvolvimento
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-3">
-                    <button
-                      onClick={handlePaymentRedirect}
-                      className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 focus:ring-4 focus:ring-green-200 transition-all duration-200"
-                    >
-                      {checkoutData.isSimulated ? 'Continuar (Teste)' : 'Pagar com Segurança'}
-                    </button>
-                    <button
-                      onClick={handlePaymentCancel}
-                      className="w-full bg-gray-300 text-gray-700 py-2 px-6 rounded-lg font-medium hover:bg-gray-400 transition-all duration-200"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Card do formulário */}
             <div className="bg-gray-50 border border-pink-300 rounded-2xl shadow-[0_8px_32px_0_rgba(236,72,153,0.25)] p-8 text-left relative grunge-card">
-              {success ? (
-                <div className="text-center py-8">
-                  <div className="text-green-600 text-6xl mb-4">✓</div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    Candidatura Enviada!
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    Sua candidatura foi processada com sucesso. Complete o pagamento para finalizar sua inscrição.
-                  </p>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <p className="text-blue-800 font-semibold mb-2">📋 Próximos Passos</p>
-                    <ul className="text-blue-700 text-sm space-y-1 text-left">
-                      <li>• Aguarde a confirmação por email</li>
-                      <li>• Entraremos em contato em breve</li>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Mensagens de erro */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-red-800 text-sm">{error}</p>
+                  </div>
+                )}
+
+                {formErrors.length > 0 && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <h4 className="text-red-800 font-semibold mb-2">Erros no formulário:</h4>
+                    <ul className="text-red-700 text-sm space-y-1">
+                      {formErrors.map((error, index) => (
+                        <li key={index}>• {error}</li>
+                      ))}
                     </ul>
                   </div>
-                  <a
-                    href="/hub"
-                    className="inline-block bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:ring-4 focus:ring-pink-200 transition-all duration-200"
-                  >
-                    Voltar para página inicial
-                  </a>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Mensagens de erro */}
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <p className="text-red-800 text-sm">{error}</p>
-                    </div>
-                  )}
+                )}
 
-                  {formErrors.length > 0 && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <h4 className="text-red-800 font-semibold mb-2">Erros no formulário:</h4>
-                      <ul className="text-red-700 text-sm space-y-1">
-                        {formErrors.map((error, index) => (
-                          <li key={index}>• {error}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                {/* Dados pessoais */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                    Dados Pessoais
+                  </h3>
 
-                  {/* Dados pessoais */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                      Dados Pessoais
-                    </h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
-                          Nome Completo *
-                        </label>
-                        <input
-                          type="text"
-                          id="nome"
-                          name="nome"
-                          value={formData.nome}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                          placeholder="Seu nome completo"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                          Email *
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                          placeholder="seu@email.com"
-                        />
-                      </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
+                        Nome Completo *
+                      </label>
+                      <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        value={formData.nome}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        placeholder="Seu nome completo"
+                      />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 mb-1">
-                          Telefone *
-                        </label>
-                        <input
-                          type="tel"
-                          id="telefone"
-                          name="telefone"
-                          value={formData.telefone}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                          placeholder="(11) 99999-9999"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="cidade" className="block text-sm font-medium text-gray-700 mb-1">
-                          Cidade *
-                        </label>
-                        <input
-                          type="text"
-                          id="cidade"
-                          name="cidade"
-                          value={formData.cidade}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                          placeholder="Sua cidade"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-1">
-                          Estado *
-                        </label>
-                        <select
-                          id="estado"
-                          name="estado"
-                          value={formData.estado}
-                          onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        >
-                          <option value="">Selecione...</option>
-                          {ESTADOS_BRASIL.map((estado) => (
-                            <option key={estado} value={estado}>{estado}</option>
-                          ))}
-                        </select>
-                      </div>
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                        Email *
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        placeholder="seu@email.com"
+                      />
                     </div>
                   </div>
 
-                  {/* Área de atuação */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                      Área de Atuação
-                    </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700 mb-1">
+                        WhatsApp *
+                      </label>
+                      <input
+                        type="tel"
+                        id="whatsapp"
+                        name="whatsapp"
+                        value={formData.whatsapp}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        placeholder="(11) 99999-9999"
+                      />
+                    </div>
 
                     <div>
-                      <label htmlFor="tipo" className="block text-sm font-medium text-gray-700 mb-1">
-                        Área de Atuação *
+                      <label htmlFor="cidade" className="block text-sm font-medium text-gray-700 mb-1">
+                        Cidade *
+                      </label>
+                      <input
+                        type="text"
+                        id="cidade"
+                        name="cidade"
+                        value={formData.cidade}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        placeholder="Sua cidade"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-1">
+                        Estado *
                       </label>
                       <select
-                        id="tipo"
-                        name="tipo"
-                        value={formData.tipo}
+                        id="estado"
+                        name="estado"
+                        value={formData.estado}
                         onChange={handleChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                       >
-                        {AREA_ATUACAO_OPTIONS.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label} - {option.description}
-                          </option>
+                        <option value="">Selecione...</option>
+                        {ESTADOS_BRASIL.map((estado) => (
+                          <option key={estado} value={estado}>{estado}</option>
                         ))}
                       </select>
                     </div>
+                  </div>
+                </div>
 
-                    {/* Campo de comentários para "Outro" */}
-                    {formData.tipo === 'outro' && (
-                      <div>
-                        <label htmlFor="comentariosOutro" className="block text-sm font-medium text-gray-700 mb-1">
-                          Especifique sua área de atuação *
-                        </label>
-                        <textarea
-                          id="comentariosOutro"
-                          name="comentariosOutro"
-                          value={formData.comentariosOutro}
-                          onChange={handleChange}
-                          rows={3}
-                          required
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                          placeholder="Descreva detalhadamente sua área de atuação e como pode contribuir para o evento..."
-                        />
-                      </div>
+                {/* Área de atuação */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                    Área de Atuação
+                  </h3>
+
+                  <div>
+                    <label htmlFor="tipo" className="block text-sm font-medium text-gray-700 mb-1">
+                      Área de Atuação *
+                    </label>
+                    <select
+                      id="tipo"
+                      name="tipo"
+                      value={formData.tipo}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    >
+                      {AREA_ATUACAO_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label} - {option.description}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Campo de comentários para "Outro" */}
+                  {formData.tipo === 'outro' && (
+                    <div>
+                      <label htmlFor="comentariosOutro" className="block text-sm font-medium text-gray-700 mb-1">
+                        Especifique sua área de atuação *
+                      </label>
+                      <textarea
+                        id="comentariosOutro"
+                        name="comentariosOutro"
+                        value={formData.comentariosOutro}
+                        onChange={handleChange}
+                        rows={3}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        placeholder="Descreva detalhadamente sua área de atuação e como pode contribuir para o evento..."
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Experiência e portfólio */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                    Experiência e Portfólio
+                  </h3>
+
+                  <div>
+                    <label htmlFor="experiencia" className="block text-sm font-medium text-gray-700 mb-1">
+                      Experiência Profissional *
+                    </label>
+                    <textarea
+                      id="experiencia"
+                      name="experiencia"
+                      value={formData.experiencia}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Descreva sua experiência na área..."
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="portfolio" className="block text-sm font-medium text-gray-700 mb-1">
+                      Links do Portfólio * (um por linha)
+                    </label>
+                    <textarea
+                      id="portfolio"
+                      name="portfolio"
+                      value={formData.portfolio}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="instagram.com/seuperfil&#10;behance.net/seuperfil&#10;vimeo.com/seuperfil"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="equipamentos" className="block text-sm font-medium text-gray-700 mb-1">
+                      Equipamentos * (um por linha)
+                    </label>
+                    <textarea
+                      id="equipamentos"
+                      name="equipamentos"
+                      value={formData.equipamentos}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Canon EOS R5&#10;DJI Mavic 3 Pro&#10;Rode NTG5"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="especialidades" className="block text-sm font-medium text-gray-700 mb-1">
+                      Especialidades * (uma por linha)
+                    </label>
+                    <textarea
+                      id="especialidades"
+                      name="especialidades"
+                      value={formData.especialidades}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Fotografia esportiva&#10;Retratos&#10;Eventos corporativos"
+                    />
+                  </div>
+                </div>
+
+                {/* Disponibilidade e motivação */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                    Disponibilidade e Motivação
+                  </h3>
+
+                  <div>
+                    <label htmlFor="disponibilidade" className="block text-sm font-medium text-gray-700 mb-1">
+                      Disponibilidade para o Evento *
+                    </label>
+                    <textarea
+                      id="disponibilidade"
+                      name="disponibilidade"
+                      value={formData.disponibilidade}
+                      onChange={handleChange}
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Descreva sua disponibilidade para o evento..."
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="motivacao" className="block text-sm font-medium text-gray-700 mb-1">
+                      Por que você quer participar? *
+                    </label>
+                    <textarea
+                      id="motivacao"
+                      name="motivacao"
+                      value={formData.motivacao}
+                      onChange={handleChange}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      placeholder="Conte-nos sua motivação para participar do time audiovisual..."
+                    />
+                  </div>
+                </div>
+
+                {/* Termos e condições */}
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <input
+                      type="checkbox"
+                      id="termosAceitos"
+                      name="termosAceitos"
+                      checked={formData.termosAceitos}
+                      onChange={handleChange}
+                      className="mt-1 h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="termosAceitos" className="ml-2 block text-sm text-gray-700">
+                      Aceito os termos e condições da candidatura audiovisual *
+                    </label>
+                  </div>
+                </div>
+
+                {/* Botões */}
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <button
+                    type="submit"
+                    disabled={loading || !user}
+                    className="flex-1 bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:ring-4 focus:ring-pink-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processando...
+                      </span>
+                    ) : !user ? (
+                      'Faça login para enviar candidatura'
+                    ) : (
+                      'Continuar para Pagamento - R$ 29,90'
                     )}
-                  </div>
+                  </button>
 
-                  {/* Experiência e portfólio */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                      Experiência e Portfólio
-                    </h3>
-
-                    <div>
-                      <label htmlFor="experiencia" className="block text-sm font-medium text-gray-700 mb-1">
-                        Experiência Profissional *
-                      </label>
-                      <textarea
-                        id="experiencia"
-                        name="experiencia"
-                        value={formData.experiencia}
-                        onChange={handleChange}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        placeholder="Descreva sua experiência na área..."
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="portfolio" className="block text-sm font-medium text-gray-700 mb-1">
-                        Links do Portfólio * (um por linha)
-                      </label>
-                      <textarea
-                        id="portfolio"
-                        name="portfolio"
-                        value={formData.portfolio}
-                        onChange={handleChange}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        placeholder="https://instagram.com/seuperfil&#10;https://behance.net/seuperfil&#10;https://vimeo.com/seuperfil"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="equipamentos" className="block text-sm font-medium text-gray-700 mb-1">
-                        Equipamentos * (um por linha)
-                      </label>
-                      <textarea
-                        id="equipamentos"
-                        name="equipamentos"
-                        value={formData.equipamentos}
-                        onChange={handleChange}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        placeholder="Canon EOS R5&#10;DJI Mavic 3 Pro&#10;Rode NTG5"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="especialidades" className="block text-sm font-medium text-gray-700 mb-1">
-                        Especialidades * (uma por linha)
-                      </label>
-                      <textarea
-                        id="especialidades"
-                        name="especialidades"
-                        value={formData.especialidades}
-                        onChange={handleChange}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        placeholder="Fotografia esportiva&#10;Retratos&#10;Eventos corporativos"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Disponibilidade e motivação */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                      Disponibilidade e Motivação
-                    </h3>
-
-                    <div>
-                      <label htmlFor="disponibilidade" className="block text-sm font-medium text-gray-700 mb-1">
-                        Disponibilidade para o Evento *
-                      </label>
-                      <textarea
-                        id="disponibilidade"
-                        name="disponibilidade"
-                        value={formData.disponibilidade}
-                        onChange={handleChange}
-                        rows={2}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        placeholder="Descreva sua disponibilidade para o evento..."
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="motivacao" className="block text-sm font-medium text-gray-700 mb-1">
-                        Por que você quer participar? *
-                      </label>
-                      <textarea
-                        id="motivacao"
-                        name="motivacao"
-                        value={formData.motivacao}
-                        onChange={handleChange}
-                        rows={4}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                        placeholder="Conte-nos sua motivação para participar do time audiovisual..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* Termos e condições */}
-                  <div className="space-y-4">
-                    <div className="flex items-start">
-                      <input
-                        type="checkbox"
-                        id="termosAceitos"
-                        name="termosAceitos"
-                        checked={formData.termosAceitos}
-                        onChange={handleChange}
-                        className="mt-1 h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
-                      />
-                      <label htmlFor="termosAceitos" className="ml-2 block text-sm text-gray-700">
-                        Aceito os termos e condições da candidatura audiovisual *
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Botões */}
-                  <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                    <button
-                      type="submit"
-                      disabled={loading || !user}
-                      className="flex-1 bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:ring-4 focus:ring-pink-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                    >
-                      {loading ? (
-                        <span className="flex items-center justify-center">
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Processando...
-                        </span>
-                      ) : !user ? (
-                        'Faça login para enviar candidatura'
-                      ) : (
-                        'Enviar Candidatura - R$ 29,90'
-                      )}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      disabled={loading}
-                      className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 focus:ring-4 focus:ring-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                    >
-                      Limpar Formulário
-                    </button>
-                  </div>
-                </form>
-              )}
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    disabled={loading}
+                    className="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-300 focus:ring-4 focus:ring-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                  >
+                    Limpar Formulário
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </main>

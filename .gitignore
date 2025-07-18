@@ -1,14 +1,44 @@
-# Logs
+# BÁSICOS
+node_modules
+dist
+build
+.env
+.env.* 
+.vscode
+.DS_Store
+
+# FIREBASE / VITE
+firebase-debug.log
+firebase.json
+firestore.indexes.json
+firestore.rules
+storage.rules
+.emulator
+functions/lib
+functions/node_modules
+
+# NEXT/VITE
+.next
+out
+coverage
+.cache
 logs
 *.log
+
+# BACKUP
+firestore-backup/
+*.backup.json
+
+# CURSOR APP
+*.cursor-config
+
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
 dist-ssr
 *.local
 
@@ -16,7 +46,6 @@ dist-ssr
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
@@ -24,7 +53,6 @@ dist-ssr
 *.sw?
 
 # Environment variables
-.env
 .env.local
 .env.development.local
 .env.test.local
@@ -32,19 +60,13 @@ dist-ssr
 
 # Firebase
 .firebase/
-firebase-debug.log
 firebase-debug.*.log
 
 # TypeScript
 *.tsbuildinfo
 
 # Testing
-coverage/
 .nyc_output/
-
-# Build outputs
-build/
-out/
 
 # Source maps (não versionar em produção)
 *.map

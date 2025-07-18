@@ -46,13 +46,12 @@ export default function AudiovisualAnalysis() {
         {/* Fita rosa como botão */}
         <a 
           href="/audiovisual/form" 
-          target="_blank"
           onClick={handleParticipateClick}
           className="relative inline-block transform transition-all duration-300 hover:scale-105 hover:rotate-1 group"
           style={{ cursor: 'pointer' }}
         >
           <OptimizedImage
-            src="/images/pngtree-light-gray-old-paper.webp"
+            src="/images/pngtree-light-gray-old-paper.png"
             alt="Fita decorativa"
             className="h-16 w-auto object-contain"
           />

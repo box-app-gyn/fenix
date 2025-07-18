@@ -25,5 +25,5 @@ export declare const criarCheckoutFlowPay: import("firebase-functions/v2/https")
 /**
  * Webhook para processar retornos da OpenPix
  */
-export declare const webhookOpenPix: import("firebase-functions/v2/https").HttpsFunction;
+export declare const openpixWebhook: import("firebase-functions/lib/v1/cloud-functions").HttpsFunction;
 //# sourceMappingURL=flowpay.d.ts.map

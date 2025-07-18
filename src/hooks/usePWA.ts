@@ -10,6 +10,16 @@ interface PWAState {
   cacheStatus: 'idle' | 'caching' | 'cached' | 'error';
   offlineActions: number;
   analyticsQueue: number;
+  deviceInfo: {
+    isMobile: boolean;
+    isIOS: boolean;
+    isAndroid: boolean;
+    isChrome: boolean;
+    isSafari: boolean;
+    isFirefox: boolean;
+    isEdge: boolean;
+    isPWA: boolean;
+  };
 }
 
 interface InstallPromptEvent extends Event {
@@ -28,9 +38,38 @@ export const usePWA = () => {
     cacheStatus: 'idle',
     offlineActions: 0,
     analyticsQueue: 0,
+    deviceInfo: {
+      isMobile: false,
+      isIOS: false,
+      isAndroid: false,
+      isChrome: false,
+      isSafari: false,
+      isFirefox: false,
+      isEdge: false,
+      isPWA: false,
+    },
   });
 
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
+
+  // Detectar informações do dispositivo
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    
+    const deviceInfo = {
+      isMobile: /mobile|android|iphone|ipad|phone/i.test(userAgent),
+      isIOS: /iphone|ipad|ipod/i.test(userAgent),
+      isAndroid: /android/i.test(userAgent),
+      isChrome: /chrome/i.test(userAgent) && !/edge/i.test(userAgent),
+      isSafari: /safari/i.test(userAgent) && !/chrome/i.test(userAgent),
+      isFirefox: /firefox/i.test(userAgent),
+      isEdge: /edge/i.test(userAgent),
+      isPWA: isStandalone,
+    };
+
+    setState(prev => ({ ...prev, deviceInfo, isStandalone }));
+  }, []);
 
   // Detectar mudanças de conectividade
   useEffect(() => {
@@ -52,6 +91,12 @@ export const usePWA = () => {
       e.preventDefault();
       setInstallPrompt(e as InstallPromptEvent);
       setState(prev => ({ ...prev, isInstallable: true }));
+      
+      // Analytics
+      trackEvent('pwa_install_prompt_available', {
+        timestamp: Date.now(),
+        userAgent: navigator.userAgent,
+      });
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -96,6 +141,11 @@ export const usePWA = () => {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 setState(prev => ({ ...prev, isUpdateAvailable: true }));
+                
+                // Analytics
+                trackEvent('pwa_update_available', {
+                  timestamp: Date.now(),
+                });
               }
             });
           }
@@ -103,6 +153,8 @@ export const usePWA = () => {
 
         // Verificar status do cache
         checkCacheStatus();
+      }).catch(error => {
+        console.error('Erro ao verificar Service Worker:', error);
       });
     }
   }, []);
@@ -152,9 +204,17 @@ export const usePWA = () => {
         });
         
         return true;
+      } else {
+        trackEvent('pwa_install_dismissed', {
+          timestamp: Date.now(),
+        });
       }
     } catch (error) {
       console.error('Erro ao instalar PWA:', error);
+      trackEvent('pwa_install_error', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: Date.now(),
+      });
     }
     
     return false;
@@ -167,13 +227,16 @@ export const usePWA = () => {
     try {
       const criticalResources = [
         '/images/bg_main.png',
-        '/images/logo-1.png',
+        '/logos/logo_circulo.png',
         '/images/bg_1.png',
         '/manifest.json',
-        '/offline.html'
+        '/offline.html',
+        '/favicon.ico',
+        '/favicon-192x192.png',
+        '/favicon-512x512.png'
       ];
 
-      const cache = await caches.open('interbox-critical-v1');
+      const cache = await caches.open('interbox-critical-v2');
       await cache.addAll(criticalResources);
       
       setState(prev => ({ ...prev, cacheStatus: 'cached' }));
@@ -250,7 +313,7 @@ export const usePWA = () => {
   // Funções de notificação
   const requestNotificationPermission = useCallback(async () => {
     if (!('Notification' in window)) {
-      console.log('Este navegador não suporta notificações');
+      console.warn('Este navegador não suporta notificações');
       return false;
     }
 
@@ -269,101 +332,69 @@ export const usePWA = () => {
     }
   }, []);
 
-  const sendTestNotification = useCallback(async () => {
-    if (Notification.permission === 'granted') {
-      new Notification('Interbox 2025', {
-        body: 'Teste de notificação push! 🚀',
-        icon: '/images/logo-1.png',
-        badge: '/images/badge.png',
-        data: {
-          type: 'test',
-          timestamp: Date.now(),
-        },
+  const sendNotification = useCallback(async (title: string, options?: NotificationOptions) => {
+    if (!('Notification' in window) || Notification.permission !== 'granted') {
+      return false;
+    }
+
+    try {
+      new Notification(title, {
+        icon: '/favicon-192x192.png',
+        badge: '/favicon-96x96.png',
+        ...options,
       });
 
-      trackEvent('test_notification_sent', {
+      trackEvent('notification_sent', {
+        title,
         timestamp: Date.now(),
       });
+
+      return true;
+    } catch (error) {
+      console.error('Erro ao enviar notificação:', error);
+      return false;
     }
   }, []);
 
-  // Funções de analytics offline
-  const trackEvent = useCallback(async (event: string, data: any) => {
-    const eventData = {
-      event,
-      data,
-      timestamp: Date.now(),
-      sessionId: getSessionId(),
-      userId: getUserId(),
-    };
-
+  // Funções de analytics
+  const trackEvent = useCallback((eventName: string, data: any = {}) => {
     try {
-      // Tentar enviar imediatamente se online
+      // Enviar para analytics se online
       if (navigator.onLine) {
-        await sendAnalyticsEvent(eventData);
+        sendAnalyticsEvent({
+          event: eventName,
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          ...data,
+        });
       } else {
-        // Salvar offline
-        await saveOfflineAnalytics(eventData);
-        setState(prev => ({ 
-          ...prev, 
-          analyticsQueue: prev.analyticsQueue + 1 
-        }));
+        // Salvar offline se não estiver online
+        saveOfflineAnalytics({
+          event: eventName,
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+          ...data,
+        });
       }
     } catch (error) {
-      console.error('Erro ao trackear evento:', error);
-      // Salvar offline como fallback
-      await saveOfflineAnalytics(eventData);
-    }
-  }, []);
-
-  // Funções de dados offline
-  const saveOfflineAction = useCallback(async (action: string, data: any) => {
-    try {
-      const actionData = {
-        type: action,
-        data,
-        timestamp: Date.now(),
-        sessionId: getSessionId(),
-        userId: getUserId(),
-      };
-
-      await saveToIndexedDB('offlineActions', actionData);
-      setState(prev => ({ 
-        ...prev, 
-        offlineActions: prev.offlineActions + 1 
-      }));
-    } catch (error) {
-      console.error('Erro ao salvar ação offline:', error);
+      console.error('Erro ao rastrear evento:', error);
     }
   }, []);
 
   // Funções auxiliares
   const checkCacheStatus = useCallback(async () => {
     try {
-      const cache = await caches.open('interbox-critical-v1');
+      const cache = await caches.open('interbox-critical-v2');
       const keys = await cache.keys();
       setState(prev => ({ 
         ...prev, 
         cacheStatus: keys.length > 0 ? 'cached' : 'idle' 
       }));
     } catch (error) {
+      console.error('Erro ao verificar status do cache:', error);
       setState(prev => ({ ...prev, cacheStatus: 'error' }));
     }
   }, []);
-
-  const getSessionId = () => {
-    let sessionId = localStorage.getItem('interbox_session_id');
-    if (!sessionId) {
-      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      localStorage.setItem('interbox_session_id', sessionId);
-    }
-    return sessionId;
-  };
-
-  const getUserId = () => {
-    // Implementar lógica para obter ID do usuário logado
-    return localStorage.getItem('interbox_user_id') || 'anonymous';
-  };
 
   return {
     ...state,
@@ -373,15 +404,14 @@ export const usePWA = () => {
     syncInBackground,
     syncAnalytics,
     requestNotificationPermission,
-    sendTestNotification,
+    sendNotification,
     trackEvent,
-    saveOfflineAction,
   };
 };
 
 // Funções auxiliares para IndexedDB
-async function openDB() {
-  return new Promise<IDBDatabase>((resolve, reject) => {
+async function openDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
     const request = indexedDB.open('InterboxOfflineDB', 1);
     
     request.onerror = () => reject(request.error);
@@ -391,13 +421,11 @@ async function openDB() {
       const db = (event.target as IDBOpenDBRequest).result;
       
       if (!db.objectStoreNames.contains('offlineActions')) {
-        const actionStore = db.createObjectStore('offlineActions', { keyPath: 'id', autoIncrement: true });
-        actionStore.createIndex('timestamp', 'timestamp', { unique: false });
+        db.createObjectStore('offlineActions', { keyPath: 'id', autoIncrement: true });
       }
       
-      if (!db.objectStoreNames.contains('analytics')) {
-        const analyticsStore = db.createObjectStore('analytics', { keyPath: 'id', autoIncrement: true });
-        analyticsStore.createIndex('timestamp', 'timestamp', { unique: false });
+      if (!db.objectStoreNames.contains('offlineAnalytics')) {
+        db.createObjectStore('offlineAnalytics', { keyPath: 'id', autoIncrement: true });
       }
     };
   });
@@ -411,39 +439,63 @@ async function saveToIndexedDB(storeName: string, data: any) {
 }
 
 async function getOfflineActions() {
-  const db = await openDB();
-  const transaction = db.transaction(['offlineActions'], 'readonly');
-  const store = transaction.objectStore('offlineActions');
-  return store.getAll();
-}
-
-async function getOfflineAnalytics() {
-  const db = await openDB();
-  const transaction = db.transaction(['analytics'], 'readonly');
-  const store = transaction.objectStore('analytics');
-  return store.getAll();
-}
-
-async function saveOfflineAnalytics(data: any) {
-  return saveToIndexedDB('analytics', data);
-}
-
-async function sendAnalyticsEvent(data: any) {
-  // Implementar envio para seu sistema de analytics
-  console.log('📊 Analytics event:', data);
-  
-  // Exemplo com Firebase Analytics
-  if (typeof window !== 'undefined' && (window as any).gtag) {
-    (window as any).gtag('event', data.event, data.data);
+  try {
+    const db = await openDB();
+    const transaction = db.transaction(['offlineActions'], 'readonly');
+    const store = transaction.objectStore('offlineActions');
+    const actions = await new Promise((resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    return actions || [];
+  } catch (error) {
+    console.error('Erro ao buscar ações offline:', error);
+    return [];
   }
 }
 
-// Função para envio em lote de analytics (não utilizada no momento)
-// async function sendAnalyticsBatch(analytics: any[]) {
-//   // Implementar envio em lote
-//   console.log('📊 Sending analytics batch:', analytics.length);
-//   
-//   for (const event of analytics) {
-//     await sendAnalyticsEvent(event);
-//   }
-// }
+async function getOfflineAnalytics() {
+  try {
+    const db = await openDB();
+    const transaction = db.transaction(['offlineAnalytics'], 'readonly');
+    const store = transaction.objectStore('offlineAnalytics');
+    const analytics = await new Promise((resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    return analytics || [];
+  } catch (error) {
+    console.error('Erro ao buscar analytics offline:', error);
+    return [];
+  }
+}
+
+async function saveOfflineAnalytics(data: any) {
+  try {
+    await saveToIndexedDB('offlineAnalytics', data);
+  } catch (error) {
+    console.error('Erro ao salvar analytics offline:', error);
+  }
+}
+
+async function sendAnalyticsEvent(data: any) {
+  try {
+    const response = await fetch('/api/analytics', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Erro ao enviar evento de analytics:', error);
+    // Salvar offline se falhar
+    await saveOfflineAnalytics(data);
+  }
+}

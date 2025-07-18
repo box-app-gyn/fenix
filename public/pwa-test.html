@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste PWA - CERRADØ INTERBOX 2025</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#ec4899" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(45deg, #fb05e4, #00259f);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fb05e4, #00259f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .test-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #fb05e4;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .test-item:last-child {
+            border-bottom: none;
+        }
+
+        .test-label {
+            font-weight: 500;
+        }
+
+        .test-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-info {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3B82F6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .test-details {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #fb05e4, #00259f);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(251, 5, 228, 0.3);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .console-output {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .console-line {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .console-success { color: #10B981; }
+        .console-error { color: #EF4444; }
+        .console-warning { color: #F59E0B; }
+        .console-info { color: #3B82F6; }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .title {
+                font-size: 1.5rem;
+            }
+            
+            .test-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📱</div>
+            <h1 class="title">Teste PWA</h1>
+            <p class="subtitle">CERRADØ INTERBOX 2025</p>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">🔧 Configuração Básica</h2>
+            <div id="basic-tests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">📱 Manifest e Ícones</h2>
+            <div id="manifest-tests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">⚡ Service Worker</h2>
+            <div id="sw-tests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">🔔 Funcionalidades PWA</h2>
+            <div id="pwa-tests"></div>
+        </div>
+
+        <div class="test-section">
+            <h2 class="test-title">📊 Console de Logs</h2>
+            <div class="console-output" id="console-output"></div>
+            <div style="margin-top: 15px;">
+                <button class="button" onclick="clearConsole()">Limpar Console</button>
+                <button class="button" onclick="runAllTests()">Executar Todos os Testes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let consoleOutput = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            consoleOutput.push({ message: logEntry, type });
+            
+            const consoleElement = document.getElementById('console-output');
+            const lineElement = document.createElement('div');
+            lineElement.className = `console-line console-${type}`;
+            lineElement.textContent = logEntry;
+            consoleElement.appendChild(lineElement);
+            consoleElement.scrollTop = consoleElement.scrollHeight;
+            
+            console.log(logEntry);
+        }
+
+        function clearConsole() {
+            consoleOutput = [];
+            document.getElementById('console-output').innerHTML = '';
+        }
+
+        function addTestResult(containerId, label, status, details = '') {
+            const container = document.getElementById(containerId);
+            const testItem = document.createElement('div');
+            testItem.className = 'test-item';
+            
+            testItem.innerHTML = `
+                <div>
+                    <div class="test-label">${label}</div>
+                    ${details ? `<div class="test-details">${details}</div>` : ''}
+                </div>
+                <div class="test-status status-${status}">${status.toUpperCase()}</div>
+            `;
+            
+            container.appendChild(testItem);
+        }
+
+        async function testBasicConfiguration() {
+            log('🔧 Testando configuração básica...', 'info');
+            
+            // Teste de HTTPS
+            const isHttps = location.protocol === 'https:' || location.hostname === 'localhost';
+            addTestResult('basic-tests', 'HTTPS/HTTP', isHttps ? 'success' : 'error', 
+                isHttps ? 'Conexão segura detectada' : 'HTTPS é necessário para PWA');
+            
+            // Teste de viewport
+            const viewport = document.querySelector('meta[name="viewport"]');
+            addTestResult('basic-tests', 'Viewport Meta Tag', viewport ? 'success' : 'error',
+                viewport ? 'Viewport configurado corretamente' : 'Viewport meta tag não encontrado');
+            
+            // Teste de charset
+            const charset = document.querySelector('meta[charset]');
+            addTestResult('basic-tests', 'Charset UTF-8', charset ? 'success' : 'error',
+                charset ? 'Charset UTF-8 configurado' : 'Charset não encontrado');
+            
+            log('✅ Testes básicos concluídos', 'success');
+        }
+
+        async function testManifest() {
+            log('📱 Testando manifest e ícones...', 'info');
+            
+            try {
+                const manifestResponse = await fetch('/manifest.json');
+                if (manifestResponse.ok) {
+                    const manifest = await manifestResponse.json();
+                    
+                    addTestResult('manifest-tests', 'Manifest JSON', 'success', 
+                        'Manifest carregado com sucesso');
+                    
+                    // Verificar campos obrigatórios
+                    const requiredFields = ['name', 'short_name', 'start_url', 'display'];
+                    const missingFields = requiredFields.filter(field => !manifest[field]);
+                    
+                    if (missingFields.length === 0) {
+                        addTestResult('manifest-tests', 'Campos Obrigatórios', 'success',
+                            'Todos os campos obrigatórios presentes');
+                    } else {
+                        addTestResult('manifest-tests', 'Campos Obrigatórios', 'error',
+                            `Campos faltando: ${missingFields.join(', ')}`);
+                    }
+                    
+                    // Verificar ícones
+                    if (manifest.icons && manifest.icons.length > 0) {
+                        const icon192 = manifest.icons.find(icon => icon.sizes === '192x192');
+                        const icon512 = manifest.icons.find(icon => icon.sizes === '512x512');
+                        
+                        if (icon192 && icon512) {
+                            addTestResult('manifest-tests', 'Ícones PWA', 'success',
+                                'Ícones 192x192 e 512x512 encontrados');
+                        } else {
+                            addTestResult('manifest-tests', 'Ícones PWA', 'warning',
+                                'Ícones recomendados não encontrados');
+                        }
+                    } else {
+                        addTestResult('manifest-tests', 'Ícones PWA', 'error',
+                            'Nenhum ícone definido no manifest');
+                    }
+                    
+                    log('✅ Manifest testado com sucesso', 'success');
+                } else {
+                    addTestResult('manifest-tests', 'Manifest JSON', 'error',
+                        `Erro HTTP: ${manifestResponse.status}`);
+                    log('❌ Erro ao carregar manifest', 'error');
+                }
+            } catch (error) {
+                addTestResult('manifest-tests', 'Manifest JSON', 'error',
+                    'Erro ao acessar manifest.json');
+                log('❌ Erro ao testar manifest: ' + error.message, 'error');
+            }
+        }
+
+        async function testServiceWorker() {
+            log('⚡ Testando Service Worker...', 'info');
+            
+            if ('serviceWorker' in navigator) {
+                addTestResult('sw-tests', 'Suporte Service Worker', 'success',
+                    'Navegador suporta Service Worker');
+                
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        addTestResult('sw-tests', 'Service Worker Registrado', 'success',
+                            'Service Worker ativo e funcionando');
+                        
+                        if (registration.active) {
+                            addTestResult('sw-tests', 'Service Worker Ativo', 'success',
+                                'Service Worker em execução');
+                        } else {
+                            addTestResult('sw-tests', 'Service Worker Ativo', 'warning',
+                                'Service Worker registrado mas não ativo');
+                        }
+                    } else {
+                        addTestResult('sw-tests', 'Service Worker Registrado', 'error',
+                            'Nenhum Service Worker registrado');
+                    }
+                } catch (error) {
+                    addTestResult('sw-tests', 'Service Worker', 'error',
+                        'Erro ao verificar Service Worker');
+                    log('❌ Erro ao testar Service Worker: ' + error.message, 'error');
+                }
+            } else {
+                addTestResult('sw-tests', 'Suporte Service Worker', 'error',
+                    'Navegador não suporta Service Worker');
+            }
+            
+            log('✅ Service Worker testado', 'success');
+        }
+
+        async function testPWAFeatures() {
+            log('🔔 Testando funcionalidades PWA...', 'info');
+            
+            // Teste de display mode
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            addTestResult('pwa-tests', 'Display Standalone', isStandalone ? 'success' : 'info',
+                isStandalone ? 'App em modo standalone' : 'App em modo browser');
+            
+            // Teste de instalação
+            let installable = false;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                installable = true;
+                addTestResult('pwa-tests', 'Instalável', 'success',
+                    'App pode ser instalado');
+            });
+            
+            // Aguardar um pouco para detectar beforeinstallprompt
+            setTimeout(() => {
+                if (!installable) {
+                    addTestResult('pwa-tests', 'Instalável', 'info',
+                        'App pode não ser instalável neste momento');
+                }
+            }, 1000);
+            
+            // Teste de notificações
+            if ('Notification' in window) {
+                addTestResult('pwa-tests', 'Suporte Notificações', 'success',
+                    'Navegador suporta notificações');
+                
+                if (Notification.permission === 'granted') {
+                    addTestResult('pwa-tests', 'Permissão Notificações', 'success',
+                        'Permissão de notificações concedida');
+                } else if (Notification.permission === 'denied') {
+                    addTestResult('pwa-tests', 'Permissão Notificações', 'error',
+                        'Permissão de notificações negada');
+                } else {
+                    addTestResult('pwa-tests', 'Permissão Notificações', 'warning',
+                        'Permissão de notificações não solicitada');
+                }
+            } else {
+                addTestResult('pwa-tests', 'Suporte Notificações', 'error',
+                    'Navegador não suporta notificações');
+            }
+            
+            // Teste de cache
+            if ('caches' in window) {
+                addTestResult('pwa-tests', 'Suporte Cache API', 'success',
+                    'Navegador suporta Cache API');
+            } else {
+                addTestResult('pwa-tests', 'Suporte Cache API', 'error',
+                    'Navegador não suporta Cache API');
+            }
+            
+            log('✅ Funcionalidades PWA testadas', 'success');
+        }
+
+        async function runAllTests() {
+            log('🚀 Iniciando todos os testes PWA...', 'info');
+            
+            // Limpar resultados anteriores
+            document.getElementById('basic-tests').innerHTML = '';
+            document.getElementById('manifest-tests').innerHTML = '';
+            document.getElementById('sw-tests').innerHTML = '';
+            document.getElementById('pwa-tests').innerHTML = '';
+            
+            await testBasicConfiguration();
+            await testManifest();
+            await testServiceWorker();
+            await testPWAFeatures();
+            
+            log('🎉 Todos os testes concluídos!', 'success');
+        }
+
+        // Executar testes automaticamente ao carregar
+        window.addEventListener('load', () => {
+            log('📱 Página de teste PWA carregada', 'info');
+            setTimeout(runAllTests, 1000);
+        });
+    </script>
+</body>
+</html> 

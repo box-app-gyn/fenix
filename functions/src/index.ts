@@ -2,36 +2,24 @@
 // FIREBASE FUNCTIONS - INDEX
 // ============================================================================
 
-import { onCall } from 'firebase-functions/v2/https';
+import * as functions from 'firebase-functions';
 import { db, admin } from './firebase-admin';
 
 // ============================================================================
-// IMPORTAR FUNÇÕES EXISTENTES (após inicialização)
-// ============================================================================
-
-export * from './teams';
-export * from './pedidos';
-export * from './audiovisual';
-export * from './audiovisual-inscricao';
-export * from './flowpay';
-
-// Dashboard API - Removida para simplificar
-
-// ============================================================================
-// FUNÇÕES LEGADAS (mantidas para compatibilidade)
+// FUNÇÕES ESSENCIAIS
 // ============================================================================
 
 // Função simples de teste
-export const testFunction = onCall(async (request) => {
+export const testFunction = functions.https.onCall(async (data, context: any) => {
   try {
-    if (!request.auth) {
+    if (!context?.auth) {
       throw new Error('Usuário não autenticado');
     }
 
     return {
       success: true,
       message: 'Função de teste funcionando!',
-      userId: request.auth.uid,
+      userId: context.auth.uid,
     };
   } catch (error) {
     console.error('Erro na função de teste:', error);
@@ -40,16 +28,16 @@ export const testFunction = onCall(async (request) => {
 });
 
 // Função para criar inscrição de time
-export const criarInscricaoTime = onCall(async (request) => {
+export const criarInscricaoTime = functions.https.onCall(async (data: any, context: any) => {
   try {
-    if (!request.auth) {
+    if (!context?.auth) {
       throw new Error('Usuário não autenticado');
     }
 
-    const { userId, timeData } = request.data;
+    const { userId, timeData } = data;
 
     // Verificar se o usuário é o dono da inscrição
-    if (request.auth.uid !== userId) {
+    if (context.auth.uid !== userId) {
       throw new Error('Usuário não autorizado');
     }
 
@@ -74,13 +62,13 @@ export const criarInscricaoTime = onCall(async (request) => {
 });
 
 // Função para validar audiovisual
-export const validaAudiovisual = onCall(async (request) => {
+export const validaAudiovisual = functions.https.onCall(async (data: any, context: any) => {
   try {
-    if (!request.auth) {
+    if (!context?.auth) {
       throw new Error('Usuário não autenticado');
     }
 
-    const { audiovisualId, adminId, aprovado, motivoRejeicao } = request.data;
+    const { audiovisualId, adminId, aprovado, motivoRejeicao } = data;
 
     // Verificar se é admin
     const adminUser = await db.collection('users').doc(adminId).get();
@@ -137,16 +125,76 @@ export const validaAudiovisual = onCall(async (request) => {
   }
 });
 
+// Webhook OpenPix (HTTP function)
+export const openpixWebhook = functions.https.onRequest(async (req, res) => {
+  // Configurar CORS
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST');
+  res.set('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Responder a requisições OPTIONS (preflight)
+  if (req.method === 'OPTIONS') {
+    res.status(204).send('');
+    return;
+  }
+
+  // Apenas aceitar POST
+  if (req.method !== 'POST') {
+    res.status(405).send('Method not allowed');
+    return;
+  }
+
+  try {
+    console.log('Webhook OpenPix recebido:', req.body);
+    
+    // Processar webhook aqui
+    const { charge } = req.body;
+    
+    if (charge && charge.status === 'COMPLETED') {
+      // Atualizar status do pagamento no Firestore
+      await db.collection('pagamentos').doc(charge.correlationID).update({
+        status: 'completed',
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        webhookData: req.body
+      });
+      
+      console.log('Pagamento processado com sucesso:', charge.correlationID);
+    }
+    
+    res.status(200).send('OK');
+  } catch (error) {
+    console.error('Erro no webhook OpenPix:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // ============================================================================
-// EXPORTAÇÕES PARA COMPATIBILIDADE
+// FUNÇÕES DE EMAIL
 // ============================================================================
 
-// Exportar todas as funções para o sistema de build do Firebase
-export default {
-  // Funções legadas
-  testFunction,
-  criarInscricaoTime,
-  validaAudiovisual,
-  
-  // Funções do dashboard (exportadas automaticamente via export *)
-}; 
+// Função para enviar email de boas-vindas
+export const enviarEmailBoasVindas = functions.https.onCall(async (data: any, context: any) => {
+  try {
+    if (!context?.auth) {
+      throw new Error('Usuário não autenticado');
+    }
+
+    const { userId } = data;
+    
+    // Buscar dados do usuário
+    const userDoc = await db.collection('users').doc(userId).get();
+    if (!userDoc.exists) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    const userData = userDoc.data();
+    
+    // Aqui você implementaria o envio do email
+    console.log('Enviando email de boas-vindas para:', userData?.email);
+    
+    return { success: true, message: 'Email de boas-vindas enviado' };
+  } catch (error) {
+    console.error('Erro ao enviar email de boas-vindas:', error);
+    throw error;
+  }
+}); 

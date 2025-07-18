@@ -222,7 +222,7 @@ export const emailTemplates = {
       <p>Fique atento às próximas atualizações!</p>
     `;
 
-    return emailTemplates.base(content, "Interbox 2025 - Notificação");
+    return emailTemplates.base(content, "CERRADO INTERBØX 2025 - Notificação");
   },
 
   // Template para boas-vindas
@@ -246,7 +246,7 @@ export const emailTemplates = {
       
       <p>Estamos muito felizes em tê-lo conosco nesta jornada incrível!</p>
       
-      <a href="https://interbox2025.com" class="button">Acessar o App</a>
+      <a href="https://cerradointerbox.com.br" class="button">Acessar o App</a>
     `;
 
     return emailTemplates.base(content, "Bem-vindo ao INTERBØX 2025");
