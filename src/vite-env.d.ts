@@ -17,7 +17,7 @@ interface ImportMeta {
 
 declare global {
   interface Window {
-    gtag: (command: 'config' | 'event' | 'set' | 'js', ...args: any[]) => void;
+    gtag: (...args: any[]) => void;
     dataLayer: any[];
   }
 }

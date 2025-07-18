@@ -65,12 +65,14 @@ Object.defineProperty(window, 'performance', {
 });
 
 // Configurações globais
-global.console = {
-  ...console,
-  // Silenciar logs durante testes
-  log: vi.fn(),
-  debug: vi.fn(),
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-};
+if (typeof global !== 'undefined') {
+  global.console = {
+    ...console,
+    // Silenciar logs durante testes
+    log: vi.fn(),
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  };
+}

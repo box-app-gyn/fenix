@@ -62,7 +62,7 @@ const ProfileAvatar = ({
   userData: FirestoreUser | null;
   photoPreview: string | null;
   photoLoading: boolean;
-  onPhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // eslint-disable-line no-unused-vars
 }) => {
   const avatarContent = () => {
     if (photoLoading) {
@@ -344,7 +344,7 @@ export default function Perfil() {
       reader.readAsDataURL(compressedFile);
 
       setMessage({ type: 'success', text: 'Foto selecionada! Clique em "Salvar Alterações" para aplicar.' });
-    } catch (err) {
+    } catch (_err) {
       setMessage({ type: 'error', text: 'Erro ao processar imagem.' });
     } finally {
       setPhotoLoading(false);
@@ -352,8 +352,8 @@ export default function Perfil() {
   };
 
   // Handle form changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (_e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = _e.target;
     
     let formattedValue = value;
     if (name === 'telefone') {

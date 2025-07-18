@@ -19,6 +19,31 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
   const [isVisible, setIsVisible] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
   const [showBenefits, setShowBenefits] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
+
+  // Detectar dispositivo e navegador
+  const [deviceInfo, setDeviceInfo] = useState({
+    isMobile: false,
+    isIOS: false,
+    isAndroid: false,
+    isChrome: false,
+    isSafari: false,
+    isFirefox: false,
+    isEdge: false,
+  });
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    setDeviceInfo({
+      isMobile: /mobile|android|iphone|ipad|phone/i.test(userAgent),
+      isIOS: /iphone|ipad|ipod/i.test(userAgent),
+      isAndroid: /android/i.test(userAgent),
+      isChrome: /chrome/i.test(userAgent) && !/edge/i.test(userAgent),
+      isSafari: /safari/i.test(userAgent) && !/chrome/i.test(userAgent),
+      isFirefox: /firefox/i.test(userAgent),
+      isEdge: /edge/i.test(userAgent),
+    });
+  }, []);
 
   // Mostrar prompt após delay
   useEffect(() => {
@@ -50,10 +75,10 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
       }
     } catch (error) {
       console.error('Erro ao instalar PWA:', error);
-              trackEvent('pwa_install_error', {
-          error: error instanceof Error ? error.message : 'Unknown error',
-          timestamp: Date.now(),
-        });
+      trackEvent('pwa_install_error', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: Date.now(),
+      });
     } finally {
       setIsInstalling(false);
     }
@@ -76,7 +101,98 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
     localStorage.setItem('pwa_install_reminder', Date.now().toString());
   };
 
+  // Gerar instruções específicas baseadas no dispositivo
+  const getInstallInstructions = () => {
+    if (deviceInfo.isIOS) {
+      if (deviceInfo.isSafari) {
+        return {
+          title: "📱 iPhone/iPad (Safari)",
+          steps: [
+            "1. Toque no botão 📤 Compartilhar (quadrado com seta)",
+            "2. Role para baixo e toque em 'Adicionar à Tela Inicial'",
+            "3. Toque em 'Adicionar' para confirmar",
+            "4. O app aparecerá na sua tela inicial!"
+          ]
+        };
+      } else {
+        return {
+          title: "📱 iPhone/iPad (Outros navegadores)",
+          steps: [
+            "1. Abra o Safari no seu dispositivo",
+            "2. Acesse este site novamente",
+            "3. Toque no botão 📤 Compartilhar",
+            "4. Selecione 'Adicionar à Tela Inicial'"
+          ]
+        };
+      }
+    } else if (deviceInfo.isAndroid) {
+      if (deviceInfo.isChrome) {
+        return {
+          title: "🤖 Android (Chrome)",
+          steps: [
+            "1. Toque no menu ⋮ (três pontos)",
+            "2. Selecione 'Adicionar à tela inicial'",
+            "3. Toque em 'Adicionar' para confirmar",
+            "4. O app aparecerá na sua tela inicial!"
+          ]
+        };
+      } else {
+        return {
+          title: "🤖 Android (Outros navegadores)",
+          steps: [
+            "1. Abra o Chrome no seu dispositivo",
+            "2. Acesse este site novamente",
+            "3. Toque no menu do navegador",
+            "4. Procure por 'Adicionar à tela inicial'"
+          ]
+        };
+      }
+    } else {
+      // Desktop
+      if (deviceInfo.isChrome) {
+        return {
+          title: "💻 Desktop (Chrome)",
+          steps: [
+            "1. Clique no ícone 📌 (instalar) na barra de endereços",
+            "2. Ou clique no menu ⋮ → 'Mais ferramentas' → 'Criar atalho'",
+            "3. Marque 'Abrir como janela' se desejar",
+            "4. Clique em 'Instalar'"
+          ]
+        };
+      } else if (deviceInfo.isEdge) {
+        return {
+          title: "💻 Desktop (Edge)",
+          steps: [
+            "1. Clique no ícone 📌 (instalar) na barra de endereços",
+            "2. Ou clique no menu ⋯ → 'Aplicativos' → 'Instalar este site'",
+            "3. Clique em 'Instalar' para confirmar"
+          ]
+        };
+      } else if (deviceInfo.isFirefox) {
+        return {
+          title: "💻 Desktop (Firefox)",
+          steps: [
+            "1. Clique no ícone 📌 (fixar) na barra de endereços",
+            "2. Ou clique no menu ☰ → 'Aplicativo' → 'Instalar'",
+            "3. Clique em 'Adicionar' para confirmar"
+          ]
+        };
+      } else {
+        return {
+          title: "💻 Desktop (Outros navegadores)",
+          steps: [
+            "1. Procure por um ícone de instalação na barra de endereços",
+            "2. Ou verifique o menu do navegador por opções de instalação",
+            "3. Alguns navegadores podem não suportar instalação de PWA"
+          ]
+        };
+      }
+    }
+  };
+
   if (!isVisible) return null;
+
+  const instructions = getInstallInstructions();
 
   return (
     <AnimatePresence>
@@ -174,6 +290,48 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
               )}
             </button>
           </div>
+
+          {/* Instructions Button */}
+          <button
+            onClick={() => setShowInstructions(!showInstructions)}
+            className="w-full mt-3 text-center text-sm text-blue-600 hover:text-blue-700 transition-colors font-medium"
+          >
+            {showInstructions ? 'Ocultar instruções' : '📋 Como instalar manualmente?'}
+          </button>
+
+          {/* Instructions */}
+          <AnimatePresence>
+            {showInstructions && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-4 pt-4 border-t border-gray-200 overflow-hidden"
+              >
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-800 mb-3 flex items-center">
+                    <span className="mr-2">📋</span>
+                    {instructions.title}
+                  </h4>
+                  <div className="space-y-2">
+                    {instructions.steps.map((step, index) => (
+                      <p key={index} className="text-sm text-blue-700 leading-relaxed">
+                        {step}
+                      </p>
+                    ))}
+                  </div>
+                  
+                  {/* Dica adicional */}
+                  <div className="mt-3 p-2 bg-blue-100 rounded border border-blue-300">
+                    <p className="text-xs text-blue-800">
+                      💡 <strong>Dica:</strong> Após a instalação, o app aparecerá na sua tela inicial ou menu de aplicativos!
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Learn More */}
           <button

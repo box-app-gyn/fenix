@@ -6,8 +6,8 @@ interface SplashScreenProps {
 }
 
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
-  const [isPlaying, setIsPlaying] = useState(true)
-  const [videoEnded, setVideoEnded] = useState(false)
+  const [isPlaying] = useState(true)
+  const [videoEnded] = useState(false)
   const [videoFailed, setVideoFailed] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -15,29 +15,18 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     const video = videoRef.current
     if (!video) return
 
-    let failTimeout: NodeJS.Timeout | null = null
-
     const handleVideoEnd = () => {
-      setVideoEnded(true)
-      setTimeout(() => {
-        setIsPlaying(false)
-        setTimeout(onComplete, 500) // Aguarda a animação de saída
-      }, 1000)
+      setVideoFailed(false)
+      onComplete()
     }
 
     const handleVideoError = () => {
       setVideoFailed(true)
-      setTimeout(() => {
-        setVideoEnded(true)
-        setTimeout(() => {
-          setIsPlaying(false)
-          setTimeout(onComplete, 500)
-        }, 1000)
-      }, 1000)
+      onComplete()
     }
 
     // Timeout para conexões lentas (ex: 7s)
-    failTimeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       setVideoFailed(true)
       handleVideoError()
     }, 7000)
@@ -48,7 +37,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
     return () => {
       video.removeEventListener('ended', handleVideoEnd)
       video.removeEventListener('error', handleVideoError)
-      if (failTimeout) clearTimeout(failTimeout)
+      if (timeout) clearTimeout(timeout)
     }
   }, [onComplete])
 

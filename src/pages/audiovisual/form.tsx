@@ -4,6 +4,7 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 // import Image from 'next/image';
 import { useAnalytics } from '../../hooks/useAnalytics';
+import { useAuth } from '../../hooks/useAuth';
 import SEOHead from '../../components/SEOHead';
 import OptimizedImage from '../../components/OptimizedImage.tsx';
 import {
@@ -101,12 +102,22 @@ export default function AudiovisualFormPage() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [checkoutData, setCheckoutData] = useState<any>(null);
   const { trackPage, trackFormSubmit, trackAudiovisual } = useAnalytics();
+  const { user } = useAuth();
   const functions = getFunctions();
 
   useEffect(() => {
     trackPage('audiovisual_form');
     trackAudiovisual('view_form', 'candidatura_audiovisual');
   }, [trackPage, trackAudiovisual]);
+
+  // Verificar autenticação
+  useEffect(() => {
+    if (!user) {
+      setError('Você precisa estar logado para enviar o formulário. Por favor, faça login e tente novamente.');
+    } else {
+      setError('');
+    }
+  }, [user]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -162,6 +173,11 @@ export default function AudiovisualFormPage() {
         estado: sanitizedData.estado,
       };
 
+      // Verificar autenticação
+      if (!user) {
+        throw new Error('Usuário não autenticado. Por favor, faça login para continuar.');
+      }
+
       // Criar checkout na FlowPay
       const criarCheckoutFlowPay = httpsCallable(functions, 'criarCheckoutFlowPay');
       const result = await criarCheckoutFlowPay(checkoutPayload);
@@ -174,14 +190,42 @@ export default function AudiovisualFormPage() {
         // Analytics
         trackFormSubmit('formulario_audiovisual_checkout');
         trackAudiovisual('checkout_created', `${sanitizedData.tipo}_${sanitizedData.cidade}`);
+        
+        // Se for simulado, mostrar mensagem especial
+        if (checkoutResult.isSimulated) {
+          console.log('✅ Checkout simulado criado - modo de desenvolvimento');
+        }
       } else {
         throw new Error('Erro ao criar checkout');
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      const errorDetails = error instanceof Error ? error.stack : 'Sem detalhes';
+      
       setError(`Erro ao processar formulário: ${errorMessage}`);
       console.error('Erro ao processar formulário:', error);
-      trackAudiovisual('form_error', 'erro_checkout');
+      console.error('Detalhes do erro:', errorDetails);
+      
+      // Analytics com mais detalhes - sanitizar mensagem de erro
+      try {
+        const sanitizedErrorMessage = errorMessage
+          .replace(/[^a-zA-Z0-9\s]/g, '') // Remover caracteres especiais
+          .replace(/\s+/g, '_') // Substituir espaços por underscores
+          .toLowerCase()
+          .substring(0, 50); // Limitar tamanho
+        
+        trackAudiovisual('form_error', `erro_checkout_${sanitizedErrorMessage}`);
+      } catch (trackingError) {
+        console.error('Erro ao fazer tracking:', trackingError);
+        // Fallback para tracking básico
+        trackAudiovisual('form_error', 'erro_checkout_generico');
+      }
+      
+      // Log adicional para debugging
+      console.log('Dados do formulário que causaram erro:', {
+        formData: formData,
+        error: errorMessage
+      });
     } finally {
       setLoading(false);
     }
@@ -226,7 +270,7 @@ export default function AudiovisualFormPage() {
 
         {/* Background com textura */}
         <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
-          <div className="w-full h-full bg-[url('/images/bg_grunge.png')] bg-repeat opacity-20 mix-blend-multiply"></div>
+          <div className="w-full h-full bg-[url('/images/bg_grunge.webp')] bg-repeat opacity-20 mix-blend-multiply"></div>
         </div>
 
         <main className="pt-24 pb-16 px-4">
@@ -260,10 +304,13 @@ export default function AudiovisualFormPage() {
                 <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center">
                   <div className="text-green-600 text-6xl mb-4">💳</div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    Finalizar Inscrição
+                    {checkoutData.isSimulated ? 'Modo de Teste' : 'Finalizar Inscrição'}
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Sua candidatura foi processada com sucesso! Agora você será redirecionado para o pagamento seguro da FlowPay.
+                    {checkoutData.isSimulated 
+                      ? 'Sua candidatura foi processada em modo de teste! Clique em "Continuar" para simular o pagamento.'
+                      : 'Sua candidatura foi processada com sucesso! Agora você será redirecionado para o pagamento seguro da FlowPay.'
+                    }
                   </p>
 
                   <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -272,6 +319,13 @@ export default function AudiovisualFormPage() {
                       <span>Taxa de Inscrição:</span>
                       <span className="font-bold">R$ 29,90</span>
                     </div>
+                    {checkoutData.isSimulated && (
+                      <div className="mt-2 p-2 bg-yellow-100 rounded border border-yellow-300">
+                        <p className="text-xs text-yellow-800">
+                          🧪 <strong>Modo de Teste:</strong> Pagamento simulado para desenvolvimento
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-3">
@@ -279,7 +333,7 @@ export default function AudiovisualFormPage() {
                       onClick={handlePaymentRedirect}
                       className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 focus:ring-4 focus:ring-green-200 transition-all duration-200"
                     >
-                      Pagar com Segurança
+                      {checkoutData.isSimulated ? 'Continuar (Teste)' : 'Pagar com Segurança'}
                     </button>
                     <button
                       onClick={handlePaymentCancel}
@@ -596,7 +650,7 @@ export default function AudiovisualFormPage() {
                   <div className="flex flex-col sm:flex-row gap-4 pt-4">
                     <button
                       type="submit"
-                      disabled={loading}
+                      disabled={loading || !user}
                       className="flex-1 bg-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-pink-700 focus:ring-4 focus:ring-pink-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                     >
                       {loading ? (
@@ -607,6 +661,8 @@ export default function AudiovisualFormPage() {
                           </svg>
                           Processando...
                         </span>
+                      ) : !user ? (
+                        'Faça login para enviar candidatura'
                       ) : (
                         'Enviar Candidatura - R$ 29,90'
                       )}

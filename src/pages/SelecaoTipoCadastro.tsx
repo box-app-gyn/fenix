@@ -137,7 +137,7 @@ export default function SelecaoTipoCadastro() {
 🎯 Nível: Iniciante
 📈 Streak: 1 dia
 
-Bem-vindo ao Interbox 2025!`);
+Bem-vindo ao CERRADØ INTERBOX 2025!`);
         navigate('/home');
       }, 1000);
     } catch (error) {

@@ -87,6 +87,7 @@ export const SECURITY_CONSTANTS = {
       'https://accounts.google.com',
       'https://apis.google.com',
       'https://*.googleapis.com',
+      'https://us-central1-interbox-app-8d400.cloudfunctions.net',
     ],
     'frame-src': [
       '\'self\'',
@@ -171,7 +172,7 @@ export const SECURITY_CONSTANTS = {
 
   // Configurações de logging
   LOGGING: {
-    LEVEL: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+    LEVEL: typeof window === 'undefined' && typeof process !== 'undefined' && process.env.NODE_ENV === 'production' ? 'info' : 'debug',
     MAX_LOG_SIZE: 10 * 1024 * 1024, // 10MB
     MAX_LOG_FILES: 5,
     ROTATION_INTERVAL: 24 * 60 * 60 * 1000, // 24 horas

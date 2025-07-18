@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.webhookFlowPay = exports.criarCheckoutFlowPay = void 0;
+exports.webhookOpenPix = exports.criarCheckoutFlowPay = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const firebase_admin_1 = require("./firebase-admin");
 // ============================================================================
@@ -42,18 +42,78 @@ exports.criarCheckoutFlowPay = (0, https_1.onCall)(async (request) => {
         userId: (_a = request.auth) === null || _a === void 0 ? void 0 : _a.uid,
     };
     try {
+        console.log("Iniciando criação de checkout FlowPay", {
+            userEmail: data.userEmail,
+            userName: data.userName,
+            tipo: data.tipo,
+            contextData,
+        });
         // Verificar autenticação
         if (!request.auth) {
             console.log("Tentativa de checkout não autenticada", contextData);
             throw new Error("Usuário não autenticado");
         }
-        // Validar dados
+        // Verificar se a API key está configurada
+        if (!process.env.FLOWPAY_API_KEY) {
+            console.log("FLOWPAY_API_KEY não configurada - usando modo de simulação", contextData);
+            // Modo de simulação para desenvolvimento/teste
+            const simulatedCheckoutId = `sim_${Date.now()}_${request.auth.uid}`;
+            const simulatedCheckoutUrl = "https://interbox-app-8d400.web.app/audiovisual/success?order_id=simulated&status=paid";
+            // Salvar dados do checkout simulado no Firestore
+            const checkoutRef = firebase_admin_1.db.collection("audiovisual_checkouts").doc();
+            await checkoutRef.set({
+                userId: request.auth.uid,
+                userEmail: data.userEmail,
+                userName: data.userName,
+                flowpayOrderId: simulatedCheckoutId,
+                externalId: `sim_audiovisual_${Date.now()}_${request.auth.uid}`,
+                amount: 2990,
+                status: "pending",
+                audiovisualData: data,
+                checkoutUrl: simulatedCheckoutUrl,
+                isSimulated: true,
+                createdAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
+            });
+            console.log("Checkout simulado criado", {
+                checkoutId: checkoutRef.id,
+                simulatedOrderId: simulatedCheckoutId,
+                userEmail: data.userEmail,
+                contextData,
+            });
+            return {
+                success: true,
+                checkoutId: checkoutRef.id,
+                flowpayOrderId: simulatedCheckoutId,
+                checkoutUrl: simulatedCheckoutUrl,
+                amount: 2990,
+                isSimulated: true,
+            };
+        }
+        // Validar dados com mais detalhes
+        console.log("Validando dados do formulário", {
+            userEmail: !!data.userEmail,
+            userName: !!data.userName,
+            tipo: !!data.tipo,
+            experiencia: !!data.experiencia,
+            portfolio: !!data.portfolio,
+            telefone: !!data.telefone,
+            contextData,
+        });
         if (!validateAudiovisualData(data)) {
-            throw new Error("Dados incompletos");
+            console.error("Dados do formulário inválidos", {
+                data: data,
+                contextData,
+            });
+            throw new Error("Dados incompletos ou inválidos");
         }
         // Verificar se já existe inscrição
         const existing = await checkExistingAudiovisual(data.userEmail);
         if (existing) {
+            console.log("Inscrição já existe para este email", {
+                userEmail: data.userEmail,
+                contextData,
+            });
             throw new Error("Já existe uma inscrição para este email");
         }
         // Configurações da FlowPay
@@ -78,45 +138,85 @@ exports.criarCheckoutFlowPay = (0, https_1.onCall)(async (request) => {
             redirectUrl: "https://interbox-app-8d400.web.app/audiovisual/success",
             webhookUrl: "https://us-central1-interbox-app-8d400.cloudfunctions.net/webhookFlowPay",
         };
-        // Criar checkout na FlowPay
-        const flowpayResponse = await fetch("https://api.flowpay.com.br/v1/orders", {
+        console.log("Configuração FlowPay preparada", {
+            externalId: flowpayConfig.externalId,
+            amount: flowpayConfig.amount,
+            contextData,
+        });
+        // Criar checkout na OpenPix
+        const openpixResponse = await fetch("https://api.openpix.com.br/api/v1/charge", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.FLOWPAY_API_KEY}`,
-                "X-Idempotency-Key": flowpayConfig.externalId,
+                "Authorization": process.env.FLOWPAY_API_KEY, // OpenPix usa a API key diretamente
             },
-            body: JSON.stringify(flowpayConfig),
+            body: JSON.stringify({
+                correlationID: flowpayConfig.externalId,
+                value: flowpayConfig.amount,
+                comment: flowpayConfig.description,
+                identifier: data.userEmail,
+                customer: {
+                    name: data.userName,
+                    email: data.userEmail,
+                    phone: data.telefone,
+                },
+                additionalInfo: [
+                    {
+                        key: "tipo",
+                        value: data.tipo
+                    },
+                    {
+                        key: "experiencia",
+                        value: data.experiencia
+                    },
+                    {
+                        key: "portfolio",
+                        value: data.portfolio
+                    }
+                ]
+            }),
         });
-        if (!flowpayResponse.ok) {
-            const errorData = await flowpayResponse.json();
-            console.error("Erro ao criar checkout FlowPay", {
+        console.log("Resposta da OpenPix recebida", {
+            status: openpixResponse.status,
+            statusText: openpixResponse.statusText,
+            contextData,
+        });
+        if (!openpixResponse.ok) {
+            const errorData = await openpixResponse.json();
+            console.error("Erro ao criar checkout OpenPix", {
                 error: errorData,
                 userEmail: data.userEmail,
-                status: flowpayResponse.status,
+                status: openpixResponse.status,
+                statusText: openpixResponse.statusText,
                 contextData,
             });
-            throw new Error("Erro ao criar checkout");
+            throw new Error(`Erro ao criar checkout: ${openpixResponse.status} ${openpixResponse.statusText}`);
         }
-        const checkoutData = await flowpayResponse.json();
+        const checkoutData = await openpixResponse.json();
+        console.log("Checkout OpenPix criado com sucesso", {
+            openpixChargeId: checkoutData.charge.pixKey,
+            qrCode: checkoutData.charge.qrCode,
+            contextData,
+        });
         // Salvar dados do checkout no Firestore
         const checkoutRef = firebase_admin_1.db.collection("audiovisual_checkouts").doc();
         await checkoutRef.set({
             userId: request.auth.uid,
             userEmail: data.userEmail,
             userName: data.userName,
-            flowpayOrderId: checkoutData.id,
-            externalId: flowpayConfig.externalId,
+            openpixChargeId: checkoutData.charge.pixKey,
+            openpixCorrelationId: flowpayConfig.externalId,
             amount: flowpayConfig.amount,
             status: "pending",
             audiovisualData: data,
-            checkoutUrl: checkoutData.checkoutUrl,
+            qrCode: checkoutData.charge.qrCode,
+            pixKey: checkoutData.charge.pixKey,
             createdAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
         });
-        console.log("Checkout FlowPay criado", {
+        console.log("Checkout salvo no Firestore", {
             checkoutId: checkoutRef.id,
-            flowpayOrderId: checkoutData.id,
+            openpixChargeId: checkoutData.charge.pixKey,
             userEmail: data.userEmail,
             amount: flowpayConfig.amount,
             contextData,
@@ -124,45 +224,45 @@ exports.criarCheckoutFlowPay = (0, https_1.onCall)(async (request) => {
         return {
             success: true,
             checkoutId: checkoutRef.id,
-            flowpayOrderId: checkoutData.id,
-            checkoutUrl: checkoutData.checkoutUrl,
+            openpixChargeId: checkoutData.charge.pixKey,
+            qrCode: checkoutData.charge.qrCode,
+            pixKey: checkoutData.charge.pixKey,
             amount: flowpayConfig.amount,
         };
     }
     catch (error) {
         console.error("Erro ao criar checkout FlowPay", {
             error: error.message,
-            userEmail: data.userEmail,
+            errorStack: error.stack,
+            userEmail: data === null || data === void 0 ? void 0 : data.userEmail,
             contextData,
         });
-        throw error;
+        // Retornar erro mais específico
+        throw new Error(`Erro interno: ${error.message}`);
     }
 });
 /**
- * Webhook para processar retornos da FlowPay
+ * Webhook para processar retornos da OpenPix
  */
-exports.webhookFlowPay = (0, https_1.onCall)(async (request) => {
+exports.webhookOpenPix = (0, https_1.onCall)(async (request) => {
     const webhookData = request.data;
     const contextData = {
-        functionName: "webhookFlowPay",
-        orderId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.id,
+        functionName: "webhookOpenPix",
+        correlationId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.correlationID,
     };
     try {
-        console.log("Webhook FlowPay recebido", {
+        console.log("Webhook OpenPix recebido", {
             event: webhookData === null || webhookData === void 0 ? void 0 : webhookData.event,
-            orderId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.id,
+            correlationId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.correlationID,
             status: webhookData === null || webhookData === void 0 ? void 0 : webhookData.status,
             contextData,
         });
         // Processar evento baseado no tipo
         switch (webhookData.event) {
-            case 'order.paid':
+            case 'CHARGE_CONFIRMED':
                 await processPaymentSuccess(webhookData);
                 break;
-            case 'order.cancelled':
-                await processPaymentCancelled(webhookData);
-                break;
-            case 'order.expired':
+            case 'CHARGE_EXPIRED':
                 await processPaymentExpired(webhookData);
                 break;
             default:
@@ -174,9 +274,9 @@ exports.webhookFlowPay = (0, https_1.onCall)(async (request) => {
         return { success: true };
     }
     catch (error) {
-        console.error("Erro ao processar webhook FlowPay", {
+        console.error("Erro ao processar webhook OpenPix", {
             error: error.message,
-            orderId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.id,
+            correlationId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.correlationID,
             contextData,
         });
         throw error;
@@ -191,13 +291,13 @@ exports.webhookFlowPay = (0, https_1.onCall)(async (request) => {
 async function processPaymentSuccess(webhookData) {
     const contextData = {
         functionName: "processPaymentSuccess",
-        orderId: webhookData.id,
+        correlationId: webhookData.correlationID,
     };
     try {
         // Buscar checkout no Firestore
         const checkoutQuery = await firebase_admin_1.db
             .collection("audiovisual_checkouts")
-            .where("flowpayOrderId", "==", webhookData.id)
+            .where("openpixCorrelationId", "==", webhookData.correlationID)
             .limit(1)
             .get();
         if (checkoutQuery.empty) {
@@ -219,29 +319,39 @@ async function processPaymentSuccess(webhookData) {
         // Criar inscrição audiovisual
         const audiovisualData = checkoutData.audiovisualData;
         const inscricaoRef = firebase_admin_1.db.collection("audiovisual").doc();
-        await inscricaoRef.set({
+        // Estruturar dados conforme interface TypeScript
+        const inscricaoData = {
             userId: checkoutData.userId,
             userEmail: audiovisualData.userEmail,
-            userName: audiovisualData.userName,
-            tipo: audiovisualData.tipo,
-            experiencia: audiovisualData.experiencia,
-            portfolio: audiovisualData.portfolio,
+            nome: audiovisualData.userName, // ✅ Campo correto
             telefone: audiovisualData.telefone,
-            status: "pending",
+            tipo: audiovisualData.tipo,
+            comentariosOutro: audiovisualData.comentariosOutro || '', // ✅ Campo de comentários para "outro"
+            portfolio: {
+                urls: audiovisualData.portfolio ? [audiovisualData.portfolio] : [], // ✅ Array de URLs
+                descricao: audiovisualData.portfolio || '', // ✅ Descrição do portfólio
+                experiencia: audiovisualData.experiencia || '', // ✅ Experiência
+                equipamentos: audiovisualData.equipamentos ? audiovisualData.equipamentos.split(',').map((e) => e.trim()) : [], // ✅ Array de equipamentos
+                especialidades: audiovisualData.especialidades ? audiovisualData.especialidades.split(',').map((e) => e.trim()) : [], // ✅ Array de especialidades
+            },
+            termosAceitos: true, // ✅ Sempre true após pagamento
+            termosAceitosEm: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(), // ✅ Timestamp
+            status: "pending", // ✅ Status inicial
             payment: {
                 status: "paid",
-                flowpayOrderId: webhookData.id,
+                openpixChargeId: webhookData.correlationID,
                 amount: checkoutData.amount,
                 paidAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
             },
             checkoutId: checkoutDoc.id,
             createdAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(),
-        });
+        };
+        await inscricaoRef.set(inscricaoData);
         console.log("Inscrição audiovisual confirmada após pagamento", {
             inscricaoId: inscricaoRef.id,
             checkoutId: checkoutDoc.id,
-            orderId: webhookData.id,
+            correlationId: webhookData.correlationID,
             userEmail: audiovisualData.userEmail,
             contextData,
         });

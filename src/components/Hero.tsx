@@ -1,7 +1,7 @@
+import React, { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import GamifiedCTA from './GamifiedCTA.tsx'
 import OptimizedImage from './OptimizedImage.tsx'
-import { useEffect, useRef, useState } from 'react'
 import { useAnalytics } from '../hooks/useAnalytics'
 
 function useDeviceParallax(ref: React.RefObject<HTMLDivElement>) {
@@ -23,6 +23,7 @@ export default function Hero() {
   const logoRef = useRef<HTMLDivElement>(null)
   const { trackPage, trackScroll } = useAnalytics()
   const [strobeActive, setStrobeActive] = useState(false)
+  const [bgImageLoaded, setBgImageLoaded] = useState(false)
 
   useDeviceParallax(logoRef)
 
@@ -53,12 +54,26 @@ export default function Hero() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [trackScroll])
 
+  // Pré-carregar imagem de fundo
+  useEffect(() => {
+    const img = new Image()
+    img.onload = () => setBgImageLoaded(true)
+    img.onerror = () => {
+      console.error('Erro ao carregar imagem de fundo WebP, tentando PNG...')
+      const pngImg = new Image()
+      pngImg.onload = () => setBgImageLoaded(true)
+      pngImg.src = '/images/bg_main.png'
+    }
+    img.src = '/images/bg_main.webp'
+  }, [])
+
   return (
     <section className="relative min-h-[80vh] flex flex-col justify-center items-center text-center px-6 text-white">
       <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500"
         style={{
-          backgroundImage: 'url(/images/bg_main.webp)',
+          backgroundImage: bgImageLoaded ? 'url(/images/bg_main.webp)' : 'url(/images/bg_main.png)',
+          opacity: bgImageLoaded ? 1 : 0.8,
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0a0a1a]/80" />

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useParams, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, useParams, Navigate, Outlet } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useMobile } from './hooks/useMobile';
@@ -44,9 +44,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CNHUpload from './components/CNHUpload';
 import { useRoleRedirect } from './hooks/useRoleRedirect';
 import { preloadImages } from './utils/clearImageCache';
+import ImageDebugger from './components/ImageDebugger';
 
-// Componente interno que usa o hook dentro do contexto do Router
-function AppContent() {
+// Componente de layout principal que inclui Header, Footer e outros componentes
+function MainLayout() {
   useRoleRedirect();
   
   // PWA hooks
@@ -177,163 +178,14 @@ function AppContent() {
 
       <Header />
       <main className="flex-1">
-        <Routes>
-          {/* Rota principal - redireciona para home se logado */}
-          <Route path="/" element={
-            <ProtectedRoute>
-              <Navigate to="/home" replace />
-            </ProtectedRoute>
-          } />
-
-          {/* Rota home - página principal protegida */}
-          <Route path="/home" element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          } />
-
-          {/* Rotas protegidas */}
-          <Route path="/hub" element={
-            <ProtectedRoute>
-              <Hub />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/leaderboard" element={
-            <ProtectedRoute>
-              <GamifiedLeaderboard />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/sobre" element={
-            <ProtectedRoute>
-              <SobrePage />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/termos" element={
-            <ProtectedRoute>
-              <Termos />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/admin" element={
-            <ProtectedRoute requireProfile={true} requireAdmin={true}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/admin-painel" element={
-            <ProtectedRoute requireProfile={true} requireAdmin={true}>
-              <AdminPainel />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/dashboard-evento" element={
-            <ProtectedRoute requireProfile={true}>
-              <DashboardEvento />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/dev" element={
-            <ProtectedRoute requireProfile={true} requireDev={true}>
-              <DevDashboard />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/marketing" element={
-            <ProtectedRoute requireProfile={true} requireMarketing={true}>
-              <MarketingDashboard />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/audiovisual" element={
-            <ProtectedRoute>
-              <Audiovisual />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/audiovisual/form" element={
-            <ProtectedRoute>
-              <AudiovisualForm />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/interbox/audiovisual/confirmacao" element={
-            <ProtectedRoute>
-              <AudiovisualSuccess />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/links" element={
-            <ProtectedRoute>
-              <LinkShortenerPage />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/l/:shortCode" element={
-            <ProtectedRoute>
-              <LinkRedirectWrapper />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/selecao-cadastro" element={
-            <ProtectedRoute>
-              <SelecaoTipoCadastro />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/cadastro-atleta" element={
-            <ProtectedRoute>
-              <CadastroAtleta />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/cadastro-jurado" element={
-            <ProtectedRoute>
-              <CadastroJurado />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/cadastro-midialouca" element={
-            <ProtectedRoute>
-              <CadastroMidia />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/cadastro-curioso" element={
-            <ProtectedRoute>
-              <CadastroEspectador />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/setup-profile" element={
-            <ProtectedRoute>
-              <SetupProfile />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/perfil" element={
-            <ProtectedRoute>
-              <Perfil />
-            </ProtectedRoute>
-          } />
-
-          <Route path="/cluster" element={
-            <ProtectedRoute>
-              <ClusterPage />
-            </ProtectedRoute>
-          } />
-
-          {/* Rota de fallback */}
-          <Route path="*" element={<Navigate to="/home" replace />} />
-        </Routes>
+        <Outlet />
       </main>
       <Footer />
       <PWAInstallPrompt />
       <PWAUpdatePrompt />
       <CacheDebug />
       <CookieBanner />
+      <ImageDebugger />
     </div>
   );
 }
@@ -414,67 +266,103 @@ function App() {
 
   // Se não está logado, mostrar página de login
   if (!user) {
+    const loginRouter = createBrowserRouter([
+      { path: "/", element: <LoginPage /> },
+      { path: "/login", element: <LoginPage /> },
+      { path: "/audiovisual", element: <Audiovisual /> },
+      { path: "/audiovisual/form", element: <AudiovisualForm /> },
+      { path: "/audiovisual/success", element: <AudiovisualSuccess /> },
+      { path: "/l/:shortCode", element: <LinkRedirectWrapper /> },
+      { path: "/ref/:referralCode", element: <ReferralLanding /> },
+      { path: "*", element: <Navigate to="/login" replace /> },
+    ], { 
+      future: {
+        v7_relativeSplatPath: true
+      }
+    });
+
     return (
       <FirebaseErrorBoundary>
-        <Router>
-          <div className="min-h-screen bg-gray-50">
-            <Routes>
-              <Route path="/" element={<LoginPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/audiovisual" element={<Audiovisual />} />
-              <Route path="/audiovisual/form" element={<AudiovisualForm />} />
-              <Route path="/audiovisual/success" element={<AudiovisualSuccess />} />
-              <Route path="/l/:shortCode" element={<LinkRedirectWrapper />} />
-              <Route path="/ref/:referralCode" element={<ReferralLanding />} />
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
-            <CookieBanner />
-          </div>
-        </Router>
+        <RouterProvider router={loginRouter} />
+        <CookieBanner />
       </FirebaseErrorBoundary>
     );
   }
 
   // Se está logado mas não tem perfil completo, mostrar setup
   if (user && !user.profileComplete) {
+    const setupRouter = createBrowserRouter([
+      { path: "/setup-profile", element: <SetupProfile /> },
+      { path: "*", element: <Navigate to="/setup-profile" replace /> },
+    ], { 
+      future: {
+        v7_relativeSplatPath: true
+      }
+    });
+
     return (
       <FirebaseErrorBoundary>
-        <Router>
-          <div className="min-h-screen bg-gray-50">
-            <Routes>
-              <Route path="/setup-profile" element={<SetupProfile />} />
-              <Route path="*" element={<Navigate to="/setup-profile" replace />} />
-            </Routes>
-          </div>
-        </Router>
+        <RouterProvider router={setupRouter} />
       </FirebaseErrorBoundary>
     );
   }
 
   // App principal com todas as funcionalidades
+  const mainRouter = createBrowserRouter([
+    {
+      path: "/",
+      element: <MainLayout />,
+      children: [
+        { index: true, element: <ProtectedRoute><Navigate to="/home" replace /></ProtectedRoute> },
+        { path: "home", element: <ProtectedRoute><Home /></ProtectedRoute> },
+        { path: "hub", element: <ProtectedRoute><Hub /></ProtectedRoute> },
+        { path: "leaderboard", element: <ProtectedRoute><GamifiedLeaderboard /></ProtectedRoute> },
+        { path: "sobre", element: <ProtectedRoute><SobrePage /></ProtectedRoute> },
+        { path: "termos", element: <ProtectedRoute><Termos /></ProtectedRoute> },
+        { path: "admin", element: <ProtectedRoute requireProfile={true} requireAdmin={true}><AdminDashboard /></ProtectedRoute> },
+        { path: "admin-painel", element: <ProtectedRoute requireProfile={true} requireAdmin={true}><AdminPainel /></ProtectedRoute> },
+        { path: "dashboard-evento", element: <ProtectedRoute requireProfile={true}><DashboardEvento /></ProtectedRoute> },
+        { path: "dev", element: <ProtectedRoute requireProfile={true} requireDev={true}><DevDashboard /></ProtectedRoute> },
+        { path: "marketing", element: <ProtectedRoute requireProfile={true} requireMarketing={true}><MarketingDashboard /></ProtectedRoute> },
+        { path: "audiovisual", element: <ProtectedRoute><Audiovisual /></ProtectedRoute> },
+        { path: "audiovisual/form", element: <ProtectedRoute><AudiovisualForm /></ProtectedRoute> },
+        { path: "interbox/audiovisual/confirmacao", element: <ProtectedRoute><AudiovisualSuccess /></ProtectedRoute> },
+        { path: "links", element: <ProtectedRoute><LinkShortenerPage /></ProtectedRoute> },
+        { path: "l/:shortCode", element: <ProtectedRoute><LinkRedirectWrapper /></ProtectedRoute> },
+        { path: "selecao-cadastro", element: <ProtectedRoute><SelecaoTipoCadastro /></ProtectedRoute> },
+        { path: "cadastro-atleta", element: <ProtectedRoute><CadastroAtleta /></ProtectedRoute> },
+        { path: "cadastro-jurado", element: <ProtectedRoute><CadastroJurado /></ProtectedRoute> },
+        { path: "cadastro-midialouca", element: <ProtectedRoute><CadastroMidia /></ProtectedRoute> },
+        { path: "cadastro-curioso", element: <ProtectedRoute><CadastroEspectador /></ProtectedRoute> },
+        { path: "setup-profile", element: <ProtectedRoute><SetupProfile /></ProtectedRoute> },
+        { path: "perfil", element: <ProtectedRoute><Perfil /></ProtectedRoute> },
+        { path: "cluster", element: <ProtectedRoute><ClusterPage /></ProtectedRoute> },
+        { path: "*", element: <Navigate to="/home" replace /> },
+      ]
+    }
+  ], { 
+    future: {
+      v7_relativeSplatPath: true
+    }
+  });
+
   return (
     <FirebaseErrorBoundary>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          {/* Video Intro */}
-          {showVideoIntro && (
-            <VideoIntro onComplete={handleVideoComplete} />
-          )}
+      <RouterProvider router={mainRouter} />
+      {/* Video Intro */}
+      {showVideoIntro && (
+        <VideoIntro onComplete={handleVideoComplete} />
+      )}
 
-          {/* CNH Upload para admins */}
-          {showCNHUpload && (
-            <CNHUpload onComplete={handleCNHUploadComplete} userId={user?.uid || ''} />
-          )}
+      {/* CNH Upload para admins */}
+      {showCNHUpload && (
+        <CNHUpload onComplete={handleCNHUploadComplete} userId={user?.uid || ''} />
+      )}
 
-          {/* Desktop Warning */}
-          {!isMobile && !isTablet && (
-            <DesktopWarning />
-          )}
-
-          {/* App Content */}
-          <AppContent />
-        </div>
-      </Router>
+      {/* Desktop Warning */}
+      {!isMobile && !isTablet && (
+        <DesktopWarning />
+      )}
     </FirebaseErrorBoundary>
   );
 }

@@ -1,10 +1,5 @@
 // Configuração do Google Analytics
-declare global {
-  interface Window {
-    gtag: (command: 'config' | 'event' | 'set' | 'js', targetId: string, config?: any) => void;
-    dataLayer: any[];
-  }
-}
+// Declarações globais movidas para vite-env.d.ts
 
 // ID de medição do Google Analytics
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-XXXXXXXXXX';
@@ -20,14 +15,14 @@ export function initializeAnalytics() {
   document.head.appendChild(script);
 
   // Configurar gtag
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = function() {
-    window.dataLayer.push(arguments);
+  (window as any).dataLayer = (window as any).dataLayer || [];
+  (window as any).gtag = function() {
+    (window as any).dataLayer.push(arguments);
   };
 
   // Configuração inicial
   (window as any).gtag('js', new Date());
-  window.gtag('config', GA_MEASUREMENT_ID, {
+  (window as any).gtag('config', GA_MEASUREMENT_ID, {
     page_title: document.title,
     page_location: window.location.href,
     cookie_domain: 'cerradointerbox.com.br',
@@ -37,8 +32,8 @@ export function initializeAnalytics() {
 
 // Função para rastrear página
 export function trackPage(page: string) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('config', GA_MEASUREMENT_ID, {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('config', GA_MEASUREMENT_ID, {
       page_title: page,
       page_location: window.location.href,
     });
@@ -47,8 +42,8 @@ export function trackPage(page: string) {
 
 // Função para rastrear eventos
 export function trackEvent(action: string, category: string, label?: string, value?: number) {
-  if (typeof window !== 'undefined' && window.gtag) {
-    window.gtag('event', action, {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', action, {
       event_category: category,
       event_label: label,
       value: value,
@@ -57,7 +52,7 @@ export function trackEvent(action: string, category: string, label?: string, val
 }
 
 // Função para rastrear CTA
-export function trackCTA(cta: string, _page: string) {
+export function trackCTA(cta: string) {
   trackEvent('click', 'cta', cta, undefined);
 }
 

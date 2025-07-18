@@ -1,7 +1,9 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "node": true,
+    "jest": true
   },
   "extends": [
     "plugin:react/recommended"
@@ -46,6 +48,10 @@
     "functions/src/__tests__/**/*",
     "dist/**/*",
     "node_modules/**/*",
-    "functions/src/**/*"
+    "functions/src/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/__tests__/**/*",
+    "functions/services/**/*"
   ]
 } 

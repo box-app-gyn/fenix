@@ -153,20 +153,20 @@ export class StorageManager {
   }
 
   // Definir valor no storage
-  public set<T>(key: string, value: T): boolean {
+  public set<T>(key: string, _value: T): boolean {
     try {
       if (!this.isStorageAvailable()) {
         return false;
       }
 
-      const serialized = JSON.stringify(value);
+      const serialized = JSON.stringify(_value);
       this.storage.setItem(key, serialized);
 
       // Atualizar cache
-      this.cache.set(key, value);
+      this.cache.set(key, _value);
 
       // Notificar listeners
-      this.notifyListeners(key, value);
+      this.notifyListeners(key, _value);
 
       return true;
     } catch (error) {
@@ -254,7 +254,7 @@ export class StorageManager {
   }
 
   // Adicionar listener para mudanças
-  public addListener(key: string, callback: (value: any) => void): () => void {
+  public addListener(key: string, callback: (_value: any) => void): () => void {
     if (!this.listeners.has(key)) {
       this.listeners.set(key, new Set());
     }
@@ -485,9 +485,9 @@ export const importUserData = (data: any): boolean => {
 };
 
 // Hook para React (se necessário)
-export const useStorage = (key: string, defaultValue?: any) => {
+export const useStorage = async (key: string, defaultValue?: any) => {
   // Importação dinâmica do React para evitar erros de build
-  const React = require('react');
+  const React = await import('react');
   const [value, setValue] = React.useState(() => storage.get(key, defaultValue));
 
   React.useEffect(() => {

@@ -17,7 +17,7 @@ async function updateTempoRealConfig() {
 
     // Verificar se o documento existe
     const configDoc = await db.collection("config").doc("tempo_real").get();
-    
+
     if (!configDoc.exists) {
       console.log("❌ Documento config/tempo_real não encontrado. Criando...");
       await createInitialConfig();
@@ -39,7 +39,7 @@ async function updateTempoRealConfig() {
         newUsersWeek: currentData.stats?.newUsersWeek || 0,
         newUsersMonth: currentData.stats?.newUsersMonth || 0,
       },
-      
+
       // 🎯 GAMIFICAÇÃO - Tokens $BOX (mantém dados existentes)
       boxTokens: {
         totalSupply: currentData.boxTokens?.totalSupply || 1000000,
@@ -52,7 +52,7 @@ async function updateTempoRealConfig() {
         weeklyVolume: currentData.boxTokens?.weeklyVolume || 0,
         monthlyVolume: currentData.boxTokens?.monthlyVolume || 0,
       },
-      
+
       // 🏆 RANKING E LÍDERES (mantém dados existentes)
       leaderboard: {
         topUsers: currentData.leaderboard?.topUsers || [],
@@ -62,7 +62,7 @@ async function updateTempoRealConfig() {
         bestStreaks: currentData.leaderboard?.bestStreaks || [],
         referralLeaders: currentData.leaderboard?.referralLeaders || [],
       },
-      
+
       // 📈 MÉTRICAS EM TEMPO REAL (mantém dados existentes)
       realtime: {
         onlineUsers: currentData.realtime?.onlineUsers || 0,
@@ -72,7 +72,7 @@ async function updateTempoRealConfig() {
         peakTime: currentData.realtime?.peakTime || null,
         averageSessionTime: currentData.realtime?.averageSessionTime || 0,
       },
-      
+
       // 🎮 AÇÕES E EVENTOS (mantém dados existentes)
       actions: {
         totalActions: currentData.actions?.totalActions || 0,
@@ -82,7 +82,7 @@ async function updateTempoRealConfig() {
         popularActions: currentData.actions?.popularActions || [],
         recentActions: currentData.actions?.recentActions || [],
       },
-      
+
       // 🏅 CONQUISTAS E BADGES (mantém dados existentes)
       achievements: {
         totalAchievements: currentData.achievements?.totalAchievements || 0,
@@ -90,7 +90,7 @@ async function updateTempoRealConfig() {
         popularAchievements: currentData.achievements?.popularAchievements || [],
         recentUnlocks: currentData.achievements?.recentUnlocks || [],
       },
-      
+
       // 🔗 REFERRALS E COMUNIDADE (mantém dados existentes)
       referrals: {
         totalReferrals: currentData.referrals?.totalReferrals || 0,
@@ -98,7 +98,7 @@ async function updateTempoRealConfig() {
         referralTokens: currentData.referrals?.referralTokens || 0,
         topReferrers: currentData.referrals?.topReferrers || [],
       },
-      
+
       // 📊 CONFIGURAÇÕES DO SISTEMA (mantém dados existentes)
       system: {
         version: currentData.system?.version || "1.0.0",
@@ -114,14 +114,14 @@ async function updateTempoRealConfig() {
 
       // 🎯 NOVOS CAMPOS: Dados específicos do evento
       ingressos: {
-        status: currentData.ingressos?.status || 'em_breve',
-        dataAbertura: currentData.ingressos?.dataAbertura || '2025-07-13T00:00:00-03:00',
+        status: currentData.ingressos?.status || "em_breve",
+        dataAbertura: currentData.ingressos?.dataAbertura || "2025-07-13T00:00:00-03:00",
         loteAtual: currentData.ingressos?.loteAtual || 1,
         vagasRestantes: currentData.ingressos?.vagasRestantes || 500,
         precoAtual: currentData.ingressos?.precoAtual || 394.95,
         precoProximoLote: currentData.ingressos?.precoProximoLote || 444.95,
-        dataProximoLote: currentData.ingressos?.dataProximoLote || '2025-07-25',
-        categoriaAtiva: currentData.ingressos?.categoriaAtiva || 'Scale',
+        dataProximoLote: currentData.ingressos?.dataProximoLote || "2025-07-25",
+        categoriaAtiva: currentData.ingressos?.categoriaAtiva || "Scale",
         vagasCategoria: currentData.ingressos?.vagasCategoria || 80,
         totalTimes: currentData.ingressos?.totalTimes || 0,
         limiteLote: currentData.ingressos?.limiteLote || 120,
@@ -154,15 +154,15 @@ async function updateTempoRealConfig() {
         indicacoes: currentData.mostrarNaHome?.indicacoes ?? false,
         fotografos: currentData.mostrarNaHome?.fotografos ?? false,
       },
-      
+
       // 🕒 TIMESTAMPS
       createdAt: currentData.createdAt || admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
     // Atualizar documento com merge para preservar dados existentes
-    await db.collection("config").doc("tempo_real").set(updatedConfig, { merge: true });
-    
+    await db.collection("config").doc("tempo_real").set(updatedConfig, {merge: true});
+
     console.log("✅ Configuração tempo_real atualizada com sucesso!");
     console.log("📊 Campos atualizados:");
     console.log("- ✅ Estatísticas gerais");
@@ -175,9 +175,8 @@ async function updateTempoRealConfig() {
     console.log("- ✅ Configurações do sistema");
     console.log("- ✅ Dados específicos do evento (ingressos, indicacoes, fotografos)");
     console.log("- ✅ Controle de exibição na home");
-    
-    return { success: true, message: "Configuração atualizada com sucesso" };
-    
+
+    return {success: true, message: "Configuração atualizada com sucesso"};
   } catch (error) {
     console.error("❌ Erro ao atualizar configuração:", error);
     throw error;
@@ -202,7 +201,7 @@ async function createInitialConfig() {
         newUsersWeek: 0,
         newUsersMonth: 0,
       },
-      
+
       // 🎯 GAMIFICAÇÃO - Tokens $BOX
       boxTokens: {
         totalSupply: 1000000,
@@ -215,7 +214,7 @@ async function createInitialConfig() {
         weeklyVolume: 0,
         monthlyVolume: 0,
       },
-      
+
       // 🏆 RANKING E LÍDERES
       leaderboard: {
         topUsers: [],
@@ -225,7 +224,7 @@ async function createInitialConfig() {
         bestStreaks: [],
         referralLeaders: [],
       },
-      
+
       // 📈 MÉTRICAS EM TEMPO REAL
       realtime: {
         onlineUsers: 0,
@@ -235,7 +234,7 @@ async function createInitialConfig() {
         peakTime: null,
         averageSessionTime: 0,
       },
-      
+
       // 🎮 AÇÕES E EVENTOS
       actions: {
         totalActions: 0,
@@ -245,7 +244,7 @@ async function createInitialConfig() {
         popularActions: [],
         recentActions: [],
       },
-      
+
       // 🏅 CONQUISTAS E BADGES
       achievements: {
         totalAchievements: 0,
@@ -253,7 +252,7 @@ async function createInitialConfig() {
         popularAchievements: [],
         recentUnlocks: [],
       },
-      
+
       // 🔗 REFERRALS E COMUNIDADE
       referrals: {
         totalReferrals: 0,
@@ -261,7 +260,7 @@ async function createInitialConfig() {
         referralTokens: 0,
         topReferrers: [],
       },
-      
+
       // 📊 CONFIGURAÇÕES DO SISTEMA
       system: {
         version: "1.0.0",
@@ -277,14 +276,14 @@ async function createInitialConfig() {
 
       // 🎯 Dados específicos do evento
       ingressos: {
-        status: 'em_breve',
-        dataAbertura: '2025-07-13T00:00:00-03:00',
+        status: "em_breve",
+        dataAbertura: "2025-07-13T00:00:00-03:00",
         loteAtual: 1,
         vagasRestantes: 500,
         precoAtual: 394.95,
         precoProximoLote: 444.95,
-        dataProximoLote: '2025-07-25',
-        categoriaAtiva: 'Scale',
+        dataProximoLote: "2025-07-25",
+        categoriaAtiva: "Scale",
         vagasCategoria: 80,
         totalTimes: 0,
         limiteLote: 120,
@@ -317,7 +316,7 @@ async function createInitialConfig() {
         indicacoes: false,
         fotografos: false,
       },
-      
+
       // 🕒 TIMESTAMPS
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -325,9 +324,8 @@ async function createInitialConfig() {
 
     await db.collection("config").doc("tempo_real").set(initialConfig);
     console.log("✅ Configuração inicial criada com sucesso!");
-    
-    return { success: true, message: "Configuração inicial criada com sucesso" };
-    
+
+    return {success: true, message: "Configuração inicial criada com sucesso"};
   } catch (error) {
     console.error("❌ Erro ao criar configuração inicial:", error);
     throw error;
@@ -342,10 +340,10 @@ async function updateSpecificData(path, value) {
     const updateData = {};
     updateData[path] = value;
     updateData.updatedAt = admin.firestore.FieldValue.serverTimestamp();
-    
+
     await db.collection("config").doc("tempo_real").update(updateData);
     console.log(`✅ Campo ${path} atualizado com sucesso!`);
-    
+
     return true;
   } catch (error) {
     console.error(`❌ Erro ao atualizar ${path}:`, error);
@@ -363,16 +361,16 @@ async function syncDataFromCollections() {
     // Sincronizar dados de usuários
     const usersSnapshot = await db.collection("users").get();
     const totalUsers = usersSnapshot.size;
-    
+
     // Sincronizar dados de times
     const teamsSnapshot = await db.collection("teams").get();
     const totalTimes = teamsSnapshot.size;
-    
+
     // Sincronizar dados de audiovisual
     const audiovisualSnapshot = await db.collection("audiovisual").get();
     const totalFotografos = audiovisualSnapshot.size;
-    const aprovadosFotografos = audiovisualSnapshot.docs.filter(doc => 
-      doc.data().status === 'aprovado'
+    const aprovadosFotografos = audiovisualSnapshot.docs.filter((doc) =>
+      doc.data().status === "aprovado",
     ).length;
 
     // Atualizar dados sincronizados
@@ -385,7 +383,7 @@ async function syncDataFromCollections() {
     console.log(`- Usuários: ${totalUsers}`);
     console.log(`- Times: ${totalTimes}`);
     console.log(`- Fotógrafos: ${totalFotografos} (${aprovadosFotografos} aprovados)`);
-    
+
     return true;
   } catch (error) {
     console.error("❌ Erro ao sincronizar dados:", error);
@@ -396,15 +394,15 @@ async function syncDataFromCollections() {
 // Executar se chamado diretamente
 if (require.main === module) {
   updateTempoRealConfig()
-    .then(() => syncDataFromCollections())
-    .then(() => {
-      console.log("🎉 Processo de atualização concluído!");
-      process.exit(0);
-    })
-    .catch((error) => {
-      console.error("💥 Erro no processo:", error);
-      process.exit(1);
-    });
+      .then(() => syncDataFromCollections())
+      .then(() => {
+        console.log("🎉 Processo de atualização concluído!");
+        process.exit(0);
+      })
+      .catch((error) => {
+        console.error("💥 Erro no processo:", error);
+        process.exit(1);
+      });
 }
 
 module.exports = {
@@ -412,4 +410,4 @@ module.exports = {
   createInitialConfig,
   updateSpecificData,
   syncDataFromCollections,
-}; 
+};

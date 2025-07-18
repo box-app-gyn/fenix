@@ -8,37 +8,51 @@ export function useAnalytics() {
   }, [])
 
   const trackPage = useCallback((page: string) => {
-    console.log('Page tracked:', page)
+    if (import.meta.env.DEV) {
+      console.log('Page tracked:', page)
+    }
     trackPageGA(page)
   }, [])
 
   const trackScroll = useCallback((section: string, percentage: number) => {
-    console.log('Scroll tracked:', section, percentage)
+    if (import.meta.env.DEV) {
+      console.log('Scroll tracked:', section, percentage)
+    }
     trackEventGA('scroll', 'engagement', section, percentage)
   }, [])
 
   const trackEvent = useCallback((action: string, category: string, label?: string, value?: number) => {
-    console.log('Event tracked:', action, category, label, value)
+    if (import.meta.env.DEV) {
+      console.log('Event tracked:', action, category, label, value)
+    }
     trackEventGA(action, category, label, value)
   }, [])
 
   const trackCTA = useCallback((cta: string, page: string) => {
-    console.log('CTA tracked:', cta, page)
-    trackCTAGA(cta, page)
+    if (import.meta.env.DEV) {
+      console.log('CTA tracked:', cta, page)
+    }
+    trackCTAGA(cta)
   }, [])
 
   const trackFormSubmit = useCallback((formName: string) => {
-    console.log('Form submit tracked:', formName)
+    if (import.meta.env.DEV) {
+      console.log('Form submit tracked:', formName)
+    }
     trackFormSubmitGA(formName)
   }, [])
 
   const trackAudiovisual = useCallback((action: string, label: string) => {
-    console.log('Audiovisual tracked:', action, label)
+    if (import.meta.env.DEV) {
+      console.log('Audiovisual tracked:', action, label)
+    }
     trackAudiovisualGA(action, label)
   }, [])
 
   const trackAdmin = useCallback((action: string, userEmail: string) => {
-    console.log('Admin tracked:', action, userEmail)
+    if (import.meta.env.DEV) {
+      console.log('Admin tracked:', action, userEmail)
+    }
     trackAdminGA(action, userEmail)
   }, [])
 

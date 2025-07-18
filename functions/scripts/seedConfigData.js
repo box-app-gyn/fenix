@@ -17,9 +17,10 @@ async function seedConfigData() {
 
     // Verificar se o documento já existe
     const configDoc = await db.collection("config").doc("tempo_real").get();
-    
+
     if (configDoc.exists) {
-      console.log("⚠️ Documento config/tempo_real já existe. Atualizando estrutura...");
+      console.log("⚠️ Documento config/tempo_real já existe. " +
+        "Atualizando estrutura...");
       return await updateExistingConfig();
     }
 
@@ -35,7 +36,7 @@ async function seedConfigData() {
         newUsersWeek: 0,
         newUsersMonth: 0,
       },
-      
+
       // 🎯 GAMIFICAÇÃO - Tokens $BOX
       boxTokens: {
         totalSupply: 1000000, // 1M tokens totais
@@ -48,7 +49,7 @@ async function seedConfigData() {
         weeklyVolume: 0,
         monthlyVolume: 0,
       },
-      
+
       // 🏆 RANKING E LÍDERES
       leaderboard: {
         topUsers: [],
@@ -58,7 +59,7 @@ async function seedConfigData() {
         bestStreaks: [],
         referralLeaders: [],
       },
-      
+
       // 📈 MÉTRICAS EM TEMPO REAL
       realtime: {
         onlineUsers: 0,
@@ -68,7 +69,7 @@ async function seedConfigData() {
         peakTime: null,
         averageSessionTime: 0,
       },
-      
+
       // 🎮 AÇÕES E EVENTOS
       actions: {
         totalActions: 0,
@@ -78,7 +79,7 @@ async function seedConfigData() {
         popularActions: [],
         recentActions: [],
       },
-      
+
       // 🏅 CONQUISTAS E BADGES
       achievements: {
         totalAchievements: 0,
@@ -86,7 +87,7 @@ async function seedConfigData() {
         popularAchievements: [],
         recentUnlocks: [],
       },
-      
+
       // 🔗 REFERRALS E COMUNIDADE
       referrals: {
         totalReferrals: 0,
@@ -94,7 +95,7 @@ async function seedConfigData() {
         referralTokens: 0,
         topReferrers: [],
       },
-      
+
       // 📊 CONFIGURAÇÕES DO SISTEMA
       system: {
         version: "1.0.0",
@@ -110,14 +111,14 @@ async function seedConfigData() {
 
       // 🎯 Dados específicos do evento (compatível com componente TempoReal)
       ingressos: {
-        status: 'em_breve',
-        dataAbertura: '2025-07-13T00:00:00-03:00',
+        status: "em_breve",
+        dataAbertura: "2025-07-13T00:00:00-03:00",
         loteAtual: 1,
         vagasRestantes: 500,
         precoAtual: 394.95,
         precoProximoLote: 444.95,
-        dataProximoLote: '2025-07-25',
-        categoriaAtiva: 'Scale',
+        dataProximoLote: "2025-07-25",
+        categoriaAtiva: "Scale",
         vagasCategoria: 80,
         totalTimes: 0,
         limiteLote: 120,
@@ -150,7 +151,7 @@ async function seedConfigData() {
         indicacoes: false,
         fotografos: false,
       },
-      
+
       // 🕒 TIMESTAMPS
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -158,16 +159,15 @@ async function seedConfigData() {
 
     // Criar documento config/tempo_real
     await db.collection("config").doc("tempo_real").set(tempoRealData);
-    
+
     console.log("✅ Dados de configuração criados com sucesso!");
     console.log("📊 Documento: config/tempo_real");
     console.log("🎯 Tokens $BOX configurados");
     console.log("🏆 Sistema de ranking inicializado");
     console.log("📈 Métricas em tempo real ativas");
     console.log("🎫 Dados do evento configurados");
-    
-    return { success: true, message: "Configuração inicializada com sucesso" };
-    
+
+    return {success: true, message: "Configuração inicializada com sucesso"};
   } catch (error) {
     console.error("❌ Erro ao criar dados de configuração:", error);
     throw error;
@@ -180,9 +180,10 @@ async function seedConfigData() {
 async function updateExistingConfig() {
   try {
     console.log("🔄 Atualizando configuração existente...");
-    
-    const currentData = (await db.collection("config").doc("tempo_real").get()).data();
-    
+
+    const currentData = (await db.collection("config")
+        .doc("tempo_real").get()).data();
+
     // Adicionar campos que podem estar faltando
     const updates = {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -191,14 +192,14 @@ async function updateExistingConfig() {
     // Adicionar campos de ingressos se não existirem
     if (!currentData.ingressos) {
       updates.ingressos = {
-        status: 'em_breve',
-        dataAbertura: '2025-07-13T00:00:00-03:00',
+        status: "em_breve",
+        dataAbertura: "2025-07-13T00:00:00-03:00",
         loteAtual: 1,
         vagasRestantes: 500,
         precoAtual: 394.95,
         precoProximoLote: 444.95,
-        dataProximoLote: '2025-07-25',
-        categoriaAtiva: 'Scale',
+        dataProximoLote: "2025-07-25",
+        categoriaAtiva: "Scale",
         vagasCategoria: 80,
         totalTimes: 0,
         limiteLote: 120,
@@ -247,13 +248,14 @@ async function updateExistingConfig() {
     if (Object.keys(updates).length > 1) { // Mais que apenas updatedAt
       await db.collection("config").doc("tempo_real").update(updates);
       console.log("✅ Configuração atualizada com sucesso!");
-      console.log("📊 Campos adicionados:", Object.keys(updates).filter(key => key !== 'updatedAt'));
+      const addedFields = Object.keys(updates)
+          .filter((key) => key !== "updatedAt");
+      console.log("📊 Campos adicionados:", addedFields);
     } else {
       console.log("✅ Configuração já está atualizada!");
     }
-    
-    return { success: true, message: "Configuração atualizada com sucesso" };
-    
+
+    return {success: true, message: "Configuração atualizada com sucesso"};
   } catch (error) {
     console.error("❌ Erro ao atualizar configuração:", error);
     throw error;
@@ -283,16 +285,16 @@ async function syncDataFromCollections() {
     // Sincronizar dados de usuários
     const usersSnapshot = await db.collection("users").get();
     const totalUsers = usersSnapshot.size;
-    
+
     // Sincronizar dados de times
     const teamsSnapshot = await db.collection("teams").get();
     const totalTimes = teamsSnapshot.size;
-    
+
     // Sincronizar dados de audiovisual
     const audiovisualSnapshot = await db.collection("audiovisual").get();
     const totalFotografos = audiovisualSnapshot.size;
-    const aprovadosFotografos = audiovisualSnapshot.docs.filter(doc => 
-      doc.data().status === 'aprovado'
+    const aprovadosFotografos = audiovisualSnapshot.docs.filter((doc) =>
+      doc.data().status === "aprovado",
     ).length;
 
     // Atualizar dados sincronizados
@@ -301,14 +303,15 @@ async function syncDataFromCollections() {
       "ingressos.totalTimes": totalTimes,
       "fotografos.total": totalFotografos,
       "fotografos.aprovados": aprovadosFotografos,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      "updatedAt": admin.firestore.FieldValue.serverTimestamp(),
     });
 
     console.log("✅ Dados sincronizados com sucesso!");
     console.log(`- Usuários: ${totalUsers}`);
     console.log(`- Times: ${totalTimes}`);
-    console.log(`- Fotógrafos: ${totalFotografos} (${aprovadosFotografos} aprovados)`);
-    
+    console.log(`- Fotógrafos: ${totalFotografos} ` +
+      `(${aprovadosFotografos} aprovados)`);
+
     return true;
   } catch (error) {
     console.error("❌ Erro ao sincronizar dados:", error);
@@ -319,15 +322,15 @@ async function syncDataFromCollections() {
 // Executar se chamado diretamente
 if (require.main === module) {
   seedConfigData()
-    .then(() => syncDataFromCollections())
-    .then(() => {
-      console.log("🎉 Processo de seed concluído!");
-      process.exit(0);
-    })
-    .catch((error) => {
-      console.error("💥 Erro no processo:", error);
-      process.exit(1);
-    });
+      .then(() => syncDataFromCollections())
+      .then(() => {
+        console.log("🎉 Processo de seed concluído!");
+        process.exit(0);
+      })
+      .catch((error) => {
+        console.error("💥 Erro no processo:", error);
+        process.exit(1);
+      });
 }
 
 module.exports = {
@@ -335,4 +338,4 @@ module.exports = {
   updateExistingConfig,
   checkConfigExists,
   syncDataFromCollections,
-}; 
+};

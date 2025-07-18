@@ -242,17 +242,19 @@ export class OfflineGamification {
   /**
    * Sincronizar submissão audiovisual offline
    */
+  // eslint-disable-next-line no-unused-vars
   private async syncAudiovisualSubmission(_action: OfflineAction): Promise<void> {
     console.log('📹 Sincronizando submissão audiovisual offline');
     
     // Implementar lógica para enviar dados do formulário audiovisual
-    // const { data } = action;
+    // const { data } = _action;
     // await submitAudiovisualForm(data);
   }
 
   /**
    * Sincronizar atualização de perfil offline
    */
+  // eslint-disable-next-line no-unused-vars
   private async syncProfileUpdate(_action: OfflineAction): Promise<void> {
     console.log('👤 Sincronizando atualização de perfil offline');
     
@@ -262,6 +264,7 @@ export class OfflineGamification {
   /**
    * Sincronizar submissão de formulário offline
    */
+  // eslint-disable-next-line no-unused-vars
   private async syncFormSubmission(_action: OfflineAction): Promise<void> {
     console.log('📝 Sincronizando submissão de formulário offline');
     
