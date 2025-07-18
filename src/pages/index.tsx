@@ -1,4 +1,3 @@
-import Header from '../components/Header'
 import Hero from '../components/Hero'
 import Comunidade from '../components/Comunidade'
 import TempoReal from '../components/TempoReal'
@@ -6,7 +5,6 @@ import HomeGamification from '../components/HomeGamification'
 import ReferralLinkGenerator from '../components/ReferralLinkGenerator'
 import CallToAction from '../components/CallToAction'
 import Parceiros from '../components/Parceiros'
-import Footer from '../components/Footer'
 
 function LinhaDelicada() {
   return (
@@ -39,7 +37,6 @@ export default function Home() {
 
       <div>
         <LinhaDelicada />
-        <Header />
         <Hero />
         <LinhaDelicada />
         <Comunidade />
@@ -53,7 +50,6 @@ export default function Home() {
         <Parceiros />
         <LinhaDelicada />
         <CallToAction />
-        <Footer />
       </div>
     </>
   )

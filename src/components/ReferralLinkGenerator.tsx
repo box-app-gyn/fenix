@@ -128,8 +128,36 @@ export default function ReferralLinkGenerator() {
       />
       <div className="relative z-10">
       <div className="text-center space-y-6">
-        {/* Header */}
+        {/* Header com Miniatura do Usuário */}
         <div>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            {/* Miniatura do usuário */}
+            <div className="relative">
+              {user?.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'Usuário'}
+                  className="w-12 h-12 rounded-full border-2 border-pink-500/50 object-cover"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full border-2 border-pink-500/50 bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                  {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
+                </div>
+              )}
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+            </div>
+            
+            {/* Informações do usuário */}
+            <div className="text-left">
+              <div className="text-white font-semibold">
+                {user?.displayName || 'Usuário'}
+              </div>
+              <div className="text-xs text-gray-400">
+                Seu link exclusivo
+              </div>
+            </div>
+          </div>
+          
           <h3 className="text-2xl font-bold text-white mb-2">
             🎯 LINK PARA INSCRIÇÃO
           </h3>

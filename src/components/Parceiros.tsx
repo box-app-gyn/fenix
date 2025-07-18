@@ -11,7 +11,7 @@ const parceiros: Parceiro[] = [
   {
     id: 'move',
     nome: 'Move',
-    logo: '/logos/parceiros/move_logo.png',
+    logo: '/logos/parceiros/move.png',
     url: 'https://move.com.br'
   }
   // Adicionar mais parceiros conforme necessário

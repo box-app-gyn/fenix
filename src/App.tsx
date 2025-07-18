@@ -264,11 +264,7 @@ function App() {
   // Router único com todas as rotas
   const router = createBrowserRouter([
     // Rotas públicas (acessíveis sem login)
-    { path: "/", element: <LoginPage /> },
     { path: "/login", element: <LoginPage /> },
-    { path: "/audiovisual", element: <Audiovisual /> },
-    { path: "/audiovisual/form", element: <AudiovisualForm /> },
-    { path: "/audiovisual/success", element: <AudiovisualSuccess /> },
     { path: "/l/:shortCode", element: <LinkRedirectWrapper /> },
     { path: "/ref/:referralCode", element: <ReferralLanding /> },
     
@@ -277,6 +273,7 @@ function App() {
       path: "/",
       element: <MainLayout />,
       children: [
+        { path: "", element: user ? <Navigate to="/hub" replace /> : <LoginPage /> },
         { path: "home", element: <ProtectedRoute><Home /></ProtectedRoute> },
         { path: "hub", element: <ProtectedRoute><Hub /></ProtectedRoute> },
         { path: "leaderboard", element: <ProtectedRoute><GamifiedLeaderboard /></ProtectedRoute> },
@@ -290,6 +287,7 @@ function App() {
         { path: "audiovisual", element: <ProtectedRoute><Audiovisual /></ProtectedRoute> },
         { path: "audiovisual/form", element: <ProtectedRoute><AudiovisualForm /></ProtectedRoute> },
         { path: "audiovisual/payment", element: <ProtectedRoute><AudiovisualPayment /></ProtectedRoute> },
+        { path: "audiovisual/success", element: <ProtectedRoute><AudiovisualSuccess /></ProtectedRoute> },
         { path: "interbox/audiovisual/confirmacao", element: <ProtectedRoute><AudiovisualSuccess /></ProtectedRoute> },
         { path: "links", element: <ProtectedRoute><LinkShortenerPage /></ProtectedRoute> },
         { path: "l/:shortCode", element: <ProtectedRoute><LinkRedirectWrapper /></ProtectedRoute> },
@@ -329,9 +327,47 @@ function App() {
       )}
 
       {/* Desktop Warning */}
-      {!isMobile && !isTablet && (
-        <DesktopWarning />
-      )}
+      {!isMobile && !isTablet && (() => {
+        // Verificar se está tentando acessar um dashboard administrativo
+        const isAdminRoute = window.location.pathname === '/admin' || 
+                            window.location.pathname === '/dev' || 
+                            window.location.pathname === '/marketing' ||
+                            window.location.pathname === '/admin-painel' ||
+                            window.location.pathname === '/dashboard-evento';
+
+        // Verificar se está tentando acessar uma rota de usuário (mobile exclusivo)
+        const isUserRoute = window.location.pathname === '/home' ||
+                           window.location.pathname === '/hub' ||
+                           window.location.pathname === '/leaderboard' ||
+                           window.location.pathname === '/perfil' ||
+                           window.location.pathname === '/audiovisual' ||
+                           window.location.pathname === '/sobre' ||
+                           window.location.pathname === '/termos' ||
+                           window.location.pathname === '/links' ||
+                           window.location.pathname === '/cluster' ||
+                           window.location.pathname === '/selecao-cadastro' ||
+                           window.location.pathname === '/cadastro-atleta' ||
+                           window.location.pathname === '/cadastro-jurado' ||
+                           window.location.pathname === '/cadastro-midialouca' ||
+                           window.location.pathname === '/cadastro-curioso' ||
+                           window.location.pathname === '/setup-profile' ||
+                           window.location.pathname === '/audiovisual/form' ||
+                           window.location.pathname === '/audiovisual/payment' ||
+                           window.location.pathname === '/audiovisual/success' ||
+                           window.location.pathname === '/interbox/audiovisual/confirmacao' ||
+                           window.location.pathname === '/l/';
+
+        if (isAdminRoute) {
+          // Para rotas administrativas, mostrar versão que permite acesso
+          return <DesktopWarning allowAdminAccess={true} />;
+        } else if (isUserRoute) {
+          // Para rotas de usuário, mostrar aviso de acesso mobile exclusivo
+          return <DesktopWarning allowAdminAccess={false} />;
+        } else {
+          // Para outras rotas (como /login, /ref/, etc.), não mostrar aviso
+          return null;
+        }
+      })()}
     </FirebaseErrorBoundary>
   );
 }
