@@ -147,6 +147,8 @@ export default defineConfig(({ mode }) => ({
           firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
           ui: ['framer-motion', 'react-router-dom'],
         },
+        // Evitar source maps em produção
+        sourcemapExcludeSources: mode === 'production',
       },
     },
     chunkSizeWarningLimit: 1000, // Aumentar limite de warning

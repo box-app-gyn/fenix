@@ -4,7 +4,7 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
 import { FirestoreUser } from '../types/firestore';
-import { useNavigate } from 'react-router-dom';
+import { useTransitionNavigate } from '../hooks/useTransitionNavigate';
 import imageCompression from 'browser-image-compression';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -227,7 +227,7 @@ const SaveIcon = ({ size = 24, className = "" }: { size?: number; className?: st
 
 export default function Perfil() {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [userData, setUserData] = useState<FirestoreUser | null>(null);

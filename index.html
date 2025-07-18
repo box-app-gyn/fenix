@@ -44,6 +44,19 @@
     <link rel="preconnect" href="https://googleapis.com" />
     <link rel="preconnect" href="https://accounts.google.com" />
     
+    <!-- Disable source map requests in production -->
+    <script>
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        // Disable source map requests in production
+        window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
+          supportsFiber: true,
+          inject: function() {},
+          onCommitFiberRoot: function() {},
+          onCommitFiberUnmount: function() {}
+        };
+      }
+    </script>
+    
     <!-- Inline critical CSS to prevent FOUC -->
     <style>
       /* Critical CSS to prevent layout shift */

@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from './useAuth';
+import { useTransitionNavigate } from './useTransitionNavigate';
 
 export const useRoleRedirect = () => {
   const { user, loading } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useTransitionNavigate();
   const location = useLocation();
 
   useEffect(() => {
