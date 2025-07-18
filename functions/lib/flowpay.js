@@ -244,8 +244,22 @@ exports.criarCheckoutFlowPay = (0, https_1.onCall)(async (request) => {
 /**
  * Webhook para processar retornos da OpenPix
  */
-exports.webhookOpenPix = (0, https_1.onCall)(async (request) => {
-    const webhookData = request.data;
+exports.webhookOpenPix = (0, https_1.onRequest)(async (request, response) => {
+    // Configurar CORS para permitir requisições da OpenPix
+    response.set('Access-Control-Allow-Origin', '*');
+    response.set('Access-Control-Allow-Methods', 'GET, POST');
+    response.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-OpenPix-Signature');
+    // Responder a requisições OPTIONS (preflight)
+    if (request.method === 'OPTIONS') {
+        response.status(200).send();
+        return;
+    }
+    // Verificar se é uma requisição POST
+    if (request.method !== 'POST') {
+        response.status(405).send({ error: 'Method not allowed' });
+        return;
+    }
+    const webhookData = request.body;
     const contextData = {
         functionName: "webhookOpenPix",
         correlationId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.correlationID,
@@ -255,6 +269,7 @@ exports.webhookOpenPix = (0, https_1.onCall)(async (request) => {
             event: webhookData === null || webhookData === void 0 ? void 0 : webhookData.event,
             correlationId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.correlationID,
             status: webhookData === null || webhookData === void 0 ? void 0 : webhookData.status,
+            headers: request.headers,
             contextData,
         });
         // Processar evento baseado no tipo
@@ -271,7 +286,8 @@ exports.webhookOpenPix = (0, https_1.onCall)(async (request) => {
                     contextData,
                 });
         }
-        return { success: true };
+        // Retornar 200 para confirmar recebimento
+        response.status(200).send({ success: true });
     }
     catch (error) {
         console.error("Erro ao processar webhook OpenPix", {
@@ -279,7 +295,8 @@ exports.webhookOpenPix = (0, https_1.onCall)(async (request) => {
             correlationId: webhookData === null || webhookData === void 0 ? void 0 : webhookData.correlationID,
             contextData,
         });
-        throw error;
+        // Retornar 500 em caso de erro interno
+        response.status(500).send({ error: error.message });
     }
 });
 // ============================================================================

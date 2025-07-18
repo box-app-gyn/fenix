@@ -143,7 +143,7 @@ async function testOpenPixProduction() {
         }
       };
 
-      const webhookResponse = await fetch('https://us-central1-interbox-app-8d400.cloudfunctions.net/webhookOpenPix', {
+      const webhookResponse = await fetch('https://webhookopenpix-gutjsyhc4q-uc.a.run.app', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

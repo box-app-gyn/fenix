@@ -1,4 +1,5 @@
 import { onCall } from 'firebase-functions/v2/https';
+import { onRequest } from 'firebase-functions/v1/https';
 import { db, admin } from './firebase-admin';
 
 // ============================================================================
@@ -273,8 +274,51 @@ export const criarCheckoutFlowPay = onCall(async (request) => {
 /**
  * Webhook para processar retornos da OpenPix
  */
-export const webhookOpenPix = onCall(async (request) => {
-  const webhookData = request.data as any;
+export const openpixWebhook = onRequest(async (request, response) => {
+  // Configuração CORS simples e robusta
+  response.set('Access-Control-Allow-Origin', '*');
+  response.set('Access-Control-Allow-Methods', '*');
+  response.set('Access-Control-Allow-Headers', '*');
+
+  // Log detalhado da requisição para debug
+  console.log("🔍 Webhook OpenPix - Detalhes da requisição:", {
+    method: request.method,
+    url: request.url,
+    headers: request.headers,
+    query: request.query,
+    body: request.body,
+    timestamp: new Date().toISOString()
+  });
+
+  // Responder a requisições OPTIONS (preflight)
+  if (request.method === 'OPTIONS') {
+    console.log("✅ OPTIONS request - retornando 200");
+    response.status(200).send();
+    return;
+  }
+
+  // Aceitar tanto GET quanto POST
+  let webhookData;
+  
+  if (request.method === 'GET') {
+    // Para requisições GET, extrair dados dos query parameters
+    webhookData = {
+      event: request.query.event as string,
+      correlationID: request.query.correlationID as string,
+      status: request.query.status as string,
+      data_criacao: request.query.data_criacao as string,
+      evento: request.query.evento as string,
+      // Adicionar outros campos que podem vir nos query params
+      ...request.query
+    };
+  } else if (request.method === 'POST') {
+    // Para requisições POST, usar o body
+    webhookData = request.body;
+  } else {
+    // Para qualquer outro método, retornar 200 para não quebrar o webhook
+    response.status(200).send({ success: true, message: 'Method not supported but accepted' });
+    return;
+  }
   
   const contextData = {
     functionName: "webhookOpenPix",
@@ -282,19 +326,24 @@ export const webhookOpenPix = onCall(async (request) => {
   };
 
   try {
-    console.log("Webhook OpenPix recebido", {
+    console.log("🔍 Webhook OpenPix - Dados completos recebidos:", {
       event: webhookData?.event,
       correlationId: webhookData?.correlationID,
+      correlationID: webhookData?.correlationID,
       status: webhookData?.status,
+      webhookData: webhookData,
+      headers: request.headers,
       contextData,
     });
 
     // Processar evento baseado no tipo
     switch (webhookData.event) {
       case 'CHARGE_CONFIRMED':
+      case 'OPENPIX:CHARGE_COMPLETED':
         await processPaymentSuccess(webhookData);
         break;
       case 'CHARGE_EXPIRED':
+      case 'OPENPIX:CHARGE_EXPIRED':
         await processPaymentExpired(webhookData);
         break;
       default:
@@ -304,14 +353,17 @@ export const webhookOpenPix = onCall(async (request) => {
         });
     }
 
-    return { success: true };
+    // Retornar 200 para confirmar recebimento
+    response.status(200).send({ success: true });
   } catch (error: any) {
     console.error("Erro ao processar webhook OpenPix", {
       error: error.message,
       correlationId: webhookData?.correlationID,
       contextData,
     });
-    throw error;
+    
+    // Retornar 500 em caso de erro interno
+    response.status(500).send({ error: error.message });
   }
 });
 
