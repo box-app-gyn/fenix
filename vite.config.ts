@@ -34,8 +34,8 @@ export default defineConfig(({ mode }) => ({
             options: {
               cacheName: 'firebase-auth',
               expiration: {
-                maxEntries: 0,
-                maxAgeSeconds: 0,
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60, // 1 hora
               },
             },
           },

@@ -44,15 +44,49 @@
     <link rel="preconnect" href="https://googleapis.com" />
     <link rel="preconnect" href="https://accounts.google.com" />
     
-    <!-- Disable source map requests in production -->
+    <!-- Disable source map requests and React DevTools in production -->
     <script>
       if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        // Disable source map requests in production
+        // Completely disable React DevTools
         window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
-          supportsFiber: true,
-          inject: function() {},
+          supportsFiber: false,
+          inject: function() { return false; },
           onCommitFiberRoot: function() {},
-          onCommitFiberUnmount: function() {}
+          onCommitFiberUnmount: function() {},
+          onCommitFiberUpdate: function() {},
+          isDisabled: true
+        };
+        
+        // Disable source map requests
+        if (window.SourceMapConsumer) {
+          window.SourceMapConsumer = function() {
+            return {
+              then: function() { return Promise.resolve(); },
+              sourceContentFor: function() { return null; }
+            };
+          };
+        }
+        
+        // Override console methods to prevent source map errors
+        const originalError = console.error;
+        console.error = function(...args) {
+          if (args[0] && typeof args[0] === 'string' && 
+              (args[0].includes('source map') || 
+               args[0].includes('react_devtools_backend') ||
+               args[0].includes('can\'t access property "sources"'))) {
+            return; // Ignore source map and React DevTools errors
+          }
+          originalError.apply(console, args);
+        };
+        
+        // Override fetch to prevent source map requests
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+          if (typeof url === 'string' && 
+              (url.includes('.map') || url.includes('react_devtools_backend'))) {
+            return Promise.resolve(new Response('', { status: 404 }));
+          }
+          return originalFetch.apply(this, arguments);
         };
       }
     </script>

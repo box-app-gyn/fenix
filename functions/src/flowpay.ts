@@ -63,7 +63,10 @@ export const criarCheckoutFlowPay = onCall(async (request) => {
     }
 
     // Verificar se a API key está configurada
-    if (!process.env.FLOWPAY_API_KEY) {
+    const functions = require('firebase-functions');
+    const flowpaySettings = functions.config().flowpay;
+    
+    if (!flowpaySettings?.api_key || flowpaySettings.mode === 'simulated') {
       console.log("FLOWPAY_API_KEY não configurada - usando modo de simulação", contextData);
       
       // Modo de simulação para desenvolvimento/teste
@@ -169,7 +172,7 @@ export const criarCheckoutFlowPay = onCall(async (request) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": process.env.FLOWPAY_API_KEY, // OpenPix usa a API key diretamente
+          "Authorization": flowpaySettings.api_key, // OpenPix usa a API key diretamente
         },
         body: JSON.stringify({
           correlationID: flowpayConfig.externalId,

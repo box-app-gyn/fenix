@@ -37,7 +37,7 @@ import Hub from './pages/Hub';
 import VideoIntro from './components/VideoIntro';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import PWAUpdatePrompt from './components/PWAUpdatePrompt';
-import CacheDebug from './components/CacheDebug';
+
 import CookieBanner from './components/CookieBanner';
 import LoadingScreen from './components/LoadingScreen';
 import DesktopWarning from './components/DesktopWarning';
@@ -104,7 +104,12 @@ function MainLayout() {
 
   // Monitorar mudanças de conectividade
   useEffect(() => {
+    const isExecutingRef = { current: false };
+    
     const handleOnline = async () => {
+      if (isExecutingRef.current) return; // Evitar execuções simultâneas
+      isExecutingRef.current = true;
+      
       console.log('🌐 Conexão restaurada - sincronizando dados...');
       
       try {
@@ -128,13 +133,16 @@ function MainLayout() {
         });
       } catch (error) {
         console.error('❌ Erro ao sincronizar dados:', error);
+      } finally {
+        isExecutingRef.current = false;
       }
     };
 
-    if (isOnline) {
+    // Só executar quando a conexão for restaurada (mudança de offline para online)
+    if (isOnline && !navigator.onLine) {
       handleOnline();
     }
-  }, [isOnline, syncOfflineActions, syncInBackground, syncAnalytics, hasPendingActions, getOfflineStats, trackEvent]);
+  }, [isOnline, hasPendingActions, syncOfflineActions, syncInBackground, syncAnalytics, getOfflineStats, trackEvent]);
 
   // Verificar estatísticas offline periodicamente
   useEffect(() => {
@@ -180,7 +188,6 @@ function MainLayout() {
       <Footer />
       <PWAInstallPrompt />
       <PWAUpdatePrompt />
-      <CacheDebug />
       <CookieBanner />
 
     </div>

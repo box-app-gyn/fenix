@@ -29,6 +29,7 @@ interface User extends FirebaseUser {
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Função para verificar e processar login diário
   const processDailyLogin = async (userId: string, userData: any) => {
@@ -104,10 +105,16 @@ export function useAuth() {
   };
 
   useEffect(() => {
+    // Evitar múltiplas inicializações
+    if (isInitialized) {
+      return;
+    }
+
     let isSubscribed = true; // Flag para evitar race conditions
 
     try {
       console.log('🔄 Inicializando listener de autenticação...');
+      setIsInitialized(true);
       const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         if (!isSubscribed) return; // Evitar atualizações se componente foi desmontado
 
@@ -293,7 +300,7 @@ export function useAuth() {
         setUser(null);
       }
     }
-  }, []);
+  }, [isInitialized]);
 
   // Verificar resultado do redirecionamento ao carregar a página (para casos onde ainda pode ter redirect)
   useEffect(() => {

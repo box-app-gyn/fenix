@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -9,9 +9,15 @@ export const useRoleRedirect = () => {
   const { user, loading } = useAuth();
   const navigate = useTransitionNavigate();
   const location = useLocation();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
     const checkAndRedirect = async () => {
+      // Evitar múltiplas execuções simultâneas
+      if (isRedirecting) {
+        console.log('🔄 useRoleRedirect: Redirecionamento já em andamento, ignorando...');
+        return;
+      }
       console.log('🔄 useRoleRedirect: Iniciando verificação...', {
         hasUser: !!user,
         loading,
@@ -28,12 +34,13 @@ export const useRoleRedirect = () => {
         return;
       }
 
-      // Se estamos na página de login e já temos usuário, redirecionar para /hub
-      if (location.pathname === '/login') {
-        console.log('🔄 useRoleRedirect: Na página de login com usuário logado, redirecionando para /hub');
-        navigate('/hub', { replace: true });
-        return;
-      }
+              // Se estamos na página de login e já temos usuário, redirecionar para /hub
+        if (location.pathname === '/login') {
+          console.log('🔄 useRoleRedirect: Na página de login com usuário logado, redirecionando para /hub');
+          setIsRedirecting(true);
+          navigate('/hub', { replace: true });
+          return;
+        }
 
       console.log('🎯 useRoleRedirect: Verificando perfil do usuário...', {
         uid: user.uid,
@@ -142,5 +149,5 @@ export const useRoleRedirect = () => {
       });
       checkAndRedirect();
     }
-  }, [user, loading, navigate, location.pathname]);
+  }, [user, loading, location.pathname]);
 };
