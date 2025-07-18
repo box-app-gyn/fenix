@@ -200,13 +200,16 @@ function App() {
   const [showVideoIntro, setShowVideoIntro] = useState(true);
   const [showCNHUpload, setShowCNHUpload] = useState(false);
 
-  console.log('🔍 App.tsx - Estado atual:', {
-    user: !!user,
-    loading,
-    userId: user?.uid,
-    isMobile,
-    isTablet,
-  });
+  // Log apenas quando há mudanças significativas
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 App.tsx - Estado atual:', {
+      user: !!user,
+      loading,
+      userId: user?.uid,
+      isMobile,
+      isTablet,
+    });
+  }
 
   // Mostrar vinheta de abertura apenas no primeiro acesso do dia após login confirmado
   useEffect(() => {

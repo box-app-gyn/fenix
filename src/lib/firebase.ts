@@ -123,12 +123,15 @@ if (typeof window !== 'undefined') {
     });
   };
   
-  console.log('🔧 Firebase exposto globalmente para debug');
-  console.log('📝 Comandos disponíveis:');
-  console.log('  - window.loginWithGoogle() - Login com Google');
-  console.log('  - window.logout() - Logout');
-  console.log('  - window.firebase.auth() - Instância do auth');
-  console.log('  - window.firebase.db() - Instância do Firestore');
+  // Logs apenas em desenvolvimento
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔧 Firebase exposto globalmente para debug');
+    console.log('📝 Comandos disponíveis:');
+    console.log('  - window.loginWithGoogle() - Login com Google');
+    console.log('  - window.logout() - Logout');
+    console.log('  - window.firebase.auth() - Instância do auth');
+    console.log('  - window.firebase.db() - Instância do Firestore');
+  }
 }
 
 export default app;
