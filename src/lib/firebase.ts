@@ -4,22 +4,17 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics, isSupported, Analytics } from 'firebase/analytics';
 import { configurePrivacySettings, initializeAnalytics } from '../utils/analyticsUtils';
+import { getFirebaseConfig, isDevelopment } from './env';
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-};
+const firebaseConfig = getFirebaseConfig();
 
 // Initialize Firebase
-let app;
+let app: any;
 try {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  console.log('✅ Firebase inicializado com sucesso');
+  if (isDevelopment) {
+    console.log('✅ Firebase inicializado com sucesso');
+  }
 } catch (error) {
   console.error('❌ Erro ao inicializar Firebase:', error);
   throw error;
@@ -65,24 +60,34 @@ export const initializeAnalyticsManually = async (): Promise<Analytics | null> =
         // Inicializar analytics com configurações corretas
         const success = initializeAnalytics(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID);
 
-        if (success) {
+              if (success) {
+        if (isDevelopment) {
           console.log('✅ Google Analytics inicializado manualmente com sucesso');
-        } else {
-          console.log('⚠️ Erro ao configurar Google Analytics');
         }
       } else {
+        if (isDevelopment) {
+          console.log('⚠️ Erro ao configurar Google Analytics');
+        }
+      }
+    } else {
+      if (isDevelopment) {
         console.log('ℹ️ Analytics aguardando consentimento de cookies');
       }
-
-      return analytics;
-    } else {
-      console.log('ℹ️ Google Analytics não suportado neste ambiente');
-      return null;
     }
-  } catch (error) {
-    console.warn('⚠️ Erro ao inicializar Google Analytics manualmente:', error);
+
+    return analytics;
+  } else {
+    if (isDevelopment) {
+      console.log('ℹ️ Google Analytics não suportado neste ambiente');
+    }
     return null;
   }
+} catch (error) {
+  if (isDevelopment) {
+    console.warn('⚠️ Erro ao inicializar Google Analytics manualmente:', error);
+  }
+  return null;
+}
 };
 
 // Expor Firebase globalmente para debug e testes via console
@@ -124,13 +129,13 @@ if (typeof window !== 'undefined') {
   };
   
   // Logs apenas em desenvolvimento
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔧 Firebase exposto globalmente para debug');
-    console.log('📝 Comandos disponíveis:');
-    console.log('  - window.loginWithGoogle() - Login com Google');
-    console.log('  - window.logout() - Logout');
-    console.log('  - window.firebase.auth() - Instância do auth');
-    console.log('  - window.firebase.db() - Instância do Firestore');
+  if (isDevelopment) {
+  console.log('🔧 Firebase exposto globalmente para debug');
+  console.log('📝 Comandos disponíveis:');
+  console.log('  - window.loginWithGoogle() - Login com Google');
+  console.log('  - window.logout() - Logout');
+  console.log('  - window.firebase.auth() - Instância do auth');
+  console.log('  - window.firebase.db() - Instância do Firestore');
   }
 }
 

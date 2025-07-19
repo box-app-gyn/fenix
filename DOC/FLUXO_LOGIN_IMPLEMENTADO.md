@@ -24,11 +24,13 @@ Login Google → Vídeo Intro → Home
 ## 🛠️ Componentes Implementados
 
 ### Hook `useRoleRedirect`
+
 - **Localização**: `src/hooks/useRoleRedirect.ts`
 - **Função**: Controla o fluxo de redirecionamento baseado no perfil do usuário
 - **Logs**: Detalhados para debug e monitoramento
 
 ### Lógica de Redirecionamento
+
 ```typescript
 // Se não tem categoria definida → Seleção de categoria
 if (!data?.categoria || data?.categoria === 'publico') {

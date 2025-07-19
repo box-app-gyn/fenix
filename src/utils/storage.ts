@@ -89,7 +89,7 @@ export class StorageManager {
   private static instance: StorageManager;
   private storage: Storage;
   private cache: Map<string, any> = new Map();
-  private listeners: Map<string, Set<(value: any) => void>> = new Map();
+  private listeners: Map<string, Set<(_value: any) => void>> = new Map();
 
   private constructor() {
     this.storage = typeof window !== 'undefined' ? window.localStorage : {
@@ -254,7 +254,7 @@ export class StorageManager {
   }
 
   // Adicionar listener para mudanças
-  public addListener(key: string, callback: (value: any) => void): () => void {
+  public addListener(key: string, callback: (_value: any) => void): () => void {
     if (!this.listeners.has(key)) {
       this.listeners.set(key, new Set());
     }
@@ -268,12 +268,12 @@ export class StorageManager {
   }
 
   // Notificar listeners
-  private notifyListeners(key: string, value: any): void {
+  private notifyListeners(key: string, _value: any): void {
     const keyListeners = this.listeners.get(key);
     if (keyListeners) {
       keyListeners.forEach((listener) => {
         try {
-          listener(value);
+          listener(_value);
         } catch (error) {
           console.error('Error in storage listener:', error);
         }

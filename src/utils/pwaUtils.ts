@@ -91,7 +91,6 @@ export const isOnline = (): boolean => {
 };
 
 // Listener para mudanças de conectividade
-// eslint-disable-next-line no-unused-vars
 export const addConnectivityListener = (callback: (_online: boolean) => void): void => {
   window.addEventListener('online', () => callback(true));
   window.addEventListener('offline', () => callback(false));

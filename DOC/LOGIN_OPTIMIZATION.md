@@ -5,6 +5,7 @@
 ### **1. 🎨 Interface Otimizada**
 
 #### **LoadingScreen Melhorado**
+
 - Spinner duplo com animação reversa
 - Logo central com gradiente
 - Animações suaves com Framer Motion
@@ -12,6 +13,7 @@
 - Feedback visual mais claro
 
 #### **Alertas Inteligentes**
+
 - **ErrorAlert**: Notificações de erro com backdrop blur
 - **SuccessAlert**: Confirmações de sucesso
 - Animações de entrada/saída
@@ -19,6 +21,7 @@
 - Posicionamento fixo no topo
 
 #### **Botão de Login Aprimorado**
+
 - Estados visuais claros (idle, popup, redirect)
 - Ícone do Google oficial
 - Spinner animado durante loading
@@ -43,6 +46,7 @@ try {
 ```
 
 #### **Tratamento de Erros Específico**
+
 - `auth/popup-blocked`: Fallback automático para redirect
 - `auth/operation-not-allowed`: Mensagem clara para suporte
 - `auth/invalid-api-key`: Erro de configuração
@@ -52,6 +56,7 @@ try {
 ### **3. 📱 Compatibilidade Mobile**
 
 #### **Otimizações PWA**
+
 - Fallback popup → redirect automático
 - Timeout de 10 segundos para verificações
 - Compatibilidade com iOS Safari

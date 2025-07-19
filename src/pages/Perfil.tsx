@@ -62,7 +62,7 @@ const ProfileAvatar = ({
   userData: FirestoreUser | null;
   photoPreview: string | null;
   photoLoading: boolean;
-  onPhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // eslint-disable-line no-unused-vars
+  onPhotoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const avatarContent = () => {
     if (photoLoading) {

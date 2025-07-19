@@ -1,3 +1,5 @@
+/// <reference types="node" />
+/// <reference types="node" />
 import { emailTemplates } from "../config/email";
 interface EmailOptions {
     to: string | string[];

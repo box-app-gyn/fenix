@@ -35,7 +35,8 @@
     "arrow-parens": "off",
     "padded-blocks": "off",
     "operator-linebreak": "off",
-    "no-unused-vars": "warn",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "ignoreRestSiblings": true }],
     "no-undef": "error"
   },
   "settings": {

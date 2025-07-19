@@ -113,8 +113,26 @@ export function useAuth() {
     let isSubscribed = true; // Flag para evitar race conditions
 
     try {
-      console.log('🔄 Inicializando listener de autenticação...');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔄 Inicializando listener de autenticação...');
+      }
       setIsInitialized(true);
+      
+      // Timeout de segurança para evitar travamento
+      const timeoutId = setTimeout(() => {
+        if (isSubscribed && loading) {
+          console.warn('⚠️ Timeout de segurança - finalizando loading');
+          setLoading(false);
+        }
+      }, 10000); // 10 segundos de timeout
+      console.log('🔍 Verificando estado atual do Firebase Auth...');
+      const currentUser = auth.currentUser;
+      console.log('👤 Usuário atual do Firebase:', currentUser ? {
+        uid: currentUser.uid,
+        email: currentUser.email,
+        emailVerified: currentUser.emailVerified
+      } : 'null');
+
       const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
         if (!isSubscribed) return; // Evitar atualizações se componente foi desmontado
 
@@ -286,11 +304,13 @@ export function useAuth() {
         if (isSubscribed) {
           console.log('🏁 Finalizando carregamento de autenticação');
           setLoading(false);
+          clearTimeout(timeoutId);
         }
       });
 
       return () => {
         isSubscribed = false;
+        clearTimeout(timeoutId);
         unsubscribe();
       };
     } catch (error) {
@@ -392,5 +412,51 @@ export function useAuth() {
     }
   };
 
-  return { user, loading, login, logout };
+  // Função para forçar logout e limpar estado
+  const forceLogout = async () => {
+    try {
+      console.log('🔄 Forçando logout e limpeza de estado...');
+      
+      // Limpar localStorage
+      localStorage.clear();
+      
+      // Limpar sessionStorage
+      sessionStorage.clear();
+      
+      // Fazer logout do Firebase
+      await signOut(auth);
+      
+      // Forçar estado limpo
+      setUser(null);
+      setLoading(false);
+      
+      console.log('✅ Logout forçado realizado com sucesso');
+    } catch (error) {
+      console.error('❌ Erro no logout forçado:', error);
+      // Mesmo com erro, limpar estado
+      setUser(null);
+      setLoading(false);
+    }
+  };
+
+  // Função para debug do estado atual
+  const debugAuthState = () => {
+    console.log('🔍 DEBUG - Estado de Autenticação:', {
+      user: user ? {
+        uid: user.uid,
+        email: user.email,
+        role: user.role,
+        profileComplete: user.profileComplete
+      } : null,
+      loading,
+      isInitialized,
+      firebaseAuth: auth.currentUser ? {
+        uid: auth.currentUser.uid,
+        email: auth.currentUser.email
+      } : null,
+      timestamp: new Date().toISOString()
+    });
+  };
+
+  return { user, loading, login, logout, forceLogout, debugAuthState };
 }

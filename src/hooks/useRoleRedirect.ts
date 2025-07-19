@@ -34,11 +34,11 @@ export const useRoleRedirect = () => {
         return;
       }
 
-              // Se estamos na página de login e já temos usuário, redirecionar para /hub
+              // Se estamos na página de login e já temos usuário, redirecionar para /home
         if (location.pathname === '/login') {
-          console.log('🔄 useRoleRedirect: Na página de login com usuário logado, redirecionando para /hub');
+          console.log('🔄 useRoleRedirect: Na página de login com usuário logado, redirecionando para /home');
           setIsRedirecting(true);
-          navigate('/hub', { replace: true });
+          navigate('/home', { replace: true });
           return;
         }
 
@@ -115,21 +115,21 @@ export const useRoleRedirect = () => {
         // Lista de páginas válidas que não precisam de redirecionamento
         const validPages = [
           '/home', '/hub', '/perfil', '/audiovisual', '/audiovisual/form', 
-          '/sobre', '/leaderboard', '/links', '/cluster', '/admin', '/dev', 
+          '/sobre', '/leaderboard', '/links', '/admin', '/dev', 
           '/marketing', '/admin-painel', '/dashboard-evento', '/termos'
         ];
         
-        // Se está na raiz, redirecionar para /hub
+        // Se está na raiz, redirecionar para /home (conforme jornada do documento)
         if (location.pathname === '/') {
-          console.log('🔄 useRoleRedirect: Na raiz, redirecionando para /hub');
-          navigate('/hub', { replace: true });
+          console.log('🔄 useRoleRedirect: Na raiz, redirecionando para /home');
+          navigate('/home', { replace: true });
           return;
         }
         
-        // Se não está em uma página válida, redirecionar para /hub
+        // Se não está em uma página válida, redirecionar para /home
         if (!validPages.includes(location.pathname)) {
-          console.log('🔄 useRoleRedirect: Página inválida, redirecionando para /hub');
-          navigate('/hub', { replace: true });
+          console.log('🔄 useRoleRedirect: Página inválida, redirecionando para /home');
+          navigate('/home', { replace: true });
         } else {
           console.log('✅ useRoleRedirect: Página válida, mantendo na página atual');
         }

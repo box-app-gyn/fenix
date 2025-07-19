@@ -142,16 +142,48 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode === 'development',
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-          ui: ['framer-motion', 'react-router-dom'],
+        manualChunks: (id) => {
+          // Vendor chunks
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('firebase')) {
+              return 'firebase-vendor';
+            }
+            if (id.includes('framer-motion') || id.includes('react-router')) {
+              return 'ui-vendor';
+            }
+
+            // Outros vendors
+            return 'vendor';
+          }
+          
+          // Chunks específicos da aplicação
+          if (id.includes('pages/Admin') || id.includes('pages/Dev') || id.includes('pages/Marketing')) {
+            return 'admin-pages';
+          }
+          if (id.includes('pages/Cadastro')) {
+            return 'cadastro-pages';
+          }
+          if (id.includes('pages/audiovisual')) {
+            return 'audiovisual-pages';
+          }
+          if (id.includes('components/')) {
+            return 'components';
+          }
+          if (id.includes('hooks/')) {
+            return 'hooks';
+          }
+          if (id.includes('utils/')) {
+            return 'utils';
+          }
         },
         // Evitar source maps em produção
         sourcemapExcludeSources: mode === 'production',
       },
     },
-    chunkSizeWarningLimit: 1000, // Aumentar limite de warning
+    chunkSizeWarningLimit: 1500, // Aumentar limite para 1.5MB
   },
   css: {
     // Source maps CSS apenas em desenvolvimento

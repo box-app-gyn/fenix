@@ -1,56 +1,154 @@
 import { createBrowserRouter, RouterProvider, useParams, Navigate, Outlet } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense, useCallback, useMemo } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { useMobile } from './hooks/useMobile';
 import { usePWA } from './hooks/usePWA';
 import { useOfflineGamification } from './utils/offlineGamification';
-import LoginPage from './pages/Login';
-import Home from './pages/index';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { FirebaseErrorBoundary } from './components/FirebaseErrorBoundary';
-
-import GamifiedLeaderboard from './components/GamifiedLeaderboard';
-import SobrePage from './pages/Sobre';
-import Termos from './pages/Termos';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminPainel from './pages/AdminPainel';
-import DashboardEvento from './pages/DashboardEvento';
-import DevDashboard from './pages/DevDashboard';
-import MarketingDashboard from './pages/MarketingDashboard';
-import Audiovisual from './pages/Audiovisual';
-import AudiovisualForm from './pages/audiovisual/form';
-import AudiovisualPayment from './pages/audiovisual/payment';
-import AudiovisualSuccess from './pages/audiovisual/success';
-import LinkShortenerPage from './pages/LinkShortenerPage';
-import LinkRedirect from './components/LinkRedirect';
-import ReferralLanding from './pages/ReferralLanding';
-import ClusterPage from './pages/ClusterPage';
-import Perfil from './pages/Perfil';
-import CadastroAtleta from './pages/CadastroAtleta';
-import CadastroJurado from './pages/CadastroJurado';
-import CadastroMidia from './pages/CadastroMidia';
-import CadastroEspectador from './pages/CadastroEspectador';
-import SetupProfile from './pages/SetupProfile';
-import SelecaoTipoCadastro from './pages/SelecaoTipoCadastro';
-import Hub from './pages/Hub';
-import VideoIntro from './components/VideoIntro';
-import PWAInstallPrompt from './components/PWAInstallPrompt';
-import PWAUpdatePrompt from './components/PWAUpdatePrompt';
-
-import CookieBanner from './components/CookieBanner';
 import LoadingScreen from './components/LoadingScreen';
-import DesktopWarning from './components/DesktopWarning';
 import ProtectedRoute from './components/ProtectedRoute';
-import CNHUpload from './components/CNHUpload';
 import { useRoleRedirect } from './hooks/useRoleRedirect';
 
+// Lazy load de páginas com prefetch strategy
+const LoginPage = lazy(() => import('./pages/Login'));
+const Home = lazy(() => import('./pages/index'));
+const GamifiedLeaderboard = lazy(() => import('./components/GamifiedLeaderboard'));
+const SobrePage = lazy(() => import('./pages/Sobre'));
+const Termos = lazy(() => import('./pages/Termos'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminPainel = lazy(() => import('./pages/AdminPainel'));
+const DashboardEvento = lazy(() => import('./pages/DashboardEvento'));
+const DevDashboard = lazy(() => import('./pages/DevDashboard'));
+const MarketingDashboard = lazy(() => import('./pages/MarketingDashboard'));
+const Audiovisual = lazy(() => import('./pages/Audiovisual'));
+const AudiovisualForm = lazy(() => import('./pages/audiovisual/form'));
+const AudiovisualPayment = lazy(() => import('./pages/audiovisual/payment'));
+const AudiovisualSuccess = lazy(() => import('./pages/audiovisual/success'));
+const LinkShortenerPage = lazy(() => import('./pages/LinkShortenerPage'));
+const LinkRedirect = lazy(() => import('./components/LinkRedirect'));
+const ReferralLanding = lazy(() => import('./pages/ReferralLanding'));
+const Perfil = lazy(() => import('./pages/Perfil'));
+const CadastroAtleta = lazy(() => import('./pages/CadastroAtleta'));
+const CadastroJurado = lazy(() => import('./pages/CadastroJurado'));
+const CadastroMidia = lazy(() => import('./pages/CadastroMidia'));
+const CadastroEspectador = lazy(() => import('./pages/CadastroEspectador'));
+const SetupProfile = lazy(() => import('./pages/SetupProfile'));
+const SelecaoTipoCadastro = lazy(() => import('./pages/SelecaoTipoCadastro'));
+const Hub = lazy(() => import('./pages/Hub'));
 
-// Componente de layout principal que inclui Header, Footer e outros componentes
+// Lazy load de componentes PWA
+const VideoIntro = lazy(() => import('./components/VideoIntro'));
+const PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt'));
+const PWAUpdatePrompt = lazy(() => import('./components/PWAUpdatePrompt'));
+const CookieBanner = lazy(() => import('./components/CookieBanner'));
+const DesktopWarning = lazy(() => import('./components/DesktopWarning'));
+const CNHUpload = lazy(() => import('./components/CNHUpload'));
+
+// Tipos TypeScript para PWA
+interface OfflineStats {
+  pendingActions: number;
+  pendingGamification: number;
+  lastSync: number | null;
+}
+
+interface PWAConnectionStatus {
+  isOnline: boolean;
+  networkType: string;
+  effectiveType: string;
+  downlink: number;
+  rtt: number;
+}
+
+// Componente de status de conexão PWA otimizado
+const PWAConnectionBar = ({ isOnline, offlineStats }: { isOnline: boolean; offlineStats: OfflineStats }) => {
+  const [connectionInfo, setConnectionInfo] = useState<PWAConnectionStatus>({
+    isOnline,
+    networkType: 'unknown',
+    effectiveType: 'unknown',
+    downlink: 0,
+    rtt: 0
+  });
+
+  useEffect(() => {
+    const updateConnectionInfo = () => {
+      const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+      
+      setConnectionInfo({
+        isOnline: navigator.onLine,
+        networkType: connection?.type || 'unknown',
+        effectiveType: connection?.effectiveType || 'unknown',
+        downlink: connection?.downlink || 0,
+        rtt: connection?.rtt || 0
+      });
+    };
+
+    updateConnectionInfo();
+    
+    const handleOnline = () => updateConnectionInfo();
+    const handleOffline = () => updateConnectionInfo();
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Monitor connection changes
+    const connection = (navigator as any).connection;
+    if (connection) {
+      connection.addEventListener('change', updateConnectionInfo);
+    }
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      if (connection) {
+        connection.removeEventListener('change', updateConnectionInfo);
+      }
+    };
+  }, []);
+
+  if (!connectionInfo.isOnline) {
+    return (
+      <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-center py-2 px-4 z-[9999] shadow-lg">
+        <div className="flex items-center justify-center space-x-2">
+          <div className="animate-pulse">📡</div>
+          <span className="text-sm font-medium">
+            Modo offline - {offlineStats.pendingActions} ações pendentes
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  if (offlineStats.pendingActions > 0) {
+    return (
+      <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-center py-2 px-4 z-[9999] shadow-lg">
+        <div className="flex items-center justify-center space-x-2">
+          <div className="animate-spin">🔄</div>
+          <span className="text-sm font-medium">
+            Sincronizando {offlineStats.pendingActions} ações offline...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // Mostrar qualidade da conexão em desenvolvimento
+  if (process.env.NODE_ENV === 'development' && connectionInfo.effectiveType) {
+    return (
+      <div className="fixed bottom-4 right-4 bg-black/80 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm z-[9999]">
+        {connectionInfo.effectiveType} • {connectionInfo.downlink}Mbps
+      </div>
+    );
+  }
+
+  return null;
+};
+
+// Componente de layout principal otimizado para PWA
 function MainLayout() {
   useRoleRedirect();
   
-  // PWA hooks
   const {
     isOnline,
     cacheCriticalData,
@@ -58,6 +156,8 @@ function MainLayout() {
     syncAnalytics,
     requestNotificationPermission,
     trackEvent,
+    isInstallable,
+    isInstalled,
   } = usePWA();
   
   const {
@@ -66,325 +166,707 @@ function MainLayout() {
     getOfflineStats,
   } = useOfflineGamification();
 
-  const [offlineStats, setOfflineStats] = useState({
+  const [offlineStats, setOfflineStats] = useState<OfflineStats>({
     pendingActions: 0,
     pendingGamification: 0,
-    lastSync: null as number | null,
+    lastSync: null,
   });
 
-  // Inicialização PWA
+  // Estados PWA específicos
+  const [pwaInitialized, setPWAInitialized] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+
+  // Função para atualizar estatísticas offline com debounce
+  const updateOfflineStats = useCallback(async () => {
+    try {
+      const stats = await getOfflineStats();
+      setOfflineStats(prevStats => {
+        // Só atualizar se realmente mudou
+        if (JSON.stringify(prevStats) !== JSON.stringify(stats)) {
+          return stats;
+        }
+        return prevStats;
+      });
+    } catch (error) {
+      console.error('❌ Erro ao verificar estatísticas offline:', error);
+    }
+  }, [getOfflineStats]);
+
+  // PWA Initialization com retry logic
   useEffect(() => {
+    let retryCount = 0;
+    const maxRetries = 3;
+    
     const initializePWA = async () => {
       try {
-        // Cachear dados críticos
+        console.log('🚀 Inicializando PWA...');
+        
+        // Preload critical resources
         await cacheCriticalData();
         
-        // Solicitar permissão de notificação
-        if (Notification.permission === 'default') {
-          setTimeout(async () => {
+        // Request notification permission after user interaction
+        const requestPermissionDelayed = setTimeout(async () => {
+          if (Notification.permission === 'default') {
             await requestNotificationPermission();
-          }, 5000); // 5 segundos após carregamento
-        }
+          }
+        }, 5000);
         
-        // Track inicialização
-        trackEvent('app_initialized', {
+        // Track initialization
+        trackEvent('pwa_initialized', {
           timestamp: Date.now(),
           userAgent: navigator.userAgent,
           online: navigator.onLine,
+          isInstallable,
+          isInstalled,
+          viewport: {
+            width: window.innerWidth,
+            height: window.innerHeight,
+          },
+          screen: {
+            width: window.screen.width,
+            height: window.screen.height,
+          },
         });
         
-        console.log('🚀 PWA inicializada com sucesso!');
+        setPWAInitialized(true);
+        console.log('✅ PWA inicializada com sucesso!');
+        
+        return () => clearTimeout(requestPermissionDelayed);
       } catch (error) {
         console.error('❌ Erro ao inicializar PWA:', error);
+        
+        if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`🔄 Tentando novamente... (${retryCount}/${maxRetries})`);
+          setTimeout(initializePWA, 2000 * retryCount);
+        }
       }
     };
 
-    initializePWA();
-  }, [cacheCriticalData, requestNotificationPermission, trackEvent]);
+    if (!pwaInitialized) {
+      initializePWA();
+    }
+  }, [
+    cacheCriticalData,
+    requestNotificationPermission,
+    trackEvent,
+    isInstallable,
+    isInstalled,
+    pwaInitialized
+  ]);
 
-  // Monitorar mudanças de conectividade
+  // Background sync quando conexão é restaurada
   useEffect(() => {
-    const isExecutingRef = { current: false };
+    let syncInProgress = false;
     
-    const handleOnline = async () => {
-      if (isExecutingRef.current) return; // Evitar execuções simultâneas
-      isExecutingRef.current = true;
+    const handleConnectionRestored = async () => {
+      if (syncInProgress || !isOnline) return;
       
-      console.log('🌐 Conexão restaurada - sincronizando dados...');
+      syncInProgress = true;
+      const syncStartTime = Date.now();
       
       try {
-        // Verificar se há ações offline pendentes
+        console.log('🌐 Conexão restaurada - iniciando sincronização...');
+        
         const hasPending = await hasPendingActions();
+        
         if (hasPending) {
-          console.log('🔄 Sincronizando ações offline...');
-          await syncOfflineActions();
-          await syncInBackground();
-          await syncAnalytics();
+          console.log('🔄 Sincronizando dados offline...');
+          
+          // Executar sincronizações em paralelo
+          const syncPromises = [
+            syncOfflineActions(),
+            syncInBackground(),
+            syncAnalytics()
+          ];
+          
+          await Promise.allSettled(syncPromises);
+          
+          const syncDuration = Date.now() - syncStartTime;
+          console.log(`✅ Sincronização concluída em ${syncDuration}ms`);
         }
         
-        // Atualizar estatísticas
-        const stats = await getOfflineStats();
-        setOfflineStats(stats);
+        await updateOfflineStats();
+        setLastSyncTime(new Date());
         
         trackEvent('connection_restored', {
           timestamp: Date.now(),
-          pendingActions: stats.pendingActions,
-          pendingGamification: stats.pendingGamification,
+          syncDuration: Date.now() - syncStartTime,
+          pendingActions: offlineStats.pendingActions,
+          pendingGamification: offlineStats.pendingGamification,
         });
+        
       } catch (error) {
-        console.error('❌ Erro ao sincronizar dados:', error);
+        console.error('❌ Erro na sincronização:', error);
+        
+        trackEvent('sync_error', {
+          timestamp: Date.now(),
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
       } finally {
-        isExecutingRef.current = false;
+        syncInProgress = false;
       }
     };
 
-    // Só executar quando a conexão for restaurada (mudança de offline para online)
-    if (isOnline && !navigator.onLine) {
-      handleOnline();
+    if (isOnline && pwaInitialized) {
+      handleConnectionRestored();
     }
-  }, [isOnline, hasPendingActions, syncOfflineActions, syncInBackground, syncAnalytics, getOfflineStats, trackEvent]);
+  }, [
+    isOnline,
+    pwaInitialized,
+    hasPendingActions,
+    syncOfflineActions,
+    syncInBackground,
+    syncAnalytics,
+    updateOfflineStats,
+    trackEvent,
+    offlineStats.pendingActions,
+    offlineStats.pendingGamification
+  ]);
 
-  // Verificar estatísticas offline periodicamente
+  // Periodic stats update com interval adaptativo
   useEffect(() => {
-    const checkOfflineStats = async () => {
-      try {
-        const stats = await getOfflineStats();
-        setOfflineStats(stats);
-      } catch (error) {
-        console.error('❌ Erro ao verificar estatísticas offline:', error);
-      }
+    const getUpdateInterval = () => {
+      if (!isOnline) return 60000; // 1 minuto offline
+      if (offlineStats.pendingActions > 0) return 10000; // 10s com ações pendentes
+      return 30000; // 30s normal
     };
-
-    checkOfflineStats();
-    const interval = setInterval(checkOfflineStats, 30000); // 30s
     
-    return () => clearInterval(interval);
-  }, [getOfflineStats]);
+    const updateStats = () => {
+      updateOfflineStats();
+      setTimeout(updateStats, getUpdateInterval());
+    };
+    
+    const initialTimeout = setTimeout(updateStats, 1000);
+    
+    return () => clearTimeout(initialTimeout);
+  }, [updateOfflineStats, isOnline, offlineStats.pendingActions]);
+
+  // Prefetch de recursos críticos
+  useEffect(() => {
+    if (pwaInitialized && isOnline) {
+      // Prefetch páginas mais acessadas
+      const prefetchPages = [
+        () => import('./pages/index'),
+        () => import('./pages/Hub'),
+        () => import('./pages/Perfil'),
+      ];
+      
+      prefetchPages.forEach(prefetch => {
+        setTimeout(() => prefetch().catch(() => {}), 2000);
+      });
+    }
+  }, [pwaInitialized, isOnline]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Indicador de status offline */}
-      {!isOnline && (
-        <div className="fixed top-0 left-0 right-0 bg-yellow-500 text-black text-center py-2 px-4 z-50">
-          <span className="text-sm font-medium">
-            📡 Modo offline - {offlineStats.pendingActions} ações pendentes
-          </span>
-        </div>
-      )}
-
-      {/* Indicador de ações offline pendentes */}
-      {isOnline && offlineStats.pendingActions > 0 && (
-        <div className="fixed top-0 left-0 right-0 bg-blue-500 text-white text-center py-2 px-4 z-50">
-          <span className="text-sm font-medium">
-            🔄 Sincronizando {offlineStats.pendingActions} ações offline...
-          </span>
-        </div>
-      )}
-
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col antialiased">
+      <PWAConnectionBar isOnline={isOnline} offlineStats={offlineStats} />
+      
       <Header />
-      <main className="flex-1">
+      
+      <main className="flex-1 relative">
         <Outlet />
+        
+        {/* PWA Loading Overlay */}
+        {!pwaInitialized && (
+          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-[9998]">
+            <div className="bg-white rounded-lg p-6 shadow-xl">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-2 text-sm text-gray-600">Inicializando PWA...</p>
+            </div>
+          </div>
+        )}
       </main>
+      
       <Footer />
-      <PWAInstallPrompt />
-      <PWAUpdatePrompt />
-      <CookieBanner />
-
+      
+      {/* PWA Components */}
+      <Suspense fallback={null}>
+        <PWAInstallPrompt />
+      </Suspense>
+      <Suspense fallback={null}>
+        <PWAUpdatePrompt />
+      </Suspense>
+      <Suspense fallback={null}>
+        <CookieBanner />
+      </Suspense>
+      
+      {/* Debug Info (Development) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 left-4 bg-black/80 text-white text-xs p-2 rounded backdrop-blur-sm z-[9999] max-w-xs">
+          <div>PWA: {pwaInitialized ? '✅' : '⏳'}</div>
+          <div>Online: {isOnline ? '🟢' : '🔴'}</div>
+          <div>Pending: {offlineStats.pendingActions}</div>
+          {lastSyncTime && (
+            <div>Last Sync: {lastSyncTime.toLocaleTimeString()}</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
+// Componente otimizado para redirecionamento de links
+const LinkRedirectWrapper = () => {
+  const { shortCode } = useParams<{ shortCode: string }>();
+  
+  if (!shortCode) {
+    return <Navigate to="/home" replace />;
+  }
+  
+  return <LinkRedirect shortCode={shortCode} />;
+};
+
+// Componente para gerenciar avisos de desktop com PWA
+const DesktopWarningHandler = ({ isMobile, isTablet }: { isMobile: boolean; isTablet: boolean }) => {
+  const currentPath = window.location.pathname;
+  
+  const routeConfig = useMemo(() => {
+    const adminRoutes = new Set([
+      '/admin',
+      '/dev',
+      '/marketing',
+      '/admin-painel',
+      '/dashboard-evento'
+    ]);
+    
+    const userRoutes = new Set([
+      '/',
+      '/home',
+      '/hub',
+      '/leaderboard',
+      '/perfil',
+      '/audiovisual',
+      '/sobre',
+      '/termos',
+      '/links',
+      '/selecao-cadastro',
+      '/cadastro-atleta',
+      '/cadastro-jurado',
+      '/cadastro-midialouca',
+      '/cadastro-curioso',
+      '/setup-profile',
+      '/audiovisual/form',
+      '/audiovisual/payment',
+      '/audiovisual/success',
+      '/interbox/audiovisual/confirmacao'
+    ]);
+    
+    return {
+      isAdmin: adminRoutes.has(currentPath),
+      isUser: userRoutes.has(currentPath) || currentPath.startsWith('/l/'),
+    };
+  }, [currentPath]);
+
+  // Não mostrar aviso em dispositivos móveis
+  if (isMobile || isTablet) return null;
+
+  if (routeConfig.isAdmin) {
+    return (
+      <Suspense fallback={null}>
+        <DesktopWarning allowAdminAccess={true} />
+      </Suspense>
+    );
+  }
+
+  if (routeConfig.isUser) {
+    return (
+      <Suspense fallback={null}>
+        <DesktopWarning allowAdminAccess={false} />
+      </Suspense>
+    );
+  }
+
+  return null;
+};
+
+// Componente principal da aplicação
 function App() {
   const { user, loading } = useAuth();
   const { isMobile, isTablet } = useMobile();
-  const [showVideoIntro, setShowVideoIntro] = useState(true);
+  
+  // Estados para componentes especiais
+  const [showVideoIntro, setShowVideoIntro] = useState(false);
   const [showCNHUpload, setShowCNHUpload] = useState(false);
 
-  // Log apenas quando há mudanças significativas
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 App.tsx - Estado atual:', {
-      user: !!user,
-      loading,
-      userId: user?.uid,
-      isMobile,
-      isTablet,
-    });
-  }
+  // Log de desenvolvimento
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 App State:', {
+        userAuthenticated: !!user,
+        loading,
+        userId: user?.uid,
+        userRole: user?.role,
+        device: { isMobile, isTablet },
+        viewport: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        },
+      });
+    }
+  }, [user, loading, isMobile, isTablet]);
 
-  // Mostrar vinheta de abertura apenas no primeiro acesso do dia após login confirmado
+  // Gerenciar vinheta de abertura com verificação de data
   useEffect(() => {
     if (!user) {
-      // Se não está logado, não mostrar vídeo
       setShowVideoIntro(false);
       return;
     }
 
-    // Verificar se já viu o vídeo hoje
     const today = new Date().toDateString();
     const lastVideoDate = localStorage.getItem('lastVideoDate');
-    const hasSeenVideoToday = lastVideoDate === today;
+    const shouldShowVideo = lastVideoDate !== today;
 
-    console.log('🎬 Video Intro Check:', {
-      user: user?.email,
-      today,
-      lastVideoDate,
-      hasSeenVideoToday,
-      willShow: !hasSeenVideoToday,
-    });
-
-    if (!hasSeenVideoToday) {
-      // Primeiro acesso do dia - mostrar vídeo
-      setShowVideoIntro(true);
-    } else {
-      // Já viu o vídeo hoje - não mostrar
-      setShowVideoIntro(false);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🎬 Video Intro Decision:', {
+        user: user.email,
+        today,
+        lastVideoDate,
+        shouldShow: shouldShowVideo,
+      });
     }
+
+    setShowVideoIntro(shouldShowVideo);
   }, [user]);
 
-  // Verificar se precisa fazer upload da CNH (apenas para os 2 primeiros admins)
+  // Gerenciar upload de CNH para admins
   useEffect(() => {
-    if (user && user.role === 'admin') {
-      const adminCNHUploaded = localStorage.getItem('adminCNHUploaded');
-      if (!adminCNHUploaded) {
-        setShowCNHUpload(true);
-      }
+    if (user?.role === 'admin') {
+      const cnhUploaded = localStorage.getItem('adminCNHUploaded');
+      setShowCNHUpload(!cnhUploaded);
+    } else {
+      setShowCNHUpload(false);
     }
-  }, [user]);
+  }, [user?.role]);
 
-  const handleVideoComplete = () => {
-    console.log('🎬 Video Intro - Completo');
-    
-    // Marcar que viu o vídeo hoje
-    const today = new Date().toDateString();
-    localStorage.setItem('lastVideoDate', today);
-    
+  // Handlers otimizados
+  const handleVideoComplete = useCallback(() => {
+    console.log('🎬 Video concluído');
+    localStorage.setItem('lastVideoDate', new Date().toDateString());
     setShowVideoIntro(false);
-  };
+  }, []);
 
-  const handleCNHUploadComplete = () => {
-    console.log('📄 CNH Upload - Completo');
+  const handleCNHUploadComplete = useCallback(() => {
+    console.log('📄 CNH upload concluído');
     localStorage.setItem('adminCNHUploaded', 'true');
     setShowCNHUpload(false);
-  };
+  }, []);
+
+  // Router memoizado com lazy loading otimizado
+  const router = useMemo(() => {
+    return createBrowserRouter([
+      // Rotas públicas
+      {
+        path: "/login",
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <LoginPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/l/:shortCode",
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <LinkRedirectWrapper />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/ref/:referralCode",
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <ReferralLanding />
+          </Suspense>
+        ),
+      },
+      
+      // Rotas protegidas
+      {
+        path: "/",
+        element: <MainLayout />,
+        children: [
+          {
+            path: "",
+            element: user ? (
+              <Navigate to="/home" replace />
+            ) : (
+              <Suspense fallback={<LoadingScreen />}>
+                <LoginPage />
+              </Suspense>
+            ),
+          },
+          { 
+            path: "home", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <Home />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "hub", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <Hub />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "leaderboard", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <GamifiedLeaderboard />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "sobre", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <SobrePage />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "termos", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <Termos />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "admin", 
+            element: (
+              <ProtectedRoute requireProfile={true} requireAdmin={true}>
+                <Suspense fallback={<LoadingScreen />}>
+                  <AdminDashboard />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "admin-painel", 
+            element: (
+              <ProtectedRoute requireProfile={true} requireAdmin={true}>
+                <Suspense fallback={<LoadingScreen />}>
+                  <AdminPainel />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "dashboard-evento", 
+            element: (
+              <ProtectedRoute requireProfile={true}>
+                <Suspense fallback={<LoadingScreen />}>
+                  <DashboardEvento />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "dev", 
+            element: (
+              <ProtectedRoute requireProfile={true} requireDev={true}>
+                <Suspense fallback={<LoadingScreen />}>
+                  <DevDashboard />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "marketing", 
+            element: (
+              <ProtectedRoute requireProfile={true} requireMarketing={true}>
+                <Suspense fallback={<LoadingScreen />}>
+                  <MarketingDashboard />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "audiovisual", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <Audiovisual />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "audiovisual/form", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <AudiovisualForm />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "audiovisual/payment", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <AudiovisualPayment />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "audiovisual/success", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <AudiovisualSuccess />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "interbox/audiovisual/confirmacao", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <AudiovisualSuccess />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "links", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <LinkShortenerPage />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "selecao-cadastro", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <SelecaoTipoCadastro />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "cadastro-atleta", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <CadastroAtleta />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "cadastro-jurado", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <CadastroJurado />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "cadastro-midialouca", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <CadastroMidia />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "cadastro-curioso", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <CadastroEspectador />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "setup-profile", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <SetupProfile />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+          { 
+            path: "perfil", 
+            element: (
+              <ProtectedRoute>
+                <Suspense fallback={<LoadingScreen />}>
+                  <Perfil />
+                </Suspense>
+              </ProtectedRoute>
+            ) 
+          },
+        ],
+      },
+      
+      // Fallback
+      {
+        path: "*",
+        element: user ? <Navigate to="/home" replace /> : <Navigate to="/" replace />,
+      },
+    ], {
+      future: {
+        v7_relativeSplatPath: true,
+      },
+    });
+  }, [user]);
 
   if (loading) {
     return <LoadingScreen />;
   }
 
-  // Router único com todas as rotas
-  const router = createBrowserRouter([
-    // Rotas públicas (acessíveis sem login)
-    { path: "/login", element: <LoginPage /> },
-    { path: "/l/:shortCode", element: <LinkRedirectWrapper /> },
-    { path: "/ref/:referralCode", element: <ReferralLanding /> },
-    
-    // Rotas protegidas (requerem login)
-    {
-      path: "/",
-      element: <MainLayout />,
-      children: [
-        { path: "", element: user ? <Navigate to="/hub" replace /> : <LoginPage /> },
-        { path: "home", element: <ProtectedRoute><Home /></ProtectedRoute> },
-        { path: "hub", element: <ProtectedRoute><Hub /></ProtectedRoute> },
-        { path: "leaderboard", element: <ProtectedRoute><GamifiedLeaderboard /></ProtectedRoute> },
-        { path: "sobre", element: <ProtectedRoute><SobrePage /></ProtectedRoute> },
-        { path: "termos", element: <ProtectedRoute><Termos /></ProtectedRoute> },
-        { path: "admin", element: <ProtectedRoute requireProfile={true} requireAdmin={true}><AdminDashboard /></ProtectedRoute> },
-        { path: "admin-painel", element: <ProtectedRoute requireProfile={true} requireAdmin={true}><AdminPainel /></ProtectedRoute> },
-        { path: "dashboard-evento", element: <ProtectedRoute requireProfile={true}><DashboardEvento /></ProtectedRoute> },
-        { path: "dev", element: <ProtectedRoute requireProfile={true} requireDev={true}><DevDashboard /></ProtectedRoute> },
-        { path: "marketing", element: <ProtectedRoute requireProfile={true} requireMarketing={true}><MarketingDashboard /></ProtectedRoute> },
-        { path: "audiovisual", element: <ProtectedRoute><Audiovisual /></ProtectedRoute> },
-        { path: "audiovisual/form", element: <ProtectedRoute><AudiovisualForm /></ProtectedRoute> },
-        { path: "audiovisual/payment", element: <ProtectedRoute><AudiovisualPayment /></ProtectedRoute> },
-        { path: "audiovisual/success", element: <ProtectedRoute><AudiovisualSuccess /></ProtectedRoute> },
-        { path: "interbox/audiovisual/confirmacao", element: <ProtectedRoute><AudiovisualSuccess /></ProtectedRoute> },
-        { path: "links", element: <ProtectedRoute><LinkShortenerPage /></ProtectedRoute> },
-        { path: "l/:shortCode", element: <ProtectedRoute><LinkRedirectWrapper /></ProtectedRoute> },
-        { path: "selecao-cadastro", element: <ProtectedRoute><SelecaoTipoCadastro /></ProtectedRoute> },
-        { path: "cadastro-atleta", element: <ProtectedRoute><CadastroAtleta /></ProtectedRoute> },
-        { path: "cadastro-jurado", element: <ProtectedRoute><CadastroJurado /></ProtectedRoute> },
-        { path: "cadastro-midialouca", element: <ProtectedRoute><CadastroMidia /></ProtectedRoute> },
-        { path: "cadastro-curioso", element: <ProtectedRoute><CadastroEspectador /></ProtectedRoute> },
-        { path: "setup-profile", element: <ProtectedRoute><SetupProfile /></ProtectedRoute> },
-        { path: "perfil", element: <ProtectedRoute><Perfil /></ProtectedRoute> },
-        { path: "cluster", element: <ProtectedRoute><ClusterPage /></ProtectedRoute> },
-      ]
-    },
-    
-    // Fallback - redirecionar para login se não logado, ou para hub se logado
-    { 
-      path: "*", 
-      element: user ? <Navigate to="/hub" replace /> : <Navigate to="/" replace /> 
-    },
-  ], { 
-    future: {
-      v7_relativeSplatPath: true
-    }
-  });
-
   return (
     <FirebaseErrorBoundary>
       <RouterProvider router={router} />
+      
       {/* Video Intro */}
       {showVideoIntro && (
-        <VideoIntro onComplete={handleVideoComplete} />
+        <Suspense fallback={<LoadingScreen />}>
+          <VideoIntro onComplete={handleVideoComplete} />
+        </Suspense>
       )}
 
-      {/* CNH Upload para admins */}
-      {showCNHUpload && (
-        <CNHUpload onComplete={handleCNHUploadComplete} userId={user?.uid || ''} />
+      {/* CNH Upload */}
+      {showCNHUpload && user?.uid && (
+        <Suspense fallback={<LoadingScreen />}>
+          <CNHUpload onComplete={handleCNHUploadComplete} userId={user.uid} />
+        </Suspense>
       )}
 
       {/* Desktop Warning */}
-      {!isMobile && !isTablet && (() => {
-        // Verificar se está tentando acessar um dashboard administrativo
-        const isAdminRoute = window.location.pathname === '/admin' || 
-                            window.location.pathname === '/dev' || 
-                            window.location.pathname === '/marketing' ||
-                            window.location.pathname === '/admin-painel' ||
-                            window.location.pathname === '/dashboard-evento';
-
-        // Verificar se está tentando acessar uma rota de usuário (mobile exclusivo)
-        const isUserRoute = window.location.pathname === '/home' ||
-                           window.location.pathname === '/hub' ||
-                           window.location.pathname === '/leaderboard' ||
-                           window.location.pathname === '/perfil' ||
-                           window.location.pathname === '/audiovisual' ||
-                           window.location.pathname === '/sobre' ||
-                           window.location.pathname === '/termos' ||
-                           window.location.pathname === '/links' ||
-                           window.location.pathname === '/cluster' ||
-                           window.location.pathname === '/selecao-cadastro' ||
-                           window.location.pathname === '/cadastro-atleta' ||
-                           window.location.pathname === '/cadastro-jurado' ||
-                           window.location.pathname === '/cadastro-midialouca' ||
-                           window.location.pathname === '/cadastro-curioso' ||
-                           window.location.pathname === '/setup-profile' ||
-                           window.location.pathname === '/audiovisual/form' ||
-                           window.location.pathname === '/audiovisual/payment' ||
-                           window.location.pathname === '/audiovisual/success' ||
-                           window.location.pathname === '/interbox/audiovisual/confirmacao' ||
-                           window.location.pathname === '/l/';
-
-        if (isAdminRoute) {
-          // Para rotas administrativas, mostrar versão que permite acesso
-          return <DesktopWarning allowAdminAccess={true} />;
-        } else if (isUserRoute) {
-          // Para rotas de usuário, mostrar aviso de acesso mobile exclusivo
-          return <DesktopWarning allowAdminAccess={false} />;
-        } else {
-          // Para outras rotas (como /login, /ref/, etc.), não mostrar aviso
-          return null;
-        }
-      })()}
+      <DesktopWarningHandler isMobile={isMobile} isTablet={isTablet} />
     </FirebaseErrorBoundary>
   );
-}
-
-function LinkRedirectWrapper() {
-  const { shortCode } = useParams();
-  return <LinkRedirect shortCode={shortCode || ''} />;
 }
 
 export default App;

@@ -5,7 +5,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 import { auth } from '../lib/firebase';
 
 // Componente de Loading Screen otimizado
-const LoadingScreen = ({ message = 'Conectando com NEØ...' }: { message?: string }) => (
+const LoadingScreen = ({ message = 'Conectando com CERRADØ INTERBOX...' }: { message?: string }) => (
   <div className="h-screen flex items-center justify-center bg-black text-white">
     <div className="text-center">
       <div className="relative">
@@ -48,7 +48,7 @@ const SuccessAlert = ({ message }: { message: string }) => (
 );
 
 export default function LoginPage() {
-  const { login, loading } = useAuth();
+  const { login, loading, forceLogout, debugAuthState } = useAuth();
   const [loginState, setLoginState] = useState<'idle' | 'redirect' | 'register' | 'access'>('idle');
   const [showError, setShowError] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -382,7 +382,23 @@ export default function LoginPage() {
             <p className="text-xs">Você será redirecionado para o Google e retornará automaticamente</p>
           </div>
 
-          {/* Botão de debug removido para produção */}
+          {/* Botões de debug temporários */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-4 space-y-2">
+              <button
+                onClick={debugAuthState}
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                🔍 Debug Auth State
+              </button>
+              <button
+                onClick={forceLogout}
+                className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                🚪 Force Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
