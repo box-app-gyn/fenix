@@ -28,7 +28,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">220 Times</h3>
               <p className="text-gray-600">
-                Competição acirrada entre os melhores times de CrossFit do Brasil e América Latina.
+              ᴄᴏᴍᴘᴇᴛɪçãᴏ. ᴄᴏᴍᴜɴɪᴅᴀᴅᴇ. ᴘʀᴏᴘóꜱɪᴛᴏ.
               </p>
             </div>
 

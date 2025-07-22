@@ -6,8 +6,6 @@ export default function HomeGamification() {
   const { user } = useAuth();
   const { leaderboard, loading } = useLeaderboard();
 
-  if (!user) return null;
-
   return (
     <div 
       className="max-w-4xl mx-auto space-y-6 relative"
@@ -36,6 +34,11 @@ export default function HomeGamification() {
           <p className="text-gray-300 text-lg">
             Veja quem está liderando o ranking
           </p>
+          {!user && (
+            <p className="text-pink-400 text-sm mt-2">
+              Faça login para participar e ganhar $BOX!
+            </p>
+          )}
         </motion.div>
 
         {/* Ranking */}
@@ -60,12 +63,12 @@ export default function HomeGamification() {
                   </div>
                 ))}
               </div>
-            ) : (
+            ) : leaderboard.length > 0 ? (
               leaderboard.slice(0, 5).map((entry, index) => (
                 <div
                   key={entry.id}
                   className={`flex items-center space-x-4 p-3 rounded-lg transition-all duration-300 ${
-                    entry.userId === user?.uid
+                    user && entry.userId === user?.uid
                       ? 'bg-pink-500/20 border border-pink-500/30'
                       : 'hover:bg-gray-800/50'
                   }`}
@@ -88,7 +91,57 @@ export default function HomeGamification() {
                   </div>
                 </div>
               ))
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-400 mb-2">Nenhum participante ainda</p>
+                <p className="text-gray-500 text-sm">Seja o primeiro a ganhar $BOX!</p>
+                {!user && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="mt-4 bg-gradient-to-r from-pink-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-pink-700 hover:to-purple-700 transition-all duration-200 font-medium"
+                  >
+                    Participar Agora
+                  </motion.button>
+                )}
+              </div>
             )}
+          </div>
+        </motion.div>
+
+        {/* Informações sobre tokens $BOX */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="bg-black/50 backdrop-blur-sm rounded-2xl p-6 border border-pink-500/20 max-w-2xl mx-auto mt-6"
+        >
+          <h3 className="text-xl font-bold text-white mb-4 text-center">💰 Como Ganhar $BOX</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center space-x-3">
+              <span className="text-pink-400 font-bold">+10</span>
+              <span className="text-gray-300">Cadastro</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-pink-400 font-bold">+50</span>
+              <span className="text-gray-300">Indicação</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-pink-400 font-bold">+100</span>
+              <span className="text-gray-300">Compra de Ingresso</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-pink-400 font-bold">+75</span>
+              <span className="text-gray-300">Envio de Conteúdo</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-pink-400 font-bold">+25</span>
+              <span className="text-gray-300">QR Code Evento</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <span className="text-pink-400 font-bold">+5</span>
+              <span className="text-gray-300">Login Diário</span>
+            </div>
           </div>
         </motion.div>
       </div>

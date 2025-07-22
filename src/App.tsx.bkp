@@ -1,0 +1,265 @@
+import { createBrowserRouter, RouterProvider, useParams, Navigate, Outlet, Routes, Route } from 'react-router-dom';
+import { useState, useEffect, Suspense, useCallback, useMemo } from 'react';
+import { lazy } from 'react';
+import { useAuth } from './hooks/useAuth';
+import { useMobile } from './hooks/useMobile';
+import { usePWA } from './hooks/usePWA';
+import { useOfflineGamification } from './utils/offlineGamification';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import { FirebaseErrorBoundary } from './components/FirebaseErrorBoundary';
+import LoadingScreen from './components/LoadingScreen';
+import ProtectedRoute from './components/ProtectedRoute';
+import { useRoleRedirect } from './hooks/useRoleRedirect';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import TestLogin from './pages/TestLogin';
+
+const LoginPage = lazy(() => import('./pages/Login'));
+const Home = lazy(() => import('./pages/index'));
+const GamifiedLeaderboard = lazy(() => import('./components/GamifiedLeaderboard'));
+const SobrePage = lazy(() => import('./pages/Sobre'));
+const Termos = lazy(() => import('./pages/Termos'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminPainel = lazy(() => import('./pages/AdminPainel'));
+const DashboardEvento = lazy(() => import('./pages/DashboardEvento'));
+const DevDashboard = lazy(() => import('./pages/DevDashboard'));
+const MarketingDashboard = lazy(() => import('./pages/MarketingDashboard'));
+const Audiovisual = lazy(() => import('./pages/Audiovisual'));
+const AudiovisualForm = lazy(() => import('./pages/audiovisual/form'));
+const AudiovisualPayment = lazy(() => import('./pages/audiovisual/payment'));
+const AudiovisualSuccess = lazy(() => import('./pages/audiovisual/success'));
+const LinkShortenerPage = lazy(() => import('./pages/LinkShortenerPage'));
+const LinkRedirect = lazy(() => import('./components/LinkRedirect'));
+const ReferralLanding = lazy(() => import('./pages/ReferralLanding'));
+const Perfil = lazy(() => import('./pages/Perfil'));
+const CadastroAtleta = lazy(() => import('./pages/CadastroAtleta'));
+const CadastroJurado = lazy(() => import('./pages/CadastroJurado'));
+const CadastroMidia = lazy(() => import('./pages/CadastroMidia'));
+const CadastroEspectador = lazy(() => import('./pages/CadastroEspectador'));
+const SetupProfile = lazy(() => import('./pages/SetupProfile'));
+const SelecaoTipoCadastro = lazy(() => import('./pages/SelecaoTipoCadastro'));
+const Hub = lazy(() => import('./pages/Hub'));
+
+const VideoIntro = lazy(() => import('./components/VideoIntro'));
+const PWAInstallPrompt = lazy(() => import('./components/PWAInstallPrompt'));
+const PWAUpdatePrompt = lazy(() => import('./components/PWAUpdatePrompt'));
+const CookieBanner = lazy(() => import('./components/CookieBanner'));
+const DesktopWarning = lazy(() => import('./components/DesktopWarning'));
+const CNHUpload = lazy(() => import('./components/CNHUpload'));
+
+interface OfflineStats {
+  pendingActions: number;
+  pendingGamification: number;
+  lastSync: number | null;
+}
+
+interface PWAConnectionStatus {
+  isOnline: boolean;
+  networkType: string;
+  effectiveType: string;
+  downlink: number;
+  rtt: number;
+}
+
+const PWAConnectionBar = ({ isOnline, offlineStats }: { isOnline: boolean; offlineStats: OfflineStats }) => {
+  const [connectionInfo, setConnectionInfo] = useState<PWAConnectionStatus>({
+    isOnline,
+    networkType: 'unknown',
+    effectiveType: 'unknown',
+    downlink: 0,
+    rtt: 0
+  });
+
+  useEffect(() => {
+    const updateConnectionInfo = () => {
+      const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+      setConnectionInfo({
+        isOnline: navigator.onLine,
+        networkType: connection?.type || 'unknown',
+        effectiveType: connection?.effectiveType || 'unknown',
+        downlink: connection?.downlink || 0,
+        rtt: connection?.rtt || 0
+      });
+    };
+
+    updateConnectionInfo();
+    window.addEventListener('online', updateConnectionInfo);
+    window.addEventListener('offline', updateConnectionInfo);
+    const connection = (navigator as any).connection;
+    if (connection) connection.addEventListener('change', updateConnectionInfo);
+
+    return () => {
+      window.removeEventListener('online', updateConnectionInfo);
+      window.removeEventListener('offline', updateConnectionInfo);
+      if (connection) connection.removeEventListener('change', updateConnectionInfo);
+    };
+  }, []);
+
+  if (!connectionInfo.isOnline) {
+    return (
+      <div className="fixed top-0 left-0 right-0 bg-orange-500 text-white text-center py-2 z-50 shadow">
+        📡 Modo offline – {offlineStats.pendingActions} ações pendentes
+      </div>
+    );
+  }
+
+  if (offlineStats.pendingActions > 0) {
+    return (
+      <div className="fixed top-0 left-0 right-0 bg-blue-600 text-white text-center py-2 z-50 shadow">
+        🔄 Sincronizando {offlineStats.pendingActions} ações offline...
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const LinkRedirectWrapper = () => {
+  const { shortCode } = useParams<{ shortCode: string }>();
+  if (!shortCode) return <Navigate to="/home" replace />;
+  return <LinkRedirect shortCode={shortCode} />;
+};
+
+const DesktopWarningHandler = ({ isMobile, isTablet }: { isMobile: boolean; isTablet: boolean }) => {
+  const currentPath = window.location.pathname;
+  const isAdmin = currentPath.startsWith('/admin') || currentPath.includes('painel');
+  const isUser = !isAdmin;
+
+  if (isMobile || isTablet) return null;
+
+  return (
+    <Suspense fallback={null}>
+      <DesktopWarning allowAdminAccess={isAdmin} />
+    </Suspense>
+  );
+};
+
+function App() {
+  const { user, loading } = useAuth();
+  const { isMobile, isTablet } = useMobile();
+  const [showVideoIntro, setShowVideoIntro] = useState(false);
+  const [showCNHUpload, setShowCNHUpload] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      setShowVideoIntro(false);
+      return;
+    }
+    const today = new Date().toDateString();
+    const lastVideoDate = localStorage.getItem('lastVideoDate');
+    setShowVideoIntro(lastVideoDate !== today);
+  }, [user]);
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      setShowCNHUpload(!localStorage.getItem('adminCNHUploaded'));
+    } else {
+      setShowCNHUpload(false);
+    }
+  }, [user?.role]);
+
+  const handleVideoComplete = useCallback(() => {
+    localStorage.setItem('lastVideoDate', new Date().toDateString());
+    setShowVideoIntro(false);
+  }, []);
+
+  const handleCNHUploadComplete = useCallback(() => {
+    localStorage.setItem('adminCNHUploaded', 'true');
+    setShowCNHUpload(false);
+  }, []);
+
+  const router = useMemo(() => {
+    return createBrowserRouter([
+      { path: "/login", element: <Suspense fallback={<LoadingScreen />}><LoginPage /></Suspense> },
+      { path: "/teste-login", element: <TestLogin /> },
+      { path: "/l/:shortCode", element: <Suspense fallback={<LoadingScreen />}><LinkRedirectWrapper /></Suspense> },
+      { path: "/ref/:referralCode", element: <Suspense fallback={<LoadingScreen />}><ReferralLanding /></Suspense> },
+      {
+        path: "/",
+        element: <MainLayout />,
+        children: [
+          { path: "", element: user ? <Navigate to="/home" replace /> : <Suspense fallback={<LoadingScreen />}><LoginPage /></Suspense> },
+          { path: "home", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><Home /></Suspense></ProtectedRoute> },
+          { path: "hub", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><Hub /></Suspense></ProtectedRoute> },
+          { path: "leaderboard", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><GamifiedLeaderboard /></Suspense></ProtectedRoute> },
+          { path: "sobre", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><SobrePage /></Suspense></ProtectedRoute> },
+          { path: "termos", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><Termos /></Suspense></ProtectedRoute> },
+          { path: "admin", element: <ProtectedRoute requireProfile requireAdmin><Suspense fallback={<LoadingScreen />}><AdminDashboard /></Suspense></ProtectedRoute> },
+          { path: "admin-painel", element: <ProtectedRoute requireProfile requireAdmin><Suspense fallback={<LoadingScreen />}><AdminPainel /></Suspense></ProtectedRoute> },
+          { path: "dashboard-evento", element: <ProtectedRoute requireProfile><Suspense fallback={<LoadingScreen />}><DashboardEvento /></Suspense></ProtectedRoute> },
+          { path: "dev", element: <ProtectedRoute requireProfile requireDev><Suspense fallback={<LoadingScreen />}><DevDashboard /></Suspense></ProtectedRoute> },
+          { path: "marketing", element: <ProtectedRoute requireProfile requireMarketing><Suspense fallback={<LoadingScreen />}><MarketingDashboard /></Suspense></ProtectedRoute> },
+          { path: "audiovisual", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><Audiovisual /></Suspense></ProtectedRoute> },
+          { path: "audiovisual/form", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><AudiovisualForm /></Suspense></ProtectedRoute> },
+          { path: "audiovisual/payment", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><AudiovisualPayment /></Suspense></ProtectedRoute> },
+          { path: "audiovisual/success", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><AudiovisualSuccess /></Suspense></ProtectedRoute> },
+          { path: "interbox/audiovisual/confirmacao", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><AudiovisualSuccess /></Suspense></ProtectedRoute> },
+          { path: "links", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><LinkShortenerPage /></Suspense></ProtectedRoute> },
+          { path: "selecao-cadastro", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><SelecaoTipoCadastro /></Suspense></ProtectedRoute> },
+          { path: "cadastro-atleta", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><CadastroAtleta /></Suspense></ProtectedRoute> },
+          { path: "cadastro-jurado", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><CadastroJurado /></Suspense></ProtectedRoute> },
+          { path: "cadastro-midialouca", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><CadastroMidia /></Suspense></ProtectedRoute> },
+          { path: "cadastro-curioso", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><CadastroEspectador /></Suspense></ProtectedRoute> },
+          { path: "setup-profile", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><SetupProfile /></Suspense></ProtectedRoute> },
+          { path: "perfil", element: <ProtectedRoute><Suspense fallback={<LoadingScreen />}><Perfil /></Suspense></ProtectedRoute> },
+        ]
+      },
+      { path: "*", element: <Navigate to="/" replace /> }
+    ]);
+  }, [user]);
+
+  if (loading) return <LoadingScreen />;
+
+  return (
+    <FirebaseErrorBoundary>
+      <RouterProvider router={router} />
+
+      {showVideoIntro && (
+        <Suspense fallback={<LoadingScreen />}>
+          <VideoIntro onComplete={handleVideoComplete} />
+        </Suspense>
+      )}
+
+      {showCNHUpload && user?.uid && (
+        <Suspense fallback={<LoadingScreen />}>
+          <CNHUpload onComplete={handleCNHUploadComplete} userId={user.uid} />
+        </Suspense>
+      )}
+
+      <DesktopWarningHandler isMobile={isMobile} isTablet={isTablet} />
+    </FirebaseErrorBoundary>
+  );
+}
+
+function MainLayout() {
+  useRoleRedirect();
+  const { isOnline } = usePWA();
+  const { getOfflineStats } = useOfflineGamification();
+  const [offlineStats, setOfflineStats] = useState<OfflineStats>({
+    pendingActions: 0,
+    pendingGamification: 0,
+    lastSync: null
+  });
+
+  useEffect(() => {
+    getOfflineStats().then(setOfflineStats).catch(() => {});
+  }, [getOfflineStats]);
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <PWAConnectionBar isOnline={isOnline} offlineStats={offlineStats} />
+      <Header />
+      <main className="flex-1 relative">
+        <Outlet />
+      </main>
+      <Footer />
+      <Suspense fallback={null}>
+        <PWAInstallPrompt />
+        <PWAUpdatePrompt />
+        <CookieBanner />
+      </Suspense>
+    </div>
+  );
+}
+
+export default App;

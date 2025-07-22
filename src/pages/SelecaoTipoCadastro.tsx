@@ -202,7 +202,7 @@ Bem-vindo ao CERRADØ INTERBOX 2025!`);
                             {tipo.titulo}
                           </h3>
                           <p className="text-gray-600 text-sm">
-                            {tipo.descricao}
+                            {tipo?.descricao ?? '—'}
                           </p>
                         </div>
                       </div>

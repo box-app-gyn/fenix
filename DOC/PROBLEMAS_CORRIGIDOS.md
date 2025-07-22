@@ -12,6 +12,7 @@ originar a apresentação de conteúdo não estilizado.
 **Causa:** A aplicação estava sendo renderizada antes das folhas de estilo CSS estarem completamente carregadas.
 
 **Solução Implementada:**
+
 - ✅ Melhorada função `waitForStylesheets()` com timeout e retry logic
 - ✅ Adicionado sistema de tentativas com limite máximo (5 segundos)
 - ✅ Implementado fallback para continuar mesmo com timeout
@@ -26,6 +27,7 @@ Error: Timeout ao verificar redirecionamento
 **Causa:** O timeout de 5 segundos era insuficiente para conexões mais lentas.
 
 **Solução Implementada:**
+
 - ✅ Aumentado timeout de 5 para 10 segundos
 - ✅ Melhorado tratamento de erros específicos
 - ✅ Removidos alerts intrusivos, substituídos por logs
@@ -39,6 +41,7 @@ Erro de mapa de fontes: Error: JSON.parse: unexpected character at line 1 column
 **Causa:** Source maps desabilitados em produção causavam problemas de debug.
 
 **Solução Implementada:**
+
 - ✅ Habilitado source maps em desenvolvimento
 - ✅ Configurado `devSourcemap: true` para CSS
 - ✅ Service worker configurado para ignorar arquivos `.map`

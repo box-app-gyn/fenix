@@ -137,7 +137,7 @@ export default function LinkRedirect({ shortCode }: LinkRedirectProps) {
                 {link?.title || 'Link Encurtado'}
               </h3>
               {link?.description && (
-                <p className="text-gray-400 text-sm mb-4">{link.description}</p>
+                <p className="text-gray-400 text-sm mb-4">{link?.description ?? '—'}</p>
               )}
               <p className="text-pink-400 text-sm break-all">
                 {link?.originalUrl}
@@ -174,7 +174,7 @@ export default function LinkRedirect({ shortCode }: LinkRedirectProps) {
             {link?.title || 'Link Encurtado'}
           </h2>
           {link?.description && (
-            <p className="text-gray-400 mb-4">{link.description}</p>
+            <p className="text-gray-400 mb-4">{link?.description ?? '—'}</p>
           )}
           <p className="text-pink-400 text-sm break-all mb-6">
             {link?.originalUrl}

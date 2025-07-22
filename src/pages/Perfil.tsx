@@ -441,7 +441,7 @@ export default function Perfil() {
       {/* Toast Messages */}
       {message && (
         <Toast
-          message={message.text}
+          message={message?.text ?? '—'}
           type={message.type}
           onClose={() => setMessage(null)}
         />
@@ -489,7 +489,7 @@ export default function Perfil() {
                     <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-500/30">
                       <span className="text-xl mr-2">{selectedCategory?.icon}</span>
                       <span className="text-sm font-medium text-white">
-                        {selectedCategory?.label}
+                        {selectedCategory?.label ?? '—'}
                       </span>
                     </div>
                   </div>
@@ -584,7 +584,7 @@ export default function Perfil() {
                       >
                         {CATEGORIAS.map(cat => (
                           <option key={cat.value} value={cat.value} className="bg-gray-800">
-                            {cat.icon} {cat.label}
+                            {cat?.icon ?? '—'} {cat?.label ?? '—'}
                           </option>
                         ))}
                       </select>

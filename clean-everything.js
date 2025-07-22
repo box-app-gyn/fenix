@@ -1,0 +1,1 @@
+javascript:(async()=>{const e=await caches.keys();await Promise.all(e.map(e=>caches.delete(e))),localStorage.clear(),sessionStorage.clear(),'databases'in indexedDB&&await Promise.all((await indexedDB.databases()).map(e=>indexedDB.deleteDatabase(e.name))),navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(r=>r.unregister())),console.log('🔥 Tudo limpo')})();

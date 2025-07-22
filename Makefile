@@ -18,7 +18,6 @@ CYAN = \033[0;36m
 WHITE = \033[1;37m
 NC = \033[0m # No Color
 
-# Comando padrão
 .DEFAULT_GOAL := help
 
 help: ## Mostra esta ajuda
@@ -30,7 +29,11 @@ help: ## Mostra esta ajuda
 	@echo "  make dev          # Inicia servidor de desenvolvimento"
 	@echo "  make build        # Gera build de produção"
 	@echo "  make deploy       # Faz deploy no Firebase"
-	@echo "  make clean        # Limpa arquivos temporários"
+
+use-node: ## Garante versão correta do Node
+	@echo "$(BLUE)Usando Node $(NODE_VERSION)...$(NC)"
+	@which volta >/dev/null 2>&1 && volta install node@$(NODE_VERSION) || true
+	@which nvm >/dev/null 2>&1 && . ~/.nvm/nvm.sh && nvm use $(NODE_VERSION) || true
 
 install: ## Instala dependências
 	@echo "$(BLUE)Instalando dependências...$(NC)"
@@ -46,6 +49,11 @@ build: ## Gera build de produção
 	@echo "$(BLUE)Gerando build de produção...$(NC)"
 	npm run build
 	@echo "$(GREEN)✓ Build gerado em dist/$(NC)"
+
+build-pwa: ## Gera apenas manifest e sw.js
+	@echo "$(BLUE)Buildando Service Worker e manifest...$(NC)"
+	npm run build
+	@echo "$(GREEN)✓ PWA gerado$(NC)"
 
 preview: ## Preview do build de produção
 	@echo "$(BLUE)Iniciando preview do build...$(NC)"
@@ -85,61 +93,44 @@ test: ## Executa testes
 	@echo "$(BLUE)Executando testes...$(NC)"
 	npm run test
 
-# Firebase
 firebase-setup: ## Configura Firebase
 	@echo "$(BLUE)Configurando Firebase...$(NC)"
-	@echo "$(YELLOW)1. Instalando Firebase CLI...$(NC)"
 	npm install -g firebase-tools
-	@echo "$(YELLOW)2. Faça login no Firebase:$(NC)"
 	@echo "   firebase login"
-	@echo "$(YELLOW)3. Inicialize o projeto:$(NC)"
 	@echo "   firebase init"
-	@echo "$(GREEN)✓ Configuração do Firebase concluída$(NC)"
+	@echo "$(GREEN)✓ Firebase configurado$(NC)"
 
 firebase-login: ## Login no Firebase
 	@echo "$(BLUE)Fazendo login no Firebase...$(NC)"
 	firebase login
-	@echo "$(GREEN)✓ Login realizado$(NC)"
 
 firebase-init: ## Inicializa projeto Firebase
 	@echo "$(BLUE)Inicializando projeto Firebase...$(NC)"
 	firebase init
-	@echo "$(GREEN)✓ Projeto Firebase inicializado$(NC)"
 
 # Google Cloud Workstations
 workstation-setup: ## Configura Google Cloud Workstations
 	@echo "$(BLUE)Configurando Google Cloud Workstations...$(NC)"
-	@echo "$(YELLOW)1. Instalando Google Cloud CLI...$(NC)"
 	@echo "   curl https://sdk.cloud.google.com | bash"
-	@echo "$(YELLOW)2. Faça login:$(NC)"
 	@echo "   gcloud auth login"
-	@echo "$(YELLOW)3. Configure o projeto:$(NC)"
 	@echo "   gcloud config set project interbox-app-8d400"
-	@echo "$(YELLOW)4. Crie o cluster:$(NC)"
 	@echo "   gcloud workstations clusters create app-fenix-cluster --region=us-central1"
-	@echo "$(YELLOW)5. Crie a configuração:$(NC)"
 	@echo "   gcloud workstations configs create app-fenix-config --cluster=app-fenix-cluster --region=us-central1 --machine-type=e2-standard-4 --container-predefined-image=codeoss"
-	@echo "$(GREEN)✓ Workstations configurado$(NC)"
 
 workstation-start: ## Inicia workstation
 	@echo "$(BLUE)Iniciando workstation...$(NC)"
 	gcloud workstations start app-fenix-dev --cluster=app-fenix-cluster --config=app-fenix-config --region=us-central1
-	@echo "$(GREEN)✓ Workstation iniciada$(NC)"
 
 workstation-tunnel: ## Abre túnel TCP para workstation
 	@echo "$(BLUE)Abrindo túnel TCP para porta $(PORT)...$(NC)"
 	gcloud workstations start-tcp-tunnel app-fenix-dev --cluster=app-fenix-cluster --config=app-fenix-config --region=us-central1 $(PORT) --local-host-port=localhost:$(PORT)
-	@echo "$(GREEN)✓ Túnel aberto$(NC)"
 
-# Desenvolvimento
 dev-setup: install firebase-setup ## Setup completo do ambiente de desenvolvimento
 	@echo "$(GREEN)✓ Ambiente de desenvolvimento configurado$(NC)"
 
-# Produção
 prod-setup: install build deploy ## Setup completo para produção
 	@echo "$(GREEN)✓ Aplicação em produção$(NC)"
 
-# Utilitários
 check-deps: ## Verifica dependências desatualizadas
 	@echo "$(BLUE)Verificando dependências...$(NC)"
 	npm outdated
@@ -156,7 +147,6 @@ audit-fix: ## Corrige vulnerabilidades de segurança
 	@echo "$(BLUE)Corrigindo vulnerabilidades...$(NC)"
 	npm audit fix
 
-# Git
 git-status: ## Status do Git
 	@echo "$(BLUE)Status do Git:$(NC)"
 	git status
@@ -170,7 +160,6 @@ git-push: ## Push para repositório
 	@echo "$(BLUE)Fazendo push...$(NC)"
 	git push
 
-# Monitoramento
 check-ports: ## Verifica portas em uso
 	@echo "$(BLUE)Portas em uso:$(NC)"
 	lsof -i :$(PORT) || echo "$(YELLOW)Nenhum processo na porta $(PORT)$(NC)"
@@ -181,51 +170,35 @@ kill-port: ## Mata processo na porta especificada
 
 # Email System
 email-setup: ## Configura sistema de email
-	@echo "$(BLUE)Configurando sistema de email...$(NC)"
 	node functions/scripts/setup-email.js
-	@echo "$(GREEN)✓ Sistema de email configurado$(NC)"
 
 email-test: ## Testa sistema de email
-	@echo "$(BLUE)Testando sistema de email...$(NC)"
 	cd functions && npm run test:email
-	@echo "$(GREEN)✓ Teste de email concluído$(NC)"
 
 email-deploy: ## Deploy das funções de email
-	@echo "$(BLUE)Fazendo deploy das funções de email...$(NC)"
 	firebase deploy --only functions:enviaEmailConfirmacaoFunction,functions:enviaEmailBoasVindasFunction,functions:enviaEmailNotificacaoFunction
-	@echo "$(GREEN)✓ Funções de email deployadas$(NC)"
 
 email-logs: ## Verifica logs do sistema de email
-	@echo "$(BLUE)Verificando logs do sistema de email...$(NC)"
 	firebase functions:log --only enviaEmailConfirmacaoFunction,enviaEmailBoasVindasFunction,enviaEmailNotificacaoFunction
-	@echo "$(GREEN)✓ Logs verificados$(NC)"
 
 email-health: ## Verifica saúde do sistema de email
-	@echo "$(BLUE)Verificando saúde do sistema de email...$(NC)"
 	cd functions && npm run test:email:health
-	@echo "$(GREEN)✓ Saúde do sistema verificada$(NC)"
 
-# Backup
 backup: ## Cria backup dos arquivos importantes
-	@echo "$(BLUE)Criando backup...$(NC)"
 	@mkdir -p backup/$(shell date +%Y%m%d_%H%M%S)
 	@cp -r src/ backup/$(shell date +%Y%m%d_%H%M%S)/
 	@cp package.json backup/$(shell date +%Y%m%d_%H%M%S)/
 	@cp vite.config.ts backup/$(shell date +%Y%m%d_%H%M%S)/
-	@echo "$(GREEN)✓ Backup criado$(NC)"
 
-# Informações
 info: ## Mostra informações do projeto
 	@echo "$(CYAN)=== App Fenix - Informações ===$(NC)"
-	@echo "$(BLUE)Projeto:$(NC) $(PROJECT_NAME)"
-	@echo "$(BLUE)Node.js:$(NC) $(shell node --version)"
-	@echo "$(BLUE)NPM:$(NC) $(shell npm --version)"
-	@echo "$(BLUE)Porta padrão:$(NC) $(PORT)"
-	@echo "$(BLUE)Diretório:$(NC) $(shell pwd)"
-	@echo "$(BLUE)Branch Git:$(NC) $(shell git branch --show-current 2>/dev/null || echo 'N/A')"
-	@echo "$(CYAN)==============================$(NC)"
+	@echo "Projeto: $(PROJECT_NAME)"
+	@echo "Node.js: $(shell node --version)"
+	@echo "NPM: $(shell npm --version)"
+	@echo "Porta padrão: $(PORT)"
+	@echo "Diretório: $(shell pwd)"
+	@echo "Branch Git: $(shell git branch --show-current 2>/dev/null || echo 'N/A')"
 
-# Comandos de emergência
 emergency-stop: ## Para todos os processos relacionados
 	@echo "$(RED)Parando todos os processos...$(NC)"
 	pkill -f "vite" || true
@@ -233,4 +206,21 @@ emergency-stop: ## Para todos os processos relacionados
 	@echo "$(GREEN)✓ Processos parados$(NC)"
 
 reset: clean emergency-stop ## Reset completo (limpa tudo e para processos)
-	@echo "$(GREEN)✓ Reset completo realizado$(NC)" 
+	@echo "$(GREEN)✓ Reset completo realizado$(NC)"
+
+restart: reset install dev ## Reset + instalação + dev
+	@echo "$(GREEN)✓ Ambiente reiniciado$(NC)"
+
+purge-cache: ## Limpa SW, caches e localStorage (Console)
+	@echo "$(RED)Cole no Console do navegador:$(NC)"
+	@echo "caches.keys().then(k => k.forEach(c => caches.delete(c)));"
+	@echo "navigator.serviceWorker.getRegistrations().then(r => r.forEach(reg => reg.unregister()));"
+	@echo "localStorage.clear(); sessionStorage.clear(); indexedDB.deleteDatabase('firebaseLocalStorageDb');"
+
+diagnostics: ## Diagnóstico do ambiente
+	@echo "$(CYAN)--- Diagnóstico do ambiente ---$(NC)"
+	@echo "Node: $(shell node --version)"
+	@echo "NPM: $(shell npm --version)"
+	@echo "Firebase CLI: $(shell firebase --version || echo '❌ Não instalado')"
+	@echo "Porta em uso? $(shell lsof -ti:$(PORT) || echo '✅ Livre')"
+	@echo "Service Worker ativo? $(shell grep -irl sw.js ./dist || echo '❌ Não encontrado')"

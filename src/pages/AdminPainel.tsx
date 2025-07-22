@@ -113,7 +113,7 @@ export default function AdminPainel() {
           <select value={filter} onChange={(e) => setFilter(e.target.value)} className="border rounded px-2 py-1">
             <option value="">Todos</option>
             {Object.entries(USER_TYPES).map(([k, v]) => (
-              <option key={k} value={k}>{v.label}</option>
+              <option key={k} value={k}>{v?.label ?? '—'}</option>
             ))}
           </select>
         </div>
@@ -145,11 +145,11 @@ export default function AdminPainel() {
                     {editingId === u.uid ? (
                       <select value={editData.role || u.role} onChange={(e) => setEditData((ed) => ({ ...ed, role: e.target.value as UserRole }))} className="border rounded px-1">
                         {Object.entries(USER_TYPES).map(([k, v]) => (
-                          <option key={k} value={k}>{v.label}</option>
+                          <option key={k} value={k}>{v?.label ?? '—'}</option>
                         ))}
                       </select>
                     ) : (
-                      <span className="px-2 py-1 rounded" style={{ background: USER_TYPES[u.role]?.color + '30', color: USER_TYPES[u.role]?.color }}>{USER_TYPES[u.role]?.icon} {USER_TYPES[u.role]?.label}</span>
+                      <span className="px-2 py-1 rounded" style={{ background: USER_TYPES[u.role]?.color + '30', color: USER_TYPES[u.role]?.color }}>{USER_TYPES[u.role]?.icon ?? '—'} {USER_TYPES[u.role]?.label ?? '—'}</span>
                     )}
                   </td>
                   <td className="py-2 px-2">

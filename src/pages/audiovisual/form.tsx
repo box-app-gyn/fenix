@@ -391,7 +391,7 @@ export default function AudiovisualFormPage() {
                     >
                       {AREA_ATUACAO_OPTIONS.map((option) => (
                         <option key={option.value} value={option.value}>
-                          {option.label} - {option.description}
+                          {option?.label ?? '—'} - {option.description}
                         </option>
                       ))}
                     </select>

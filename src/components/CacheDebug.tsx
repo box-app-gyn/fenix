@@ -145,7 +145,7 @@ export default function CacheDebug() {
               <li key={`cache-${index}`} className="text-red-200">• Cache: {issue}</li>
             ))}
             {loadIssues.issues?.map((issue: LoadIssue, index: number) => (
-              <li key={`load-${index}`} className="text-red-200">• {issue.type}: {issue.message}</li>
+              <li key={`load-${index}`} className="text-red-200">• {issue.type}: {issue?.message ?? '—'}</li>
             ))}
             {specificIssues.quirksMode && (
               <li className="text-red-200">• Modo Quirks ativo</li>

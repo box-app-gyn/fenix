@@ -5,6 +5,7 @@
 O projeto foi migrado para o novo backend principal `interbox-box-app25` com as seguintes atualizações:
 
 ### ✅ **Configurações Atualizadas**
+
 - ✅ Projeto Firebase: `interbox-box-app25`
 - ✅ Auth Domain: `interbox-box-app25.firebaseapp.com`
 - ✅ Storage Bucket: `interbox-box-app25.appspot.com`
@@ -12,6 +13,7 @@ O projeto foi migrado para o novo backend principal `interbox-box-app25` com as 
 - ✅ Firebase Analytics integrado
 
 ### 🔧 **Arquivos Modificados**
+
 - ✅ `src/lib/firebase.ts` - Configuração atualizada
 - ✅ `src/vite-env.d.ts` - Tipos para measurementId
 - ✅ `.firebaserc` - Projeto padrão atualizado
@@ -20,6 +22,7 @@ O projeto foi migrado para o novo backend principal `interbox-box-app25` com as 
 ## 🚀 **PRÓXIMOS PASSOS**
 
 ### 1. **Configurar Firebase Console**
+
 ```bash
 # Acesse: https://console.firebase.google.com/
 # Projeto: interbox-box-app25

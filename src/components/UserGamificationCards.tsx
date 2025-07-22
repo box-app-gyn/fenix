@@ -116,7 +116,7 @@ export default function UserGamificationCards() {
                     {challenge.title}
                   </h4>
                   <p className="text-gray-400 text-xs">
-                    {challenge.description}
+                    {challenge?.description ?? '—'}
                   </p>
                 </div>
                 <div className="text-right">

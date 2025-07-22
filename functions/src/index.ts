@@ -28,38 +28,35 @@ export const testFunction = functions.https.onCall(async (data, context: any) =>
 });
 
 // Função para criar inscrição de time
-export const criarInscricaoTime = functions.https.onCall(async (data: any, context: any) => {
+
+export const criarInscricaoTime = functions.https.onRequest(async (req, res) => {
   try {
-    if (!context?.auth) {
-      throw new Error('Usuário não autenticado');
+    const { userId, timeData } = req.body
+
+    if (!userId || !timeData) {
+      res.status(400).json({ success: false, msg: 'Dados incompletos' })
+      return
     }
 
-    const { userId, timeData } = data;
-
-    // Verificar se o usuário é o dono da inscrição
-    if (context.auth.uid !== userId) {
-      throw new Error('Usuário não autorizado');
-    }
-
-    // Criar inscrição do time
     const inscricaoRef = await db.collection('inscricoes_times').add({
       userId,
       ...timeData,
       status: 'pending',
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    })
 
     console.log('Inscrição de time criada:', {
       inscricaoId: inscricaoRef.id,
       categoria: timeData.categoria,
-    });
-    return { success: true, inscricaoId: inscricaoRef.id };
+    })
+
+    res.status(200).json({ success: true, inscricaoId: inscricaoRef.id })
   } catch (error) {
-    console.error('Erro ao criar inscrição de time:', error);
-    throw error;
+    console.error('Erro ao criar inscrição de time:', error)
+    res.status(500).json({ success: false, msg: 'Erro interno' })
   }
-});
+})
 
 // Função para validar audiovisual
 export const validaAudiovisual = functions.https.onCall(async (data: any, context: any) => {

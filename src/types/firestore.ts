@@ -1,5 +1,6 @@
 import { Timestamp as FirebaseTimestamp } from 'firebase/firestore';
 
+
 // ============================================================================
 // TIPOS BASE E ENUMS
 // ============================================================================
@@ -498,6 +499,7 @@ export interface FirestoreAdminLog {
 // ============================================================================
 
 // Coleção: gamification_actions
+
 export interface FirestoreGamificationAction {
   id: string;
   userId: string;

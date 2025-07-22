@@ -139,7 +139,7 @@ export default function Hub() {
                             {item.title}
                           </h2>
                           <p className="text-white/90 text-sm">
-                            {item.description}
+                            {item?.description ?? '—'}
                           </p>
                         </div>
                       </div>
@@ -161,7 +161,7 @@ export default function Hub() {
                           {item.title}
                         </h2>
                         <p className="text-white/90 text-sm">
-                          {item.description}
+                          {item?.description ?? '—'}
                         </p>
                         <div className="mt-2">
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/20 text-white">

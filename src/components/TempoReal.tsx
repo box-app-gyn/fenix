@@ -369,7 +369,7 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
             }`}>
               {ingressosInfo.subtitle}
             </p>
-            <p className="text-xs text-gray-500">{ingressosInfo.description}</p>
+            <p className="text-xs text-gray-500">{ingressosInfo?.description ?? '—'}</p>
 
             {/* Contagem regressiva detalhada */}
             {getIngressosStatus() === 'em_breve' && countdown.days > 0 && (
@@ -464,7 +464,7 @@ const TempoReal: React.FC<TempoRealProps> = ({ isPublic = false }) => {
             </h3>
             <p className="text-gray-400 mb-6">
               {isIngressosDisponiveis()
-                ? `🔥 ${getIngressosText().description.split(' vagas')[0].split('🔥 ')[1]} vagas restantes! Próximo lote será R$ ${getIngressosText().description.split('R$ ')[1].split(' ')[0]}`
+                ? `🔥 ${getIngressosText()?.description.split(' vagas')[0].split('🔥 ')[1]} vagas restantes! Próximo lote será R$ ${getIngressosText()?.description.split('R$ ')[1].split(' ')[0]}`
                 : 'Entre na comunidade oficial e receba notificações em primeira mão.'
               }
             </p>

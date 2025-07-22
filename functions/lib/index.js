@@ -18,13 +18,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.enviarEmailBoasVindas = exports.openpixWebhook = exports.validaAudiovisual = exports.criarInscricaoTime = exports.testFunction = void 0;
 const functions = __importStar(require("firebase-functions"));
@@ -50,27 +60,23 @@ exports.testFunction = functions.https.onCall(async (data, context) => {
     }
 });
 // Função para criar inscrição de time
-exports.criarInscricaoTime = functions.https.onCall(async (data, context) => {
+exports.criarInscricaoTime = functions.https.onRequest(async (req, res) => {
     try {
-        if (!(context === null || context === void 0 ? void 0 : context.auth)) {
-            throw new Error('Usuário não autenticado');
+        const { userId, timeData } = req.body;
+        if (!userId || !timeData) {
+            res.status(400).json({ success: false, msg: 'Dados incompletos' });
+            return;
         }
-        const { userId, timeData } = data;
-        // Verificar se o usuário é o dono da inscrição
-        if (context.auth.uid !== userId) {
-            throw new Error('Usuário não autorizado');
-        }
-        // Criar inscrição do time
         const inscricaoRef = await firebase_admin_1.db.collection('inscricoes_times').add(Object.assign(Object.assign({ userId }, timeData), { status: 'pending', createdAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp(), updatedAt: firebase_admin_1.admin.firestore.FieldValue.serverTimestamp() }));
         console.log('Inscrição de time criada:', {
             inscricaoId: inscricaoRef.id,
             categoria: timeData.categoria,
         });
-        return { success: true, inscricaoId: inscricaoRef.id };
+        res.status(200).json({ success: true, inscricaoId: inscricaoRef.id });
     }
     catch (error) {
         console.error('Erro ao criar inscrição de time:', error);
-        throw error;
+        res.status(500).json({ success: false, msg: 'Erro interno' });
     }
 });
 // Função para validar audiovisual

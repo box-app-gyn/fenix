@@ -169,7 +169,7 @@ export default function InitialLinkCreator({ className = '' }: InitialLinkCreato
           <div>
             <label className="block text-white font-medium mb-2">Descrição</label>
             <textarea
-              value={customLink.description}
+              value={customLink?.description ?? '—'}
               onChange={(e) => setCustomLink({ ...customLink, description: e.target.value })}
               placeholder="Descrição do link"
               rows={3}

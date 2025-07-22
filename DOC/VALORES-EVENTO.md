@@ -55,6 +55,7 @@
 *Pode aumentar para 60 times dependendo da procura
 
 ## 🎬 **Audiovisual**
+
 - **Valor:** R$ 29,90
 - **Processo:** 
   1. Cadastro de interessados
@@ -64,6 +65,7 @@
 ## 📊 **Estrutura de Dados Atualizada**
 
 ### **Interface de Inscrição:**
+
 ```typescript
 interface InscricaoTime {
   timeId: string;

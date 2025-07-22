@@ -4,10 +4,7 @@ export declare const testFunction: functions.https.CallableFunction<any, Promise
     message: string;
     userId: any;
 }>, unknown>;
-export declare const criarInscricaoTime: functions.https.CallableFunction<any, Promise<{
-    success: boolean;
-    inscricaoId: string;
-}>, unknown>;
+export declare const criarInscricaoTime: functions.https.HttpsFunction;
 export declare const validaAudiovisual: functions.https.CallableFunction<any, Promise<{
     success: boolean;
     audiovisualId: any;

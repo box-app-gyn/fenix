@@ -33,6 +33,7 @@ export const useRoleRedirect = () => {
         });
         return;
       }
+      setIsRedirecting(true); 
 
               // Se estamos na página de login e já temos usuário, redirecionar para /home
         if (location.pathname === '/login') {

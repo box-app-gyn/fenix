@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+
 interface OptimizedImageProps {
   src: string;
   alt: string;

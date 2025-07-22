@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Favicon - CERRADØ INTERBOX 2025</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#ec4899" />
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .favicon-test {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .favicon-preview {
+            width: 32px;
+            height: 32px;
+            border: 2px solid white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .success { background: #10b981; }
+        .error { background: #ef4444; }
+        .warning { background: #f59e0b; }
+        .checklist {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .checklist h3 {
+            margin-top: 0;
+        }
+        .checklist ul {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .checklist li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Teste de Favicon - CERRADØ INTERBOX 2025</h1>
+        
+        <div class="checklist">
+            <h3>✅ Checklist de Favicon</h3>
+            <ul>
+                <li>favicon.ico (32x32) - Formato ICO padrão</li>
+                <li>favicon-16x16.png - Para resoluções menores</li>
+                <li>favicon-32x32.png - Para resoluções padrão</li>
+                <li>apple-touch-icon.png (180x180) - Para dispositivos Apple</li>
+                <li>manifest.json - Para PWA</li>
+                <li>Meta tags corretas no HTML</li>
+            </ul>
+        </div>
+
+        <div class="favicon-test">
+            <div class="favicon-preview">
+                <img src="/favicon.ico" alt="Favicon" width="24" height="24" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; color: #666;">❌</span>
+            </div>
+            <div>
+                <strong>favicon.ico</strong><br>
+                <span class="status success">✅ Carregado</span>
+            </div>
+        </div>
+
+        <div class="favicon-test">
+            <div class="favicon-preview">
+                <img src="/favicon-32x32.png" alt="Favicon 32x32" width="24" height="24" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; color: #666;">❌</span>
+            </div>
+            <div>
+                <strong>favicon-32x32.png</strong><br>
+                <span class="status warning">⚠️ Opcional</span>
+            </div>
+        </div>
+
+        <div class="favicon-test">
+            <div class="favicon-preview">
+                <img src="/favicon-16x16.png" alt="Favicon 16x16" width="24" height="24" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; color: #666;">❌</span>
+            </div>
+            <div>
+                <strong>favicon-16x16.png</strong><br>
+                <span class="status warning">⚠️ Opcional</span>
+            </div>
+        </div>
+
+        <div class="favicon-test">
+            <div class="favicon-preview">
+                <img src="/apple-touch-icon.png" alt="Apple Touch Icon" width="24" height="24" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                <span style="display:none; color: #666;">❌</span>
+            </div>
+            <div>
+                <strong>apple-touch-icon.png</strong><br>
+                <span class="status warning">⚠️ Opcional</span>
+            </div>
+        </div>
+
+        <div class="checklist">
+            <h3>🔧 Como verificar se está funcionando:</h3>
+            <ul>
+                <li>Verifique se o ícone aparece na aba do navegador</li>
+                <li>Teste em diferentes navegadores (Chrome, Firefox, Safari)</li>
+                <li>Verifique em dispositivos móveis</li>
+                <li>Teste o modo PWA (Add to Home Screen)</li>
+                <li>Verifique se aparece nos favoritos</li>
+                <li>Teste em diferentes resoluções de tela</li>
+            </ul>
+        </div>
+
+        <div class="checklist">
+            <h3>📱 Teste PWA</h3>
+            <ul>
+                <li>Abra o DevTools (F12)</li>
+                <li>Vá para a aba "Application"</li>
+                <li>Verifique se o manifest.json está carregado</li>
+                <li>Teste "Add to Home Screen"</li>
+                <li>Verifique se o ícone aparece na tela inicial</li>
+            </ul>
+        </div>
+
+        <script>
+            // Verificar se os favicons estão carregando
+            window.addEventListener('load', function() {
+                console.log('🔍 Verificando favicons...');
+                
+                // Testar carregamento do favicon principal
+                const favicon = new Image();
+                favicon.onload = function() {
+                    console.log('✅ favicon.ico carregado com sucesso');
+                };
+                favicon.onerror = function() {
+                    console.error('❌ Erro ao carregar favicon.ico');
+                };
+                favicon.src = '/favicon.ico';
+                
+                // Verificar se o manifest está acessível
+                fetch('/manifest.json')
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('✅ manifest.json acessível');
+                            return response.json();
+                        } else {
+                            throw new Error('Manifest não encontrado');
+                        }
+                    })
+                    .then(manifest => {
+                        console.log('📱 Manifest carregado:', manifest);
+                    })
+                    .catch(error => {
+                        console.error('❌ Erro ao carregar manifest:', error);
+                    });
+            });
+        </script>
+    </div>
+</body>
+</html> 

@@ -3,6 +3,7 @@
 ## 🏠 Páginas Principais
 
 ### `/` - Página Inicial (HomePage)
+
 - **Hero**: Seção principal com chamada para ação
 - **TempoReal**: Dados em tempo real do evento
 - **GamifiedLeaderboard**: Ranking gamificado
@@ -10,11 +11,13 @@
 - **Sobre**: Informações sobre o projeto
 
 ### `/hub` - Hub Principal
+
 - Dashboard com cards de navegação
 - Links para todas as funcionalidades principais
 - Interface centralizada
 
 ### `/tempo-real` - Tempo Real
+
 - Dados em tempo real do Firestore
 - Contagem regressiva para ingressos
 - Estatísticas do evento
@@ -116,7 +119,7 @@
 
 ## 🔗 Links Úteis
 
-- **Firebase Console**: https://console.firebase.google.com/
-- **Documentação Firebase**: https://firebase.google.com/docs
-- **Vite Docs**: https://vitejs.dev/
-- **Tailwind CSS**: https://tailwindcss.com/ 
+- **Firebase Console**: <https://console.firebase.google.com/>
+- **Documentação Firebase**: <https://firebase.google.com/docs>
+- **Vite Docs**: <https://vitejs.dev/>
+- **Tailwind CSS**: <https://tailwindcss.com/>

@@ -50,9 +50,11 @@ switch (data?.categoria) {
 ## 📱 Rotas Configuradas
 
 ### Rotas Públicas (Não Logado)
+
 - `/login` → Página de login
 
 ### Rotas Protegidas (Logado)
+
 - `/` → Redireciona para `/home`
 - `/home` → Página principal
 - `/selecao-cadastro` → Seleção de tipo de cadastro
@@ -71,6 +73,7 @@ switch (data?.categoria) {
 ## 🔒 Proteção de Rotas
 
 ### Componente `ProtectedRoute`
+
 - **Função**: Protege rotas que requerem autenticação
 - **Ajuste**: Não interfere mais com o fluxo do `useRoleRedirect`
 - **Logs**: Adicionados para debug
@@ -78,6 +81,7 @@ switch (data?.categoria) {
 ## 📊 Logs de Debug
 
 ### Hook useRoleRedirect
+
 ```
 🔄 useRoleRedirect: Aguardando usuário ou loading...
 🎯 useRoleRedirect: Verificando perfil do usuário...

@@ -143,10 +143,10 @@ export default function PerfilEspectador() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex items-center gap-4">
           <span className="text-3xl" style={{ color: USER_TYPE.color }}>{USER_TYPE.icon}</span>
-          <h1 className="text-3xl font-bold text-gray-900">Perfil {USER_TYPE.label}</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Perfil {USER_TYPE?.label ?? '—'}</h1>
         </div>
         {message && (
-          <div className={`mb-6 p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}`}>{message.text}</div>
+          <div className={`mb-6 p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'}`}>{message?.text ?? '—'}</div>
         )}
         <div className="bg-white shadow rounded-lg">
           <div className="px-6 py-8">

@@ -1,3 +1,4 @@
+import Header from '../components/Header'
 import Hero from '../components/Hero'
 import Comunidade from '../components/Comunidade'
 import TempoReal from '../components/TempoReal'
@@ -35,21 +36,25 @@ export default function Home() {
         <link rel="canonical" href="https://cerradointerbox.com.br" />
       </head>
 
-      <div>
-        <LinhaDelicada />
-        <Hero />
-        <LinhaDelicada />
-        <Comunidade />
-        <LinhaDelicada />
-        <TempoReal isPublic={true} />
-        <LinhaDelicada />
-        <HomeGamification />
-        <LinhaDelicada />
-        <ReferralLinkGenerator />
-        <LinhaDelicada />
-        <Parceiros />
-        <LinhaDelicada />
-        <CallToAction />
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
+        <Header />
+        
+        <main className="pt-20">
+          <LinhaDelicada />
+          <Hero />
+          <LinhaDelicada />
+          <Comunidade />
+          <LinhaDelicada />
+          <TempoReal isPublic={true} />
+          <LinhaDelicada />
+          <HomeGamification />
+          <LinhaDelicada />
+          <ReferralLinkGenerator />
+          <LinhaDelicada />
+          <Parceiros />
+          <LinhaDelicada />
+          <CallToAction />
+        </main>
       </div>
     </>
   )

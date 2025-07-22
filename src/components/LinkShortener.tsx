@@ -203,7 +203,7 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
             <div>
               <label className="block text-white font-medium mb-2">Descrição</label>
               <textarea
-                value={formData.description}
+                value={formData?.description ?? '—'}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Descrição do link"
                 rows={3}
@@ -400,7 +400,7 @@ export default function LinkShortener({ className = '' }: LinkShortenerProps) {
                 <div className="mt-4">
                   <label className="block text-white font-medium mb-2">Descrição</label>
                   <textarea
-                    value={editData.description || link.description || ''}
+                    value={editData?.description || link.description || ''}
                     onChange={(e) => setEditData({ ...editData, description: e.target.value })}
                     rows={2}
                     className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-pink-500"
