@@ -124,7 +124,6 @@
     }
   ],
   "display_override": ["standalone", "minimal-ui", "browser"],
-  "prefer_related_applications": false,
   "iarc_rating_id": "",
   "share_target": {
     "action": "/share",

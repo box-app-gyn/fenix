@@ -29,18 +29,15 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         skipWaiting: true,
         clientsClaim: true,
-        disableDevLogs: true, // Desabilitar logs de desenvolvimento
-        cleanupOutdatedCaches: true, // Limpar caches antigos
+        disableDevLogs: true,
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/(firebase|identitytoolkit|securetoken|accounts|apis)\.googleapis\.com/,
             handler: 'NetworkOnly',
             options: {
               cacheName: 'firebase-auth',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 3600,
-              },
+              expiration: { maxEntries: 10, maxAgeSeconds: 3600 },
             },
           },
           {
@@ -48,10 +45,7 @@ export default defineConfig(({ mode }) => ({
             handler: 'CacheFirst',
             options: {
               cacheName: 'google-fonts',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 ano
-              },
+              expiration: { maxEntries: 10, maxAgeSeconds: 31536000 },
             },
           },
           {
@@ -59,10 +53,7 @@ export default defineConfig(({ mode }) => ({
             handler: 'CacheFirst',
             options: {
               cacheName: 'google-fonts-static',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 ano
-              },
+              expiration: { maxEntries: 10, maxAgeSeconds: 31536000 },
             },
           },
         ],
@@ -84,18 +75,8 @@ export default defineConfig(({ mode }) => ({
           { src: 'favicon-16x16.png', sizes: '16x16', type: 'image/png' },
           { src: 'favicon-32x32.png', sizes: '32x32', type: 'image/png' },
           { src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-          {
-            src: 'logos/logo_circulo.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable',
-          },
-          {
-            src: 'logos/logo_circulo.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
-          },
+          { src: 'logos/logo_circulo.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+          { src: 'logos/logo_circulo.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
         ],
         shortcuts: [
           {
@@ -124,12 +105,13 @@ export default defineConfig(({ mode }) => ({
     }),
   ],
   server: {
-    host: '0.0.0.0',
-    port: 3002,
-    open: true,
-    hmr: {
-      overlay: true,
-      port: 3002,
+    port: 5173,
+    headers: {
+      'Content-Security-Policy': "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;",
+    },
+    proxy: {
+      '/api': { target: 'http://localhost:3001', changeOrigin: true },
+      '/payment': { target: 'http://localhost:3002', changeOrigin: true },
     },
   },
   build: {
@@ -155,7 +137,6 @@ export default defineConfig(({ mode }) => ({
     },
     chunkSizeWarningLimit: 1500,
   },
-  // Configuração específica para Service Worker
   define: {
     __SW_VERSION__: JSON.stringify(Date.now()),
   },

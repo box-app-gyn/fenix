@@ -1,0 +1,488 @@
+.
+├── .DS_Store
+├── .env
+├── .eslintrc.json
+├── .firebase
+│   └── hosting.ZGlzdA.cache
+├── .firebaserc
+├── .gitignore
+├── .prettierrc
+├── auth-export.json
+├── auth-service
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── README.md
+│   ├── src
+│   │   ├── index.ts
+│   │   ├── middleware
+│   │   ├── routes
+│   │   │   └── verifyToken.ts
+│   │   └── utils
+│   └── tsconfig.json
+├── backup_sw
+├── backup-firestore.js
+├── backup-remove-sw.sh
+├── backups
+│   ├── build_20250719_130652
+│   │   └── sw.js
+│   ├── build_20250719_131916
+│   ├── build_20250719_132014
+│   └── build_20250719_133933
+├── clean-everything.js
+├── dependency-graph.png
+├── dependency-graph.svg
+├── dev-all.sh
+├── dist_backup_20250719_130604
+│   ├── .DS_Store
+│   ├── apple-touch-icon.png
+│   ├── assets
+│   │   ├── admin-pages-NPVKbNvB.js
+│   │   ├── Audiovisual-D0YAukFj.js
+│   │   ├── audiovisual-pages-D5W7Uf0N.js
+│   │   ├── cadastro-pages-CEpZn3Ig.js
+│   │   ├── components-DnyS3Eh5.js
+│   │   ├── DashboardEvento-3KcWGQJ0.js
+│   │   ├── firebase-vendor-DqmTlSD9.js
+│   │   ├── hooks-Dh4rj4GA.js
+│   │   ├── Hub-CfCPYwkv.js
+│   │   ├── index-B1u8NlsK.css
+│   │   ├── index-ChsEXvDB.js
+│   │   ├── index-DSA_zu_A.js
+│   │   ├── LinkShortenerPage-_2l1cxcF.js
+│   │   ├── Login-BS7ZFQ6C.js
+│   │   ├── Perfil-CSNrdrsW.js
+│   │   ├── react-vendor-4KVcW9E9.js
+│   │   ├── ReferralLanding-Cn3IzOuC.js
+│   │   ├── SelecaoTipoCadastro-8tCtNRHW.js
+│   │   ├── SetupProfile-B3HOCjU7.js
+│   │   ├── Sobre-B0gm5Dsg.js
+│   │   ├── Termos-BMlTWB5Q.js
+│   │   ├── ui-vendor-DXhXuwYa.js
+│   │   ├── utils-BlHP7G-6.js
+│   │   └── vendor-CrhDUPGb.js
+│   ├── BingSiteAuth.xml
+│   ├── cerrado-interbox.kml
+│   ├── csp-test.html
+│   ├── df.ico
+│   ├── facebook-verification.html
+│   ├── favicon-16x16.png
+│   ├── favicon-192x192.png
+│   ├── favicon-32x32.png
+│   ├── favicon-512x512.png
+│   ├── favicon-96x96.png
+│   ├── favicon-test.html
+│   ├── favicon.ico
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── images
+│   │   ├── .DS_Store
+│   │   ├── ArtIA
+│   │   ├── bg_1.png
+│   │   ├── bg_grunge.png
+│   │   ├── bg_main.png
+│   │   ├── bg_rounded.png
+│   │   ├── bg_total.png
+│   │   ├── cellphone.png
+│   │   ├── corner.png
+│   │   ├── default-avatar.png
+│   │   ├── liner.png
+│   │   ├── og-interbox.png
+│   │   ├── pngtree-light-gray-old-paper.png
+│   │   ├── quadro_transp_rtglr.png
+│   │   ├── screenshot-1.png
+│   │   ├── screenshot-2.png
+│   │   ├── splash
+│   │   └── twolines.png
+│   ├── index.html
+│   ├── logos
+│   │   ├── .DS_Store
+│   │   ├── anilha.png
+│   │   ├── BOX.png
+│   │   ├── FLOWPAY_trans.png
+│   │   ├── logo_circulo.png
+│   │   ├── nome_hrz.png
+│   │   ├── oficial_logo.png
+│   │   └── parceiros
+│   │       └── move.png
+│   ├── manifest.json
+│   ├── next.svg
+│   ├── offline.html
+│   ├── pwa-test.html
+│   ├── vercel.svg
+│   ├── videos
+│   │   ├── intro 2.mp4
+│   │   └── intro.mp4
+│   └── window.svg
+├── DOC
+│   ├── ADMIN_CNH_VERIFICATION.md
+│   ├── BRANDING_GUIDELINES.md
+│   ├── CACHE_FIX_GUIDE.md
+│   ├── COOKIES_ANALYTICS_FIX.md
+│   ├── DASHBOARD_API.md
+│   ├── DESKTOP_ACCESS_FIX.md
+│   ├── EMAIL_BOAS_VINDAS_SETUP.md
+│   ├── EMAIL_CONFIG_DASHBOARD.md
+│   ├── EMAIL_PRODUCTION_SETUP.md
+│   ├── EMAIL_SYSTEM.md
+│   ├── FIREBASE_FIX.md
+│   ├── FIREBASE_SETUP.md
+│   ├── FIRESTORE_TYPES.md
+│   ├── FLOWPAY_INTEGRATION.md
+│   ├── FLUXO_LOGIN_IMPLEMENTADO.md
+│   ├── LINK_SHORTENER.md
+│   ├── LOGIN_OPTIMIZATION.md
+│   ├── LOGIN_REDIRECT.md
+│   ├── MOBILE_FIX_GUIDE.md
+│   ├── PAGINAS_COMPONENTES.md
+│   ├── PAINEIS_ATUALIZADOS.md
+│   ├── PROBLEMAS_CORRIGIDOS.md
+│   ├── PROJETO_PRINCIPAL.md
+│   ├── RANKING_FIX.md
+│   ├── README.md
+│   ├── ROTAS_CORRIGIDAS.md
+│   ├── STATUS_COMPLETO.md
+│   ├── STORAGE_SYSTEM.md
+│   ├── VALORES-EVENTO.md
+│   └── WEBHOOK_OPENPIX_SETUP.md
+├── env.example
+├── estrutura.txt
+├── favicon.ico
+├── firebase.json
+├── firestore-backup
+│   └── firestore-backup-2025-07-17T14-49-40-752Z.json
+├── firestore.indexes.json
+├── firestore.rules
+├── fix-mobile-issues.cjs
+├── fix-mobile-issues.js
+├── fix-sw.js
+├── functions
+│   ├── .DS_Store
+│   ├── .eslintrc.js
+│   ├── .gitignore
+│   ├── config
+│   │   ├── email.d.ts
+│   │   ├── email.d.ts.map
+│   │   ├── email.js
+│   │   └── email.js.map
+│   ├── lib
+│   │   ├── audiovisual-inscricao.d.ts
+│   │   ├── audiovisual-inscricao.d.ts.map
+│   │   ├── audiovisual-inscricao.js
+│   │   ├── audiovisual-inscricao.js.map
+│   │   ├── audiovisual.d.ts
+│   │   ├── audiovisual.d.ts.map
+│   │   ├── audiovisual.js
+│   │   ├── audiovisual.js.map
+│   │   ├── config
+│   │   │   ├── email.d.ts
+│   │   │   ├── email.d.ts.map
+│   │   │   ├── email.js
+│   │   │   └── email.js.map
+│   │   ├── dashboard-api.d.ts
+│   │   ├── dashboard-api.d.ts.map
+│   │   ├── dashboard-api.js
+│   │   ├── dashboard-api.js.map
+│   │   ├── email.d.ts
+│   │   ├── email.d.ts.map
+│   │   ├── email.js
+│   │   ├── email.js.map
+│   │   ├── emails.d.ts
+│   │   ├── emails.d.ts.map
+│   │   ├── emails.js
+│   │   ├── emails.js.map
+│   │   ├── firebase-admin.d.ts
+│   │   ├── firebase-admin.d.ts.map
+│   │   ├── firebase-admin.js
+│   │   ├── firebase-admin.js.map
+│   │   ├── flowpay.d.ts
+│   │   ├── flowpay.d.ts.map
+│   │   ├── flowpay.js
+│   │   ├── flowpay.js.map
+│   │   ├── index.d.ts
+│   │   ├── index.d.ts.map
+│   │   ├── index.js
+│   │   ├── index.js.map
+│   │   ├── pedidos.d.ts
+│   │   ├── pedidos.d.ts.map
+│   │   ├── pedidos.js
+│   │   ├── pedidos.js.map
+│   │   ├── services
+│   │   │   ├── emailService.d.ts
+│   │   │   ├── emailService.d.ts.map
+│   │   │   ├── emailService.js
+│   │   │   └── emailService.js.map
+│   │   ├── teams.d.ts
+│   │   ├── teams.d.ts.map
+│   │   ├── teams.js
+│   │   ├── teams.js.map
+│   │   └── utils
+│   │       ├── logger.d.ts
+│   │       ├── logger.d.ts.map
+│   │       ├── logger.js
+│   │       └── logger.js.map
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── scripts
+│   │   ├── discover-flowpay-domain.js
+│   │   ├── executar-config.js
+│   │   ├── run-config-update.js
+│   │   ├── seedConfigData.js
+│   │   ├── setup-email-production.js
+│   │   ├── setup-email.js
+│   │   ├── setup-production-flowpay.js
+│   │   ├── test-flowpay-api.js
+│   │   ├── test-flowpay-endpoints.js
+│   │   ├── test-flowpay-function.js
+│   │   ├── test-flowpay-production.js
+│   │   ├── test-flowpay.js
+│   │   ├── test-openpix-production.js
+│   │   ├── test-webhook-flowpay.js
+│   │   ├── test-webhook-http.js
+│   │   ├── test-welcome-email.js
+│   │   └── updateTempoRealConfig.js
+│   ├── services
+│   │   ├── emailService.d.ts
+│   │   ├── emailService.d.ts.map
+│   │   ├── emailService.js
+│   │   └── emailService.js.map
+│   ├── src
+│   │   ├── __tests__
+│   │   │   └── email.test.ts
+│   │   ├── audiovisual-inscricao.ts
+│   │   ├── audiovisual.ts
+│   │   ├── config
+│   │   │   └── email.ts
+│   │   ├── email.ts
+│   │   ├── emails.ts
+│   │   ├── firebase-admin.ts
+│   │   ├── flowpay.ts
+│   │   ├── index.ts
+│   │   ├── pedidos.ts
+│   │   ├── services
+│   │   │   └── emailService.ts
+│   │   ├── teams.ts
+│   │   └── utils
+│   │       ├── logger.d.ts
+│   │       └── logger.ts
+│   └── tsconfig.json
+├── index.html
+├── installHook.js.map
+├── js_errors.log
+├── Makefile
+├── migrate-teams-to-times.js
+├── mobile-debug.html
+├── package-lock.json
+├── package.json
+├── patch_fallbacks.py
+├── payment-service
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── README.md
+│   ├── src
+│   │   ├── index.ts
+│   │   ├── routes
+│   │   │   ├── createCharge.ts
+│   │   │   ├── paymentWebhook.ts
+│   │   │   └── verifyCharge.ts
+│   │   ├── types
+│   │   └── utils
+│   └── tsconfig.json
+├── possible-issues.log
+├── postcss.config.js
+├── public
+│   ├── .DS_Store
+│   ├── apple-touch-icon.png
+│   ├── BingSiteAuth.xml
+│   ├── cerrado-interbox.kml
+│   ├── csp-test.html
+│   ├── df.ico
+│   ├── facebook-verification.html
+│   ├── favicon-16x16.png
+│   ├── favicon-192x192.png
+│   ├── favicon-32x32.png
+│   ├── favicon-512x512.png
+│   ├── favicon-96x96.png
+│   ├── favicon-test.html
+│   ├── favicon.ico
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── images
+│   │   ├── .DS_Store
+│   │   ├── ArtIA
+│   │   ├── bg_1.png
+│   │   ├── bg_grunge.png
+│   │   ├── bg_main.png
+│   │   ├── bg_rounded.png
+│   │   ├── bg_total.png
+│   │   ├── cellphone.png
+│   │   ├── corner.png
+│   │   ├── default-avatar.png
+│   │   ├── liner.png
+│   │   ├── og-interbox.png
+│   │   ├── pngtree-light-gray-old-paper.png
+│   │   ├── quadro_transp_rtglr.png
+│   │   ├── screenshot-1.png
+│   │   ├── screenshot-2.png
+│   │   ├── splash
+│   │   └── twolines.png
+│   ├── logos
+│   │   ├── .DS_Store
+│   │   ├── anilha.png
+│   │   ├── BOX.png
+│   │   ├── FLOWPAY_trans.png
+│   │   ├── logo_circulo.png
+│   │   ├── nome_hrz.png
+│   │   ├── oficial_logo.png
+│   │   └── parceiros
+│   │       └── move.png
+│   ├── manifest.json
+│   ├── next.svg
+│   ├── offline.html
+│   ├── pwa-test.html
+│   ├── sw.js
+│   ├── vercel.svg
+│   ├── videos
+│   │   ├── intro 2.mp4
+│   │   └── intro.mp4
+│   └── window.svg
+├── README
+├── rename-teams.sh
+├── seedBoxUsers.js
+├── service-worker.js
+├── src
+│   ├── .DS_Store
+│   ├── app
+│   │   ├── .DS_Store
+│   │   ├── globals.css
+│   │   └── page.tsx
+│   ├── App.tsx
+│   ├── App.tsx.bkp
+│   ├── components
+│   │   ├── AudiovisualAnalysis.tsx
+│   │   ├── CacheDebug.tsx
+│   │   ├── CallToAction.tsx
+│   │   ├── CNHUpload.tsx
+│   │   ├── Comunidade.tsx
+│   │   ├── ConfettiExplosion.tsx
+│   │   ├── CookieBanner.tsx
+│   │   ├── DesktopWarning.tsx
+│   │   ├── DevCacheButton.tsx
+│   │   ├── FirebaseDiagnostic.tsx
+│   │   ├── FirebaseErrorBoundary.tsx
+│   │   ├── FirebaseTest.tsx
+│   │   ├── Footer.tsx
+│   │   ├── GamifiedCTA.tsx
+│   │   ├── GamifiedLeaderboard.tsx
+│   │   ├── Header.tsx
+│   │   ├── Hero.tsx
+│   │   ├── HomeGamification.tsx
+│   │   ├── InitialLinkCreator.tsx
+│   │   ├── LinkRedirect.tsx
+│   │   ├── LinkShortener.tsx
+│   │   ├── LoadingDiagnostic.tsx
+│   │   ├── LoadingScreen.tsx
+│   │   ├── LoadingSpinner.tsx
+│   │   ├── OptimizedImage.tsx
+│   │   ├── Parceiros.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   ├── PWAInstallPrompt.tsx
+│   │   ├── PWALoading.tsx
+│   │   ├── PWAOfflineIndicator.tsx
+│   │   ├── PWASplash.tsx
+│   │   ├── PWAStandaloneTest.tsx
+│   │   ├── PWATest.tsx
+│   │   ├── PWAUpdatePrompt.tsx
+│   │   ├── ReferralLinkGenerator.tsx
+│   │   ├── SEOHead.tsx
+│   │   ├── Sobre.tsx
+│   │   ├── SplashScreen.tsx
+│   │   ├── TempoReal.tsx
+│   │   ├── UserExperienceMetrics.tsx
+│   │   ├── UserGamificationCards.tsx
+│   │   └── VideoIntro.tsx
+│   ├── hooks
+│   │   ├── useAnalytics.ts
+│   │   ├── useAuth.ts
+│   │   ├── useDashboardAPI.ts
+│   │   ├── useFirestore.ts
+│   │   ├── useLeaderboard.ts
+│   │   ├── useLinkShortener.ts
+│   │   ├── useMobile.ts
+│   │   ├── usePWA.ts
+│   │   ├── useRateLimit.ts
+│   │   ├── useRitualAnimation.ts
+│   │   ├── useRoleRedirect.ts
+│   │   ├── useStorage.ts
+│   │   └── useTransitionNavigate.ts
+│   ├── index.css
+│   ├── lib
+│   │   ├── analytics.ts
+│   │   ├── env.ts
+│   │   ├── firebase.ts
+│   │   ├── index.ts
+│   │   └── security.ts
+│   ├── main.tsx
+│   ├── pages
+│   │   ├── AdminDashboard.tsx
+│   │   ├── AdminPainel.tsx
+│   │   ├── audiovisual
+│   │   │   ├── form.tsx
+│   │   │   ├── payment.tsx
+│   │   │   └── success.tsx
+│   │   ├── Audiovisual.tsx
+│   │   ├── CadastroAtleta.tsx
+│   │   ├── CadastroEspectador.tsx
+│   │   ├── CadastroJurado.tsx
+│   │   ├── CadastroMidia.tsx
+│   │   ├── DashboardEvento.tsx
+│   │   ├── DashboardExample.tsx
+│   │   ├── DevDashboard.tsx
+│   │   ├── Hub.tsx
+│   │   ├── index.tsx
+│   │   ├── LinkShortenerPage.tsx
+│   │   ├── Login.tsx
+│   │   ├── MarketingDashboard.tsx
+│   │   ├── Perfil.tsx
+│   │   ├── PerfilEspectador.tsx
+│   │   ├── PerfilJudge.tsx
+│   │   ├── PerfilMidia.tsx
+│   │   ├── ReferralLanding.tsx
+│   │   ├── SelecaoTipoCadastro.tsx
+│   │   ├── SetupProfile.tsx
+│   │   ├── Sobre.tsx
+│   │   ├── Termos.tsx
+│   │   └── TestLogin.tsx
+│   ├── test
+│   │   └── setup.ts
+│   ├── types
+│   │   ├── __tests__
+│   │   │   └── firestore.test.ts
+│   │   ├── canvas-confetti.d.ts
+│   │   ├── firestore.ts
+│   │   ├── index.ts
+│   │   ├── linkShortener.ts
+│   │   └── token.ts
+│   ├── utils
+│   │   ├── __tests__
+│   │   │   └── storage.test.ts
+│   │   ├── analyticsUtils.ts
+│   │   ├── cacheUtils.ts
+│   │   ├── clearCache.ts
+│   │   ├── createInitialLinks.ts
+│   │   ├── index.ts
+│   │   ├── loadUtils.ts
+│   │   ├── logger.ts
+│   │   ├── offlineGamification.ts
+│   │   ├── pwaUtils.ts
+│   │   ├── seedConfigData.ts
+│   │   ├── seedData.ts
+│   │   └── storage.ts
+│   └── vite-env.d.ts
+├── storage.rules
+├── tailwind.config.ts
+├── tsconfig.json
+├── tsconfig.node.json
+├── vite.config.ts
+└── vitest.config.ts
+
+60 directories, 426 files

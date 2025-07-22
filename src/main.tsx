@@ -4,6 +4,8 @@ import App from './App'
 import './index.css'
 
 // --- Função para aguardar estilos carregarem ---
+console.log('🔥 APP INICIALIZADA');
+
 const waitForStylesheets = (): Promise<void> => {
   return new Promise((resolve) => {
     let attempts = 0
