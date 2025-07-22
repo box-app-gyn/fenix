@@ -35,13 +35,14 @@ export default function DevCacheButton() {
         });
       }
 
-      // Forçar reload do service worker
-      if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.getRegistration();
-        if (registration) {
-          await registration.update();
-        }
-      }
+                    // Forçar reload do service worker
+              if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                  await registration.update();
+                  console.log('🔄 Service Worker atualizado');
+                }
+              }
 
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);

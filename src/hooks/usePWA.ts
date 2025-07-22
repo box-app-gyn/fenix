@@ -10,6 +10,12 @@ interface PWAState {
   cacheStatus: 'idle' | 'caching' | 'cached' | 'error';
   offlineActions: number;
   analyticsQueue: number;
+  // Estados PWA específicos
+  showSplash: boolean;
+  showLoading: boolean;
+  showInstallPrompt: boolean;
+  showUpdatePrompt: boolean;
+  showOfflineIndicator: boolean;
   deviceInfo: {
     isMobile: boolean;
     isIOS: boolean;
@@ -38,6 +44,12 @@ export const usePWA = () => {
     cacheStatus: 'idle',
     offlineActions: 0,
     analyticsQueue: 0,
+    // Estados PWA específicos
+    showSplash: true, // Começa mostrando splash
+    showLoading: false,
+    showInstallPrompt: false,
+    showUpdatePrompt: false,
+    showOfflineIndicator: false,
     deviceInfo: {
       isMobile: false,
       isIOS: false,
@@ -71,10 +83,57 @@ export const usePWA = () => {
     setState(prev => ({ ...prev, deviceInfo, isStandalone }));
   }, []);
 
+  // Gerenciar splash screen
+  useEffect(() => {
+    const hideSplash = () => {
+      setTimeout(() => {
+        setState(prev => ({ ...prev, showSplash: false }));
+      }, 2000); // Mostrar splash por 2 segundos
+    };
+
+    // Esconder splash quando app carregar
+    if (document.readyState === 'complete') {
+      hideSplash();
+    } else {
+      window.addEventListener('load', hideSplash);
+      return () => window.removeEventListener('load', hideSplash);
+    }
+  }, []);
+
+  // Gerenciar loading states
+  useEffect(() => {
+    const showLoading = () => setState(prev => ({ ...prev, showLoading: true }));
+    const hideLoading = () => setState(prev => ({ ...prev, showLoading: false }));
+
+    // Mostrar loading durante navegação
+    window.addEventListener('beforeunload', showLoading);
+    
+    // Esconder loading quando página carregar
+    window.addEventListener('load', hideLoading);
+
+    return () => {
+      window.removeEventListener('beforeunload', showLoading);
+      window.removeEventListener('load', hideLoading);
+    };
+  }, []);
+
   // Detectar mudanças de conectividade
   useEffect(() => {
-    const handleOnline = () => setState(prev => ({ ...prev, isOnline: true }));
-    const handleOffline = () => setState(prev => ({ ...prev, isOnline: false }));
+    const handleOnline = () => {
+      setState(prev => ({ 
+        ...prev, 
+        isOnline: true,
+        showOfflineIndicator: false 
+      }));
+    };
+    
+    const handleOffline = () => {
+      setState(prev => ({ 
+        ...prev, 
+        isOnline: false,
+        showOfflineIndicator: true 
+      }));
+    };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -90,7 +149,11 @@ export const usePWA = () => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setInstallPrompt(e as InstallPromptEvent);
-      setState(prev => ({ ...prev, isInstallable: true }));
+      setState(prev => ({ 
+        ...prev, 
+        isInstallable: true,
+        showInstallPrompt: true // Mostrar prompt automaticamente
+      }));
       
       // Analytics
       trackEvent('pwa_install_prompt_available', {
@@ -112,7 +175,8 @@ export const usePWA = () => {
       setState(prev => ({ 
         ...prev, 
         isInstalled: true, 
-        isInstallable: false 
+        isInstallable: false,
+        showInstallPrompt: false // Esconder prompt após instalação
       }));
       setInstallPrompt(null);
       
@@ -130,7 +194,7 @@ export const usePWA = () => {
     };
   }, []);
 
-  // Verificar Service Worker
+  // Verificar Service Worker e atualizações
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(registration => {
@@ -140,7 +204,11 @@ export const usePWA = () => {
           if (newWorker) {
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                setState(prev => ({ ...prev, isUpdateAvailable: true }));
+                setState(prev => ({ 
+                  ...prev, 
+                  isUpdateAvailable: true,
+                  showUpdatePrompt: true // Mostrar prompt de atualização
+                }));
                 
                 // Analytics
                 trackEvent('pwa_update_available', {
@@ -184,6 +252,31 @@ export const usePWA = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Funções de controle dos estados PWA
+  const hideSplash = useCallback(() => {
+    setState(prev => ({ ...prev, showSplash: false }));
+  }, []);
+
+  const showLoading = useCallback(() => {
+    setState(prev => ({ ...prev, showLoading: true }));
+  }, []);
+
+  const hideLoading = useCallback(() => {
+    setState(prev => ({ ...prev, showLoading: false }));
+  }, []);
+
+  const hideInstallPrompt = useCallback(() => {
+    setState(prev => ({ ...prev, showInstallPrompt: false }));
+  }, []);
+
+  const hideUpdatePrompt = useCallback(() => {
+    setState(prev => ({ ...prev, showUpdatePrompt: false }));
+  }, []);
+
+  const hideOfflineIndicator = useCallback(() => {
+    setState(prev => ({ ...prev, showOfflineIndicator: false }));
+  }, []);
+
   // Funções de instalação
   const installApp = useCallback(async () => {
     if (!installPrompt) return false;
@@ -196,7 +289,8 @@ export const usePWA = () => {
         setState(prev => ({ 
           ...prev, 
           isInstalled: true, 
-          isInstallable: false 
+          isInstallable: false,
+          showInstallPrompt: false
         }));
         
         trackEvent('pwa_install_accepted', {
@@ -398,6 +492,14 @@ export const usePWA = () => {
 
   return {
     ...state,
+    // Controles de estado
+    hideSplash,
+    showLoading,
+    hideLoading,
+    hideInstallPrompt,
+    hideUpdatePrompt,
+    hideOfflineIndicator,
+    // Funções existentes
     installApp,
     cacheCriticalData,
     clearCache,

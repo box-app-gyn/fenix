@@ -1,15 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePWA } from '../hooks/usePWA';
 
-interface PWAInstallPromptProps {
-  onClose?: () => void;
-  showIncentive?: boolean;
-}
-
-export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAInstallPromptProps) {
+export default function PWAInstallPrompt() {
   const {
-    isInstallable,
+    showInstallPrompt,
+    hideInstallPrompt,
     isInstalled,
     isStandalone,
     deviceInfo,
@@ -17,24 +13,12 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
     trackEvent,
   } = usePWA();
 
-  const [isVisible, setIsVisible] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
   const [showBenefits, setShowBenefits] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
 
-  // Mostrar prompt após delay
-  useEffect(() => {
-    if (isInstallable && !isInstalled && !isStandalone) {
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-        trackEvent('pwa_install_prompt_shown', {
-          timestamp: Date.now(),
-        });
-      }, 3000); // 3 segundos
-
-      return () => clearTimeout(timer);
-    }
-  }, [isInstallable, isInstalled, isStandalone, trackEvent]);
+  // Não mostrar se já instalado ou em modo standalone
+  if (!showInstallPrompt || isInstalled || isStandalone) return null;
 
   const handleInstall = async () => {
     setIsInstalling(true);
@@ -48,7 +32,7 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
         trackEvent('pwa_install_success', {
           timestamp: Date.now(),
         });
-        setIsVisible(false);
+        hideInstallPrompt();
       }
     } catch (error) {
       console.error('Erro ao instalar PWA:', error);
@@ -62,15 +46,14 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
   };
 
   const handleClose = () => {
-    setIsVisible(false);
+    hideInstallPrompt();
     trackEvent('pwa_install_dismissed', {
       timestamp: Date.now(),
     });
-    onClose?.();
   };
 
   const handleLater = () => {
-    setIsVisible(false);
+    hideInstallPrompt();
     trackEvent('pwa_install_later', {
       timestamp: Date.now(),
     });
@@ -167,8 +150,6 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
     }
   };
 
-  if (!isVisible) return null;
-
   const instructions = getInstallInstructions();
 
   return (
@@ -208,17 +189,15 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
               Instale o Interbox 2025 no seu dispositivo para uma experiência completa!
             </p>
 
-            {showIncentive && (
-              <div className="bg-gradient-to-r from-pink-50 to-blue-50 border border-pink-200 rounded-lg p-4 mb-4">
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-pink-600 text-lg">🎁</span>
-                  <span className="font-semibold text-pink-700">Bônus de Instalação</span>
-                </div>
-                <p className="text-sm text-gray-600">
-                  Ganhe <strong>+25 ₿ tokens</strong> ao instalar o app!
-                </p>
+            <div className="bg-gradient-to-r from-pink-50 to-blue-50 border border-pink-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <span className="text-pink-600 text-lg">🎁</span>
+                <span className="font-semibold text-pink-700">Bônus de Instalação</span>
               </div>
-            )}
+              <p className="text-sm text-gray-600">
+                Ganhe <strong>+25 ₿ tokens</strong> ao instalar o app!
+              </p>
+            </div>
 
             {/* Benefits */}
             <div className="space-y-2">
@@ -250,7 +229,7 @@ export default function PWAInstallPrompt({ onClose, showIncentive = true }: PWAI
               >
                 <h4 className="font-semibold text-gray-800 mb-2">{instructions.title}</h4>
                 <ol className="space-y-1 text-sm text-gray-600">
-                  {instructions.steps.map((step, index) => (
+                  {instructions.steps.map((step: string, index: number) => (
                     <li key={index}>{step}</li>
                   ))}
                 </ol>

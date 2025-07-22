@@ -7,6 +7,10 @@ import ReferralLinkGenerator from '../components/ReferralLinkGenerator'
 import CallToAction from '../components/CallToAction'
 import Parceiros from '../components/Parceiros'
 import DevCacheButton from '../components/DevCacheButton'
+import FirebaseTest from '../components/FirebaseTest'
+import PWATest from '../components/PWATest'
+import UserExperienceMetrics from '../components/UserExperienceMetrics'
+import LoadingDiagnostic from '../components/LoadingDiagnostic'
 
 function LinhaDelicada() {
   return (
@@ -57,8 +61,12 @@ export default function Home() {
           <CallToAction />
         </main>
 
-        {/* Botão de limpeza de cache apenas em desenvolvimento */}
+        {/* Botões de desenvolvimento */}
         <DevCacheButton />
+        <FirebaseTest />
+        <PWATest />
+        <UserExperienceMetrics />
+        <LoadingDiagnostic />
       </div>
     </>
   )

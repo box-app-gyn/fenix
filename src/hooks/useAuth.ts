@@ -7,7 +7,6 @@ import {
   User as FirebaseUser,
   getRedirectResult
 } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
 import {
   auth,
   provider,
@@ -71,7 +70,6 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (isInitialized) return;
@@ -182,7 +180,6 @@ export function useAuth() {
           };
 
           setUser(extendedUser);
-          navigate('/home');
         } catch (error) {
           console.error('❌ Erro ao carregar dados do usuário:', error);
           setUser({ ...firebaseUser, role: 'publico', profileComplete: false });
@@ -200,7 +197,7 @@ export function useAuth() {
       clearTimeout(timeoutId);
       unsubscribe();
     };
-  }, [isInitialized, navigate]);
+  }, [isInitialized]);
 
   useEffect(() => {
     if (user || loading) return;
