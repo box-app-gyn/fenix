@@ -55,7 +55,7 @@ async function testFlowPayProduction() {
     const flowpayConfig = {
       amount: 2990, // R$ 29,90 em centavos
       currency: "BRL",
-      description: "Inscrição Audiovisual - CERRADØ INTERBOX 2025",
+      description: "Inscrição Audiovisual - CERRADO INTERBØX 2025",
       externalId: `test_prod_${Date.now()}`,
       customer: {
         name: testData.userName,
@@ -65,7 +65,7 @@ async function testFlowPayProduction() {
       items: [
         {
           name: "Inscrição Audiovisual",
-          description: `Candidatura para ${testData.tipo} - CERRADØ INTERBOX 2025`,
+          description: `Candidatura para ${testData.tipo} - CERRADO INTERBØX 2025`,
           quantity: 1,
           unitAmount: 2990,
         },

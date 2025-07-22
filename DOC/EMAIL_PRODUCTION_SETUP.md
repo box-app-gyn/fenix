@@ -102,7 +102,7 @@ firebase functions:log --only webhookFlowPay
 
 ### 1. **Confirmação de Inscrição Audiovisual**
 - **Trigger:** Pagamento confirmado via FlowPay
-- **Assunto:** "Inscrição Audiovisual Confirmada - CERRADØ INTERBOX 2025"
+- **Assunto:** "Inscrição Audiovisual Confirmada - CERRADO INTERBØX 2025"
 - **Conteúdo:** Confirmação, detalhes do pagamento, próximos passos
 
 ### 2. **Status de Aprovação Audiovisual**
@@ -327,5 +327,5 @@ curl -X POST http://localhost:5001/interbox-app-8d400/us-central1/webhookFlowPay
 
 ---
 
-**CERRADØ INTERBOX 2025** 🏆  
+**CERRADO INTERBØX 2025** 🏆  
 **Sistema de Email Configurado** 📧 

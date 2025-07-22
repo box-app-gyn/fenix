@@ -2,7 +2,7 @@
 
 ## 🎯 Visão Geral
 
-O sistema de encurtamento de links do App Fenix permite criar URLs curtas e acompanhar estatísticas detalhadas de cliques em tempo real. Desenvolvido com TypeScript, React, Firebase e integrado ao ecossistema do CERRADØ INTERBOX 2025.
+O sistema de encurtamento de links do App Fenix permite criar URLs curtas e acompanhar estatísticas detalhadas de cliques em tempo real. Desenvolvido com TypeScript, React, Firebase e integrado ao ecossistema do CERRADO INTERBØX 2025.
 
 ## ✨ Funcionalidades
 
@@ -331,5 +331,5 @@ VITE_FIREBASE_PROJECT_ID=interbox-box-app25
 
 ---
 
-**Desenvolvido para o CERRADØ INTERBOX 2025** 🏆
+**Desenvolvido para o CERRADO INTERBØX 2025** 🏆
 *O maior evento de times da América Latina* 

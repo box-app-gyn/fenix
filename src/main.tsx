@@ -153,7 +153,7 @@ const setupPWA = () => {
 
 // --- Inicializar aplicação ---
 const boot = async () => {
-  console.log('🚀 Iniciando CERRADØ INTERBOX 2025...');
+  console.log('🚀 Iniciando CERRADO INTERBØX 2025...');
   
   try {
     // Aguardar estilos carregarem

@@ -1,4 +1,4 @@
-# Valores CERRADØ INTERBOX 2025 - INFORMAÇÕES OFICIAIS
+# Valores CERRADO INTERBØX 2025 - INFORMAÇÕES OFICIAIS
 
 ## 🎫 **Tipos de Ingresso**
 

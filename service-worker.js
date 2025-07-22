@@ -387,7 +387,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('CERRADØ INTERBOX 2025', options)
+    self.registration.showNotification('CERRADO INTERBØX 2025', options)
   );
 });
 

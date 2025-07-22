@@ -23,7 +23,7 @@ export default function PWASplash() {
         </div>
         
         <h1 className="title">
-          CERRADØ INTERBOX 2025
+          CERRADO INTERBØX 2025
         </h1>
         
         <p className="subtitle">

@@ -240,13 +240,13 @@ exports.emailTemplates = {
       <p>Olá <strong>${data.userName}</strong>,</p>
       
       <div class="warning-box">
-        <h3>🎯 CERRADØ INTERBOX 2025</h3>
-        <p>${((_a = data.dadosAdicionais) === null || _a === void 0 ? void 0 : _a.message) || "Você tem uma notificação do CERRADØ INTERBOX 2025."}</p>
+        <h3>🎯 CERRADO INTERBØX 2025</h3>
+        <p>${((_a = data.dadosAdicionais) === null || _a === void 0 ? void 0 : _a.message) || "Você tem uma notificação do CERRADO INTERBØX 2025."}</p>
       </div>
       
       <p>Fique atento às próximas atualizações!</p>
     `;
-    return exports.emailTemplates.base(content, "CERRADØ INTERBOX 2025 - Notificação");
+    return exports.emailTemplates.base(content, "CERRADO INTERBØX 2025 - Notificação");
   },
   // Template para boas-vindas
   boasVindas: (data) => {

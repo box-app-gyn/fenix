@@ -8,8 +8,8 @@ export default function SobrePage() {
   return (
     <>
       <SEOHead 
-        title="Sobre - CERRADØ INTERBOX 2025" 
-        description="Conheça mais sobre o CERRADØ INTERBOX 2025, o maior evento de times da América Latina." 
+        title="Sobre - CERRADO INTERBØX 2025" 
+        description="Conheça mais sobre o CERRADO INTERBØX 2025, o maior evento de times da América Latina." 
       />
       <Header />
       <main className="pt-20">

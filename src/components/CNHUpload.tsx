@@ -234,7 +234,7 @@ export default function CNHUpload({ userId, onComplete }: CNHUploadProps) {
 
         <div className="text-center mt-6">
           <p className="text-sm text-gray-500">
-            CERRADØ INTERBOX 2025 - Verificação de Identidade
+            CERRADO INTERBØX 2025 - Verificação de Identidade
           </p>
         </div>
       </div>

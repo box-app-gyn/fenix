@@ -159,7 +159,7 @@ export const checkFirebaseAuth = async (): Promise<boolean> => {
 
 // Logs de debug do PWA
 export const logPWADebug = async (): Promise<void> => {
-  console.group('🔧 Debug PWA - CERRADØ INTERBOX 2025');
+  console.group('🔧 Debug PWA - CERRADO INTERBØX 2025');
 
   const debug = await debugPWA();
   console.log('Service Worker:', debug.serviceWorker);

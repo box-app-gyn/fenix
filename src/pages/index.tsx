@@ -30,7 +30,7 @@ export default function Home() {
     <>
       {/* Fake SEOHead substituindo temporariamente */}
       <head>
-        <title>CERRADØ INTERBOX 2025 - O Maior Evento de Times da América Latina</title>
+        <title>CERRADO INTERBØX 2025 - O Maior Evento de Times da América Latina</title>
         <meta
           name="description"
           content="24, 25 e 26 de outubro. O CERRADØ INTERBOX vai além da arena. Aqui você não se inscreve. Você assume seu chamado."

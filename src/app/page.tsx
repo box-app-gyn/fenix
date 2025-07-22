@@ -13,7 +13,7 @@ export default function Home() {
               O Maior Evento de Times da América Latina
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              CERRADØ INTERBOX 2025 - Uma experiência única de CrossFit, 
+              CERRADO INTERBØX 2025 - Uma experiência única de CrossFit, 
               comunidade e superação no coração do Brasil.
             </p>
           </div>

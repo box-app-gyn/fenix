@@ -143,7 +143,7 @@ export default function AudiovisualPaymentPage() {
     return (
       <>
         <SEOHead
-          title="Erro no Pagamento - CERRADØ INTERBOX 2025"
+          title="Erro no Pagamento - CERRADO INTERBØX 2025"
           description="Erro ao processar pagamento da candidatura audiovisual."
           image="/images/og-interbox.png"
           type="website"
@@ -172,7 +172,7 @@ export default function AudiovisualPaymentPage() {
   return (
     <>
       <SEOHead
-        title="Pagamento Seguro - FlowPay | CERRADØ INTERBOX 2025"
+        title="Pagamento Seguro - FlowPay | CERRADO INTERBØX 2025"
         description="Finalize sua candidatura audiovisual com pagamento seguro via FlowPay."
         image="/images/og-interbox.png"
         type="website"

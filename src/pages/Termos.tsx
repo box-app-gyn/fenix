@@ -7,8 +7,8 @@ export default function Termos() {
   return (
     <>
       <SEOHead 
-        title="Termos e Condições - CERRADØ INTERBOX 2025" 
-        description="Termos e condições de participação do CERRADØ INTERBOX 2025." 
+        title="Termos e Condições - CERRADO INTERBØX 2025" 
+        description="Termos e condições de participação do CERRADO INTERBØX 2025." 
       />
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white py-12 px-4 pt-24">
@@ -16,7 +16,7 @@ export default function Termos() {
           <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
             🧾 Termos e Condições de Participação
           </h1>
-          <h2 className="text-xl font-semibold mb-2 text-center">CERRADØ INTERBOX 2025</h2>
+          <h2 className="text-xl font-semibold mb-2 text-center">CERRADO INTERBØX 2025</h2>
           <p className="text-center text-sm text-gray-300 mb-6">
             Ginásio Rio Vermelho – 24 a 26 de outubro de 2025<br/>
             Última atualização: 27/01/2025
@@ -25,7 +25,7 @@ export default function Termos() {
 
           <h3 className="text-lg font-bold mb-2 text-pink-400">1. 💪 Participação e Responsabilidades</h3>
           <ul className="mb-4 list-disc pl-6 text-gray-200 space-y-2">
-            <li>Ao confirmar sua inscrição no CERRADØ INTERBOX 2025, o(a) atleta declara estar em plenas condições físicas e mentais para participar da competição.</li>
+            <li>Ao confirmar sua inscrição no CERRADO INTERBØX 2025, o(a) atleta declara estar em plenas condições físicas e mentais para participar da competição.</li>
             <li>A organização <b>não se responsabiliza por acidentes, lesões ou complicações médicas decorrentes da participação</b>, sendo de responsabilidade exclusiva do atleta manter exames e acompanhamento médico atualizados.</li>
             <li>Atletas menores de 18 anos devem apresentar <b>autorização expressa dos responsáveis legais</b>.</li>
           </ul>
@@ -45,7 +45,7 @@ export default function Termos() {
 
           <h3 className="text-lg font-bold mb-2 text-pink-400">4. 📸 Direito de Imagem</h3>
           <ul className="mb-4 list-disc pl-6 text-gray-200 space-y-2">
-            <li>Ao participar do evento, o(a) atleta autoriza o uso de sua <b>imagem, voz e nome</b> em todo e qualquer material publicitário, institucional ou promocional vinculado ao CERRADØ INTERBOX 2025, incluindo redes sociais, TV, site e peças impressas.</li>
+            <li>Ao participar do evento, o(a) atleta autoriza o uso de sua <b>imagem, voz e nome</b> em todo e qualquer material publicitário, institucional ou promocional vinculado ao CERRADO INTERBØX 2025, incluindo redes sociais, TV, site e peças impressas.</li>
             <li>Essa autorização é concedida <b>de forma gratuita, por tempo indeterminado e em caráter irrevogável</b>.</li>
           </ul>
 
@@ -84,7 +84,7 @@ export default function Termos() {
 
           <h3 className="text-lg font-bold mb-2 text-pink-400">9. ✅ Aceite</h3>
           <blockquote className="border-l-4 border-pink-500 pl-4 italic text-pink-200 bg-pink-900/10 py-2 rounded-r">
-            Ao confirmar minha inscrição, declaro que li, compreendi e <b>aceito integralmente</b> todos os termos acima, assumindo responsabilidade pelas decisões, consequências e experiências vividas durante o CERRADØ INTERBOX 2025.
+            Ao confirmar minha inscrição, declaro que li, compreendi e <b>aceito integralmente</b> todos os termos acima, assumindo responsabilidade pelas decisões, consequências e experiências vividas durante o CERRADO INTERBØX 2025.
           </blockquote>
         </div>
       </div>

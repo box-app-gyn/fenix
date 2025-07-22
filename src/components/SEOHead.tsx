@@ -12,7 +12,7 @@ interface SEOHeadProps {
 }
 
 const SEOHead: React.FC<SEOHeadProps> = ({
-  title = '🔥 CERRADØ INTERBOX 2025 • 24 a 26 OUT • O Maior Campeonato de CrossFit do Brasil',
+  title = '🔥 CERRADO INTERBØX 2025 • 24 a 26 OUT • O Maior Campeonato de CrossFit do Brasil',
   description = 'O maior evento de times da América Latina. CrossFit de verdade, com suor, estratégia e adrenalina em Goiânia.',
   image = '/images/og-interbox.png',
   type = 'website',
@@ -48,9 +48,9 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <meta property="og:image:height" content="630" />
       <meta property="og:type" content={type} />
       <meta property="og:url" content={fullUrl} />
-      <meta property="og:site_name" content="CERRADØ INTERBOX 2025" />
+      <meta property="og:site_name" content="CERRADO INTERBØX 2025" />
       <meta property="og:locale" content="pt_BR" />
-      <meta property="og:image:alt" content="CERRADØ INTERBOX 2025 - Campeonato de CrossFit Goiânia" />
+      <meta property="og:image:alt" content="CERRADO INTERBØX 2025 - Campeonato de CrossFit Goiânia" />
       <meta property="og:updated_time" content="2025-07-01T12:00:00+00:00" />
 
       {/* Twitter */}
@@ -84,7 +84,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
         {JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'SportsEvent',
-          'name': 'CERRADØ INTERBOX 2025',
+          'name': 'CERRADO INTERBØX 2025',
           'startDate': '2025-10-24',
           'endDate': '2025-10-26',
           'eventAttendanceMode': 'https://schema.org/OfflineEventAttendanceMode',

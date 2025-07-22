@@ -190,7 +190,7 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
           {/* Fallback para PWA */}
           <div className="absolute bottom-4 left-4 right-4 text-center">
             <p className="text-white/60 text-xs">
-              Carregando CERRADØ INTERBOX 2025...
+              Carregando CERRADO INTERBØX 2025...
             </p>
           </div>
         </motion.div>

@@ -74,12 +74,12 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
                 Formulário Audiovisual
               </h1>
               <p className="text-gray-600">
-                Candidate-se para fazer parte da equipe audiovisual da CERRADØ INTERBOX 2025!
+                Candidate-se para fazer parte da equipe audiovisual da CERRADO INTERBØX 2025!
               </p>
             </div>
 
             <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg p-4 text-white">
-              <h3 className="font-semibold mb-2">🎯 CERRADØ INTERBOX 2025</h3>
+              <h3 className="font-semibold mb-2">🎯 CERRADO INTERBØX 2025</h3>
               <p className="text-sm opacity-90">
                 ᴄᴏᴍᴘᴇᴛɪçãᴏ. ᴄᴏᴍᴜɴɪᴅᴀᴅᴇ. ᴘʀᴏᴘóꜱɪᴛᴏ.
               </p>
@@ -170,7 +170,7 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
               </div>
 
               <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-lg p-4 text-white">
-                <h3 className="font-semibold mb-2">🎯 CERRADØ INTERBOX 2025</h3>
+                <h3 className="font-semibold mb-2">🎯 CERRADO INTERBØX 2025</h3>
                 <p className="text-sm opacity-90">
                   Painel Administrativo
                 </p>
@@ -239,7 +239,7 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
               Acesso Mobile Exclusivo
             </h1>
             <p className="text-gray-600">
-              O CERRADØ INTERBOX 2025 é otimizado para dispositivos móveis.
+              O CERRADO INTERBØX 2025 é otimizado para dispositivos móveis.
               Acesse pelo seu smartphone para uma experiência completa.
             </p>
           </div>
@@ -273,7 +273,7 @@ export default function DesktopWarning({ allowAdminAccess = false, isAudiovisual
             </div>
 
             <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg p-4 text-white">
-              <h3 className="font-semibold mb-2">🎯 CERRADØ INTERBOX 2025</h3>
+              <h3 className="font-semibold mb-2">🎯 CERRADO INTERBØX 2025</h3>
               <p className="text-sm opacity-90">
                 O maior evento de times da América Latina
               </p>

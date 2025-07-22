@@ -6,9 +6,11 @@
       "**/.*",
       "**/node_modules/**"
     ],
-      "rewrites": [
-        { "source": "/sw.js", "destination": "/sw.js" },
-        { "source": "**", "destination": "/index.html" }
+    "rewrites": [
+      { "source": "/sw.js", "destination": "/sw.js" },
+      { "source": "/auth/**", "function": "authService" },
+      { "source": "/payment/**", "function": "paymentService" },
+      { "source": "**", "destination": "/index.html" }
     ],
     "headers": [
       {

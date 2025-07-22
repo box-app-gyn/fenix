@@ -228,7 +228,7 @@ export default function ReferralLanding() {
           </button>
 
           <div className="text-xs text-gray-400">
-            CERRADØ INTERBOX 2025 - O maior evento de times da América Latina
+            CERRADO INTERBØX 2025 - O maior evento de times da América Latina
           </div>
         </div>
       </motion.div>

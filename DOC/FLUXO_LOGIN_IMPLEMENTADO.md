@@ -1,4 +1,4 @@
-# Fluxo de Login Implementado - CERRADØ INTERBOX 2025
+# Fluxo de Login Implementado - CERRADO INTERBØX 2025
 
 ## 🎯 Visão Geral
 

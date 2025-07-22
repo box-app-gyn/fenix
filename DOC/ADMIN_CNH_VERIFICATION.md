@@ -1,4 +1,4 @@
-# 🔐 Verificação de CNH para Admins - CERRADØ INTERBOX 2025
+# 🔐 Verificação de CNH para Admins - CERRADO INTERBØX 2025
 
 ## 📋 Visão Geral
 
@@ -178,5 +178,5 @@ console.log('❌ Erro ao enviar CNH:', error);
 
 ---
 
-**CERRADØ INTERBOX 2025** 🏆  
+**CERRADO INTERBØX 2025** 🏆  
 **Sistema de Verificação Seguro** 🔐 

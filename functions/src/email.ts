@@ -48,17 +48,17 @@ function validateAndSanitizeData(data: any): EmailData {
 // Templates de email (usando o serviço)
 const emailTemplates: Record<string, EmailTemplate> = {
   pedido: {
-    subject: "Pedido Confirmado - CERRADØ INTERBOX 2025",
+    subject: "Pedido Confirmado - CERRADO INTERBØX 2025",
     html: (data: EmailData) => `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
-        <title>Pedido Confirmado - CERRADØ INTERBOX 2025</title>
+        <title>Pedido Confirmado - CERRADO INTERBØX 2025</title>
       </head>
       <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #ec4899;">🎫 Pedido Confirmado - CERRADØ INTERBOX 2025</h2>
+          <h2 style="color: #ec4899;">🎫 Pedido Confirmado - CERRADO INTERBØX 2025</h2>
           
           <p>Olá ${data.userName},</p>
           <p>Seu pedido foi confirmado com sucesso!</p>
@@ -85,7 +85,7 @@ const emailTemplates: Record<string, EmailTemplate> = {
   },
 
   audiovisual: {
-    subject: "Status da Inscrição - CERRADØ INTERBOX 2025",
+    subject: "Status da Inscrição - CERRADO INTERBØX 2025",
     html: (data: EmailData) => {
       const aprovado = data.dadosAdicionais?.aprovado;
       const tipo = data.dadosAdicionais?.tipo || "Profissional Audiovisual";
@@ -95,11 +95,11 @@ const emailTemplates: Record<string, EmailTemplate> = {
         <html>
         <head>
           <meta charset="utf-8">
-          <title>Status da Inscrição - CERRADØ INTERBOX 2025</title>
+          <title>Status da Inscrição - CERRADO INTERBØX 2025</title>
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-            <h2 style="color: #ec4899;">📸 Status da Inscrição - CERRADØ INTERBOX 2025</h2>
+            <h2 style="color: #ec4899;">📸 Status da Inscrição - CERRADO INTERBØX 2025</h2>
             
             <p>Olá ${data.userName},</p>
             
@@ -107,7 +107,7 @@ const emailTemplates: Record<string, EmailTemplate> = {
               <div style="background: #dcfce7; border: 1px solid #22c55e; padding: 20px; border-radius: 8px; margin: 20px 0;">
                 <h3 style="color: #166534;">✅ Inscrição Aprovada!</h3>
                 <p>Parabéns! Sua inscrição como ${tipo} foi aprovada.</p>
-                <p>Você está oficialmente credenciado para o CERRADØ INTERBOX 2025!</p>
+                <p>Você está oficialmente credenciado para o CERRADO INTERBØX 2025!</p>
               </div>
             ` : `
               <div style="background: #fef2f2; border: 1px solid #ef4444; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -134,23 +134,23 @@ const emailTemplates: Record<string, EmailTemplate> = {
   },
 
   admin: {
-    subject: "CERRADØ INTERBOX 2025 - Notificação",
+    subject: "CERRADO INTERBØX 2025 - Notificação",
     html: (data: EmailData) => `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
-        <title>CERRADØ INTERBOX 2025 - Notificação</title>
+        <title>CERRADO INTERBØX 2025 - Notificação</title>
       </head>
       <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #ec4899;">🎯 CERRADØ INTERBOX 2025</h2>
+          <h2 style="color: #ec4899;">🎯 CERRADO INTERBØX 2025</h2>
           
           <p>Olá ${data.userName},</p>
           
           <div style="background: #fef3c7; border: 1px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #92400e;">📢 Notificação Importante</h3>
-            <p>${data.dadosAdicionais?.message || "Você tem uma notificação do CERRADØ INTERBOX 2025."}</p>
+            <p>${data.dadosAdicionais?.message || "Você tem uma notificação do CERRADO INTERBØX 2025."}</p>
           </div>
           
           <p>Fique atento às próximas atualizações!</p>

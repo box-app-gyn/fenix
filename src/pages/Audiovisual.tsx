@@ -25,7 +25,7 @@ export default function Audiovisual() {
     <>
       {/* Meta fake ou usa React Helmet */}
       <head>
-        <title>Audiovisual & Creators - CERRADØ INTERBOX 2025</title>
+        <title>Audiovisual & Creators - CERRADO INTERBØX 2025</title>
         <meta name="description" content="Faça parte da equipe audiovisual..." />
         <meta property="og:image" content="/images/og-interbox.png" />
       </head>

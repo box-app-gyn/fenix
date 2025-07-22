@@ -48,7 +48,7 @@ async function testFlowPayAPI() {
     const testOrderData = {
       amount: 2990, // R$ 29,90 em centavos
       currency: "BRL",
-      description: "Teste - Inscrição Audiovisual - CERRADØ INTERBOX 2025",
+      description: "Teste - Inscrição Audiovisual - CERRADO INTERBØX 2025",
       externalId: `test_api_${Date.now()}`,
       customer: {
         name: "Usuário Teste API",
@@ -58,7 +58,7 @@ async function testFlowPayAPI() {
       items: [
         {
           name: "Inscrição Audiovisual (Teste)",
-          description: "Candidatura para fotógrafo - CERRADØ INTERBOX 2025",
+          description: "Candidatura para fotógrafo - CERRADO INTERBØX 2025",
           quantity: 1,
           unitAmount: 2990,
         },

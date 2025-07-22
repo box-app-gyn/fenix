@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       manifest: {
-        name: 'CERRADØ INTERBOX 2025',
+        name: 'CERRADO INTERBØX 2025',
         short_name: 'CERRADØ',
         description: 'O maior evento de times da América Latina. Eternize a intensidade.',
         theme_color: '#ec4899',

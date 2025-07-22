@@ -1,5 +1,5 @@
 {
-  "name": "CERRADØ INTERBOX 2025",
+  "name": "CERRADO INTERBØX 2025",
   "short_name": "CERRADØ",
   "description": "O maior evento de times da América Latina. Eternize a intensidade.",
   "start_url": "/",
@@ -60,14 +60,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Interface principal do CERRADØ INTERBOX 2025"
+      "label": "Interface principal do CERRADO INTERBØX 2025"
     },
     {
       "src": "/images/screenshot-2.png",
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Visualização mobile do CERRADØ INTERBOX 2025"
+      "label": "Visualização mobile do CERRADO INTERBØX 2025"
     }
   ],
   "shortcuts": [

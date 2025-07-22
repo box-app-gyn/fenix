@@ -89,7 +89,7 @@ export default function ReferralLinkGenerator() {
   // Compartilhar via WhatsApp
   const shareViaWhatsApp = () => {
     const message = encodeURIComponent(
-      `🎯 CERRADØ INTERBOX 2025\n\n` +
+      `🎯 CERRADO INTERBØX 2025\n\n` +
       `Olha só! Use meu link de referência para se cadastrar no maior evento de times da América Latina!\n\n` +
       `🔗 ${referralLink}\n\n` +
       `Ganhe tokens $BOX e participe da gamificação! 💰`

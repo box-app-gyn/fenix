@@ -1,8 +1,8 @@
-# 📚 Documentação do Projeto - CERRADØ INTERBOX 2025
+# 📚 Documentação do Projeto - CERRADO INTERBØX 2025
 
 ## 📋 Índice da Documentação
 
-Esta pasta contém toda a documentação técnica e de desenvolvimento do projeto CERRADØ INTERBOX 2025.
+Esta pasta contém toda a documentação técnica e de desenvolvimento do projeto CERRADO INTERBØX 2025.
 
 ---
 
@@ -228,5 +228,5 @@ Para dúvidas sobre a documentação:
 
 ---
 
-**CERRADØ INTERBOX 2025** 🏆  
+**CERRADO INTERBØX 2025** 🏆  
 **Documentação Organizada** 📚 

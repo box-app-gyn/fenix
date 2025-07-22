@@ -224,8 +224,8 @@ export default function AudiovisualFormPage() {
   return (
     <>
       <SEOHead
-        title="Candidatura Audiovisual - CERRADØ INTERBOX 2025"
-        description="Candidate-se para fazer parte da equipe audiovisual do CERRADØ INTERBOX 2025. Eternize a intensidade do maior evento de times da América Latina."
+        title="Candidatura Audiovisual - CERRADO INTERBØX 2025"
+        description="Candidate-se para fazer parte da equipe audiovisual do CERRADO INTERBØX 2025. Eternize a intensidade do maior evento de times da América Latina."
         image="/images/og-interbox.png"
         type="website"
       />

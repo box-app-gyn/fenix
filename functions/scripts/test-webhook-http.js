@@ -33,7 +33,7 @@ async function testWebhookHTTP() {
       items: [
         {
           name: "Inscrição Audiovisual",
-          description: "Candidatura para fotógrafo - CERRADØ INTERBOX 2025",
+          description: "Candidatura para fotógrafo - CERRADO INTERBØX 2025",
           quantity: 1,
           unitAmount: 2990,
         },

@@ -60,7 +60,7 @@ async function testOpenPixProduction() {
     const openpixConfig = {
       correlationID: `test_prod_${Date.now()}`,
       value: 2990, // R$ 29,90 em centavos
-      comment: "Inscrição Audiovisual - CERRADØ INTERBOX 2025",
+      comment: "Inscrição Audiovisual - CERRADO INTERBØX 2025",
       identifier: testData.userEmail,
       customer: {
         name: testData.userName,

@@ -101,7 +101,7 @@ const result = await criarCheckoutFlowPay(checkoutPayload);
 const flowpayConfig = {
   amount: 2990, // R$ 29,90 em centavos
   currency: "BRL",
-  description: "Inscrição Audiovisual - CERRADØ INTERBOX 2025",
+  description: "Inscrição Audiovisual - CERRADO INTERBØX 2025",
   externalId: `audiovisual_${Date.now()}_${userId}`,
   customer: {
     name: data.userName,
@@ -110,7 +110,7 @@ const flowpayConfig = {
   },
   items: [{
     name: "Inscrição Audiovisual",
-    description: `Candidatura para ${data.tipo} - CERRADØ INTERBOX 2025`,
+    description: `Candidatura para ${data.tipo} - CERRADO INTERBØX 2025`,
     quantity: 1,
     unitAmount: 2990
   }],
@@ -303,5 +303,5 @@ logger.error("Erro ao criar checkout FlowPay", {
 
 ---
 
-**CERRADØ INTERBOX 2025** 🏆  
+**CERRADO INTERBØX 2025** 🏆  
 **Integração FlowPay Completa** 💳 

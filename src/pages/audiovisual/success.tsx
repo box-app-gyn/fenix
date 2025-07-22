@@ -185,7 +185,7 @@ export default function AudiovisualSuccessPage() {
             {/* Mensagem de agradecimento */}
             <div className="text-center mt-8">
               <p className="text-gray-500 text-sm">
-                Obrigado por fazer parte da <span className="font-semibold">CERRADØ INTERBOX 2025</span>!
+                Obrigado por fazer parte da <span className="font-semibold">CERRADO INTERBØX 2025</span>!
                 Juntos vamos criar algo incrível! 🏆
               </p>
             </div>
