@@ -6,6 +6,7 @@ import HomeGamification from '../components/HomeGamification'
 import ReferralLinkGenerator from '../components/ReferralLinkGenerator'
 import CallToAction from '../components/CallToAction'
 import Parceiros from '../components/Parceiros'
+import DevCacheButton from '../components/DevCacheButton'
 
 function LinhaDelicada() {
   return (
@@ -55,6 +56,9 @@ export default function Home() {
           <LinhaDelicada />
           <CallToAction />
         </main>
+
+        {/* Botão de limpeza de cache apenas em desenvolvimento */}
+        <DevCacheButton />
       </div>
     </>
   )
