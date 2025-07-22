@@ -2,74 +2,105 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Funções auxiliares
+    // Funções auxiliares otimizadas
     function isAuthenticated() {
       return request.auth != null;
     }
+    
     function isAdmin() {
+      return isAuthenticated() && 
+        request.auth.token.admin == true;
+    }
+    
+    function isUserAdmin() {
       return isAuthenticated() &&
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isTeamCaptain(teamData) {
+      return isAuthenticated() && teamData.captainId == request.auth.uid;
+    }
+    
+    function isValidUserData() {
+      return request.resource.data.keys().hasAll(['email', 'displayName', 'role']) &&
+             request.resource.data.role in ['user', 'admin', 'moderator'];
+    }
+    
+    function isValidGamificationAction() {
+      return request.resource.data.keys().hasAll(['userId', 'actionType', 'points', 'timestamp']) &&
+             request.resource.data.userId == request.auth.uid;
     }
 
     // Coleção: users
     match /users/{userId} {
-      allow read, write: if request.auth.uid == userId;
-      allow create: if request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserData();
     }
+    
     // Coleção: box_rewards
     match /box_rewards/{docId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if isAuthenticated();
     }
+    
     // Coleção: box_stats
     match /box_stats/{docId} {
       allow read: if true;
-      allow write: if request.auth.token.admin == true;
+      allow write: if isAdmin();
     }
-    // Coleção: audiovisual (engloba fotógrafos, videomakers, etc.)
+    
+    // Coleção: audiovisual
     match /audiovisual/{audiovisualId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow update: if isUserAdmin();
+      allow delete: if isUserAdmin();
     }
-    // Coleção: adminLogs (apenas admins)
+    
+    // Coleção: adminLogs
     match /adminLogs/{logId} {
-      allow read, write: if isAdmin();
+      allow read, write: if isUserAdmin();
     }
+    
     // Coleção: teams
     match /teams/{teamId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
-        resource.data.captainId == request.auth.uid || isAdmin()
+        isTeamCaptain(resource.data) || isUserAdmin()
       );
-      allow delete: if isAdmin();
+      allow delete: if isUserAdmin();
     }
+    
     // Coleção: convites_times
     match /convites_times/{conviteId} {
       allow read: if isAuthenticated() && (
         resource.data.captainId == request.auth.uid || 
         resource.data.invitedEmail == request.auth.token.email || 
-        isAdmin()
+        isUserAdmin()
       );
       allow create: if isAuthenticated();
       allow update: if isAuthenticated() && (
         resource.data.captainId == request.auth.uid || 
         resource.data.invitedEmail == request.auth.token.email || 
-        isAdmin()
+        isUserAdmin()
       );
-      allow delete: if isAdmin();
+      allow delete: if isUserAdmin();
     }
+    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_actions
     match /gamification_actions/{actionId} {
       allow read: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid || isAdmin()
+        resource.data.userId == request.auth.uid || isUserAdmin()
       );
-      allow create: if isAuthenticated() && 
-        request.resource.data.userId == request.auth.uid;
-      allow update: if isAdmin();
-      allow delete: if isAdmin();
+      allow create: if isAuthenticated() && isValidGamificationAction();
+      allow update: if isUserAdmin();
+      allow delete: if isUserAdmin();
     }
+    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_leaderboard
     match /gamification_leaderboard/{userId} {
       allow read: if isAuthenticated();
@@ -77,66 +108,62 @@ service cloud.firestore {
         request.resource.data.userId == request.auth.uid;
       allow update: if isAuthenticated() && 
         resource.data.userId == request.auth.uid;
-      allow delete: if isAdmin();
+      allow delete: if isUserAdmin();
     }
+    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_rewards
     match /gamification_rewards/{rewardId} {
       allow read: if isAuthenticated();
-      allow create, update, delete: if isAdmin();
+      allow create, update, delete: if isUserAdmin();
     }
+    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_user_rewards
     match /gamification_user_rewards/{userRewardId} {
       allow read: if isAuthenticated() && (
-        resource.data.userId == request.auth.uid || isAdmin()
+        resource.data.userId == request.auth.uid || isUserAdmin()
       );
       allow create: if isAuthenticated() && 
         request.resource.data.userId == request.auth.uid;
       allow update: if isAuthenticated() && 
         resource.data.userId == request.auth.uid;
-      allow delete: if isAdmin();
+      allow delete: if isUserAdmin();
     }
+    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_achievements
     match /gamification_achievements/{achievementId} {
       allow read: if isAuthenticated();
-      allow create, update, delete: if isAdmin();
+      allow create, update, delete: if isUserAdmin();
     }
+    
     // 🎯 GAMIFICAÇÃO - Coleção: gamification_community_highlights
     match /gamification_community_highlights/{highlightId} {
       allow read: if isAuthenticated();
-      allow create, update, delete: if isAdmin();
+      allow create, update, delete: if isUserAdmin();
     }
+    
     // 📊 CONFIGURAÇÕES - Coleção: config
     match /config/{configId} {
       allow read: if true; // Dados públicos para o componente TempoReal
-      allow create, update, delete: if isAdmin(); // Apenas admins podem modificar
+      allow create, update, delete: if isUserAdmin(); // Apenas admins podem modificar
     }
-    // Bloquear acesso a todas as outras coleções
+    
+    // 💳 FLOWPAY - Coleção: flowpay_checkouts
+    match /flowpay_checkouts/{checkoutId} {
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == resource.data.userId || isUserAdmin());
+      
+      allow create: if isAuthenticated() && 
+        request.auth.uid == request.resource.data.userId;
+      
+      allow update: if isAuthenticated() && 
+        (request.auth.uid == resource.data.userId || isUserAdmin());
+      
+      allow delete: if isUserAdmin();
+    }
+    
+    // 🔒 Bloquear acesso a todas as outras coleções
     match /{document=**} {
       allow read, write: if false;
-    }
-
-    // Regras para flowpay_checkouts
-    match /flowpay_checkouts/{checkoutId} {
-      // Usuário pode ler apenas seus próprios checkouts
-      // Admin pode ler todos
-      allow read: if request.auth != null && 
-        (request.auth.uid == resource.data.userId || 
-         request.auth.token.admin == true);
-      
-      // Usuário pode criar apenas seus próprios checkouts
-      allow create: if request.auth != null && 
-        request.auth.uid == resource.data.userId &&
-        request.resource.data.userId == request.auth.uid;
-      
-      // Usuário pode atualizar apenas seus próprios checkouts
-      // Admin pode atualizar qualquer checkout
-      allow update: if request.auth != null && 
-        (request.auth.uid == resource.data.userId || 
-         request.auth.token.admin == true);
-      
-      // Apenas admin pode deletar
-      allow delete: if request.auth != null && 
-        request.auth.token.admin == true;
     }
   }
 } 

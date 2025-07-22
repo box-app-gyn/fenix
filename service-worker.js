@@ -65,10 +65,14 @@ self.addEventListener('install', (event) => {
   
   event.waitUntil(
     Promise.all([
-      // Precache de assets críticos
+      // Precache de assets críticos (apenas se não estiver usando Workbox)
       caches.open(STATIC_CACHE).then((cache) => {
         console.log('📦 Fazendo precache de', PRECACHE_URLS.length, 'assets...');
-        return cache.addAll(PRECACHE_URLS);
+        return cache.addAll(PRECACHE_URLS).catch((error) => {
+          console.warn('⚠️ Alguns assets não puderam ser cacheados:', error);
+          // Continuar mesmo com erros
+          return Promise.resolve();
+        });
       }),
       // Preparar outros caches
       caches.open(DYNAMIC_CACHE),
@@ -128,6 +132,11 @@ self.addEventListener('fetch', (event) => {
 
   // Skip non-GET requests
   if (req.method !== 'GET') return;
+
+  // Verificar se é um asset do Workbox (deixar o Workbox lidar)
+  if (url.pathname.includes('workbox-') || url.pathname.includes('__WB_REVISION__')) {
+    return; // Deixar o Workbox lidar com seus próprios assets
+  }
 
   // Log para debugging (apenas em desenvolvimento)
   if (self.location.hostname === 'localhost') {

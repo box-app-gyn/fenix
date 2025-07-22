@@ -6,6 +6,7 @@ import LoadingScreen from './components/LoadingScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import FirebaseTest from './components/FirebaseTest';
 import FirebaseDiagnostic from './components/FirebaseDiagnostic';
+import PWAStandaloneTest from './components/PWAStandaloneTest';
 
 // Componentes PWA
 import PWASplash from './components/PWASplash';
@@ -152,6 +153,7 @@ function App() {
         <>
           <FirebaseTest />
           <FirebaseDiagnostic />
+          <PWAStandaloneTest />
         </>
       )}
     </FirebaseErrorBoundary>

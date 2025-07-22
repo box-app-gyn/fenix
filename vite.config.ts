@@ -12,6 +12,8 @@ export default defineConfig(({ mode }) => ({
       injectManifest: {
         swSrc: 'service-worker.js',
         swDest: 'sw.js',
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        globIgnores: ['**/node_modules/**/*', '**/dist/**/*'],
       },
       includeAssets: [
         'favicon.ico',
@@ -27,6 +29,8 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         skipWaiting: true,
         clientsClaim: true,
+        disableDevLogs: true, // Desabilitar logs de desenvolvimento
+        cleanupOutdatedCaches: true, // Limpar caches antigos
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/(firebase|identitytoolkit|securetoken|accounts|apis)\.googleapis\.com/,

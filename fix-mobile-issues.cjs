@@ -8,7 +8,18 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log('🔧 Corrigindo problemas comuns no mobile...\n');
+// Configurações do projeto atual
+const PROJECT_CONFIG = {
+  projectId: 'interbox-app-8d400',
+  authDomain: 'interbox-app-8d400.firebaseapp.com',
+  storageBucket: 'interbox-app-8d400.appspot.com',
+  apiKey: 'AIzaSyDdLZo5ZO32WOpxNgqqSQw381cekJPfVBg',
+  messagingSenderId: '1087720410628',
+  appId: '1:1087720410628:web:12ee7c7a6b6d987f102f51',
+  measurementId: 'G-VRZEQPCZ55'
+};
+
+console.log('🔧 Iniciando correções para mobile - interbox-app-8d400');
 
 // 1. Verificar se o arquivo .env existe
 const envPath = path.join(process.cwd(), '.env');
